@@ -27,6 +27,8 @@
     LC_TIME = "en_US.UTF-8";
   };
 
+  programs.git.prompt.enable = true;
+
   # Enable the X11 windowing system.
   # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
@@ -64,9 +66,8 @@
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
       kdePackages.kate
-    #  thunderbird
     ];
-  };  
+  };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
