@@ -3,5 +3,6 @@
   environment.systemPackages = with pkgs; [
     git
     neovim
+    eza # A modern replacement for ‘ls’
   ];
 }
