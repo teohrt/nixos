@@ -8,13 +8,8 @@
   imports = [
     ./user-apps.nix
     ./hyprland.nix
+    ./git.nix
   ];
-
-  programs.git.enable = true;
-  programs.git.settings.user = {
-    name = "Trace Ohrt";
-    email = "teohrt18@gmail.com";
-  };
 
   # alacritty - a cross-platform, GPU-accelerated terminal emulator
   programs.alacritty = {
