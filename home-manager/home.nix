@@ -1,13 +1,11 @@
 { config, pkgs, ... }:
 
 {
-
   home.username = "trace";
   home.homeDirectory = "/home/trace";
 
   imports = [
     ./user-apps.nix
-    ./hyprland.nix
     ./git.nix
   ];
 
