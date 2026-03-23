@@ -5,6 +5,7 @@
     [
       ./hardware-configuration.nix
       ./system-apps.nix
+      ./hyprland.nix
     ];
   
   nix.settings.experimental-features = [ "nix-command" "flakes" ];

@@ -12,5 +12,6 @@
     vscode
     google-chrome
     btop
+    alacritty
   ];
 }

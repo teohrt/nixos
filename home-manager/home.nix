@@ -7,6 +7,7 @@
 
   imports = [
     ./user-apps.nix
+    ./hyprland.nix
   ];
 
   programs.git.enable = true;
