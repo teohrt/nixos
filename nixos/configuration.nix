@@ -78,11 +78,6 @@
   environment.systemPackages = with pkgs; [
     git
     neovim
-    vscode
-    google-chrome
-    btop
-    neofetch
-    eza
   ];
 
   # This value determines the NixOS release from which the default

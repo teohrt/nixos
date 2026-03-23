@@ -1,8 +1,13 @@
 { config, pkgs, ... }:
 
 {
+
   home.username = "trace";
   home.homeDirectory = "/home/trace";
+
+  imports = [
+    ./user-apps.nix
+  ];
 
   # Import files from the current configuration directory into the Nix store,
   # and create symbolic links pointing to those store files in the Home directory.
@@ -27,18 +32,6 @@
     "Xcursor.size" = 16;
     "Xft.dpi" = 172;
   };
-
-  # Packages that should be installed to the user profile.
-  home.packages = with pkgs; [
-    neofetch
-    ripgrep # recursively searches directories for a regex pattern
-    jq # A lightweight and flexible command-line JSON processor
-    eza # A modern replacement for ‘ls’
-    fzf # A command-line fuzzy finder
-    which
-    tree
-    gawk
-  ];
 
   # basic configuration of git, please change to your own
   programs.git = {
