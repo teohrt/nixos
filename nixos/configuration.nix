@@ -2,12 +2,11 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [
       ./hardware-configuration.nix
       ./system-apps.nix
     ];
   
-  # Enable the Flakes feature and the accompanying new nix command-line tool
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   boot.loader.systemd-boot.enable = true;
@@ -73,7 +72,6 @@
     ];
   };
 
-  # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
   # This value determines the NixOS release from which the default
