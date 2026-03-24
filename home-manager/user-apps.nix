@@ -1,16 +1,27 @@
 # Packages that should be installed to the user profile.
 { pkgs, ... }: {
   home.packages = with pkgs; [
-    neofetch
-    ripgrep # recursively searches directories for a regex pattern
-    jq # A lightweight and flexible command-line JSON processor
-    fzf # A command-line fuzzy finder
+    # cli utilities
+    ripgrep
+    jq
+    fzf
     which
     tree
     gawk
+    btop
+    neofetch
+
+    # apps
     vscode
     google-chrome
-    btop
-    alacritty
+
+    # wayland / hyprland ecosystem
+    waybar        # status bar
+    wofi          # app launcher
+    mako          # notification daemon
+    hyprpaper     # wallpaper
+    grim          # screenshot tool
+    slurp         # screen area selection
+    wl-clipboard  # clipboard utilities (wl-copy / wl-paste)
   ];
 }

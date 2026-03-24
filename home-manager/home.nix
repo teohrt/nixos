@@ -7,6 +7,7 @@
   imports = [
     ./user-apps.nix
     ./git.nix
+    ./hyprland.nix
   ];
 
   # alacritty - a cross-platform, GPU-accelerated terminal emulator
