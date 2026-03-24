@@ -7,9 +7,9 @@
     settings = {
       monitor = ",preferred,auto,auto";
 
-      "$terminal" = "alacritty";
+      "$terminal" = "kitty";
       "$menu" = "wofi --show drun";
-      "$mod" = "CTRL";
+      "$mod" = "ALT";
 
       exec-once = [
         "waybar"
