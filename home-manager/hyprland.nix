@@ -9,7 +9,7 @@
 
       "$terminal" = "alacritty";
       "$menu" = "wofi --show drun";
-      "$mod" = "SUPER";
+      "$mod" = "CTRL";
 
       exec-once = [
         "waybar"
