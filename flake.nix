@@ -18,6 +18,7 @@
       my-nixos = nixpkgs.lib.nixosSystem {
         modules = [
           ./nixos/configuration.nix
+          /etc/nixos/hardware-configuration.nix
 
           home-manager.nixosModules.home-manager
           {

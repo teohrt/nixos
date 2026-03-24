@@ -1,19 +1,14 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [
-      ./hardware-configuration.nix
-      ./system-apps.nix
-    ];
+  imports = [
+    ./system-apps.nix
+  ];
   
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  boot.loader.grub = {
-    enable = true;
-    device = "/dev/sda";
-    useOSProber = false;
-  };
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "my-nixos";
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
