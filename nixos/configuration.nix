@@ -10,7 +10,7 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.efi.canTouchEfiVariables = false;
 
   networking.hostName = "my-nixos";
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
