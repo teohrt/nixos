@@ -1,5 +1,16 @@
 { pkgs, ... }:
 
+let
+  # Kill any stuck wofi before opening; stale layer-shell instances often stop the menu from appearing again.
+  hyprWofiMenu = pkgs.writeShellScript "hypr-wofi-menu" ''
+    pkill -x wofi 2>/dev/null || true
+    exec ${pkgs.wofi}/bin/wofi --show drun
+  '';
+
+  hyprScreenshot = pkgs.writeShellScript "hypr-screenshot" ''
+    ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)" - | ${pkgs.wl-clipboard}/bin/wl-copy
+  '';
+in
 {
   wayland.windowManager.hyprland = {
     enable = true;
@@ -7,14 +18,14 @@
     settings = {
       monitor = ",preferred,auto,auto";
 
-      "$terminal" = "kitty";
-      "$menu" = "wofi --show drun";
+      "$terminal" = "${pkgs.kitty}/bin/kitty";
+      "$menu" = "${hyprWofiMenu}";
       "$mod" = "ALT";
 
       exec-once = [
-        "waybar"
-        "mako"
-        "hyprpaper"
+        "${pkgs.waybar}/bin/waybar"
+        "${pkgs.mako}/bin/mako"
+        "${pkgs.hyprpaper}/bin/hyprpaper"
       ];
 
       env = [
@@ -80,7 +91,7 @@
         "$mod SHIFT, 5, movetoworkspace, 5"
 
         # screenshot
-        ", Print, exec, grim -g \"$(slurp)\" - | wl-copy"
+        ", Print, exec, ${hyprScreenshot}"
       ];
 
       # mouse bindings
