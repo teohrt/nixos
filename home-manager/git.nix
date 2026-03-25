@@ -1,11 +1,9 @@
 { ... }: {
   programs.git = {
     enable = true;
-    settings = {
-      user = {
-        name = "Trace Ohrt";
-        email = "teohrt18@gmail.com";
-      };
+    userName = "Trace Ohrt";
+    userEmail = "teohrt18@gmail.com";
+    extraConfig = {
       pull.rebase = false;
       core.editor = "nvim";
     };
