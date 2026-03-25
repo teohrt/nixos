@@ -16,7 +16,6 @@
     google-chrome
 
     # wayland / hyprland ecosystem
-    kitty         # terminal (Hyprland $terminal; needs profile for wofi drun)
     waybar        # status bar
     wofi          # app launcher
     mako          # notification daemon
