@@ -20,7 +20,7 @@ in
 
       "$terminal" = "${pkgs.kitty}/bin/kitty";
       "$menu" = "${hyprWofiMenu}";
-      "$mod" = "ALT";
+      "$mod" = "SUPER";
 
       exec-once = [
         "${pkgs.waybar}/bin/waybar"
@@ -63,11 +63,10 @@ in
       # key bindings
       bind = [
         "$mod, Return, exec, $terminal"
-        "$mod, C, killactive"
-        "$mod, M, exit"
+        "$mod, W, killactive"
+        "$mod, ESC, exit"
         "$mod, V, togglefloating"
-        "$mod, R, exec, $menu"
-        "$mod, P, pseudo"
+        "$mod, SPACE, exec, $menu"
         "$mod, J, togglesplit"
 
         # focus
