@@ -15,8 +15,10 @@
     vscode
     google-chrome
 
+    # fonts
+    nerd-fonts.jetbrains-mono
+
     # wayland / hyprland ecosystem
-    waybar        # status bar
     wofi          # app launcher
     mako          # notification daemon
     hyprpaper     # wallpaper

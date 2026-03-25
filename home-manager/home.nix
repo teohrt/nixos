@@ -8,6 +8,7 @@
     ./user-apps.nix
     ./git.nix
     ./hyprland.nix
+    ./waybar.nix
   ];
 
   # This value determines the home Manager release that your
