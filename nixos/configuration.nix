@@ -8,11 +8,6 @@
   
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  virtualisation.virtualbox.guest = {
-    enable = true;
-    draganddrop = true;
-  };
-
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
