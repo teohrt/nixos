@@ -50,11 +50,12 @@
         border: none;
         border-radius: 0;
         min-height: 0;
+        background: transparent;
+        color: #ffffff;
       }
 
       window#waybar {
         background: rgba(10, 10, 15, 0.85);
-        color: #cdd6f4;
         border-radius: 12px;
       }
 
@@ -66,13 +67,12 @@
 
       #workspaces button {
         padding: 0 8px;
-        color: #585b70;
-        background: transparent;
+        color: rgba(255, 255, 255, 0.3);
         box-shadow: none;
       }
 
       #workspaces button.active {
-        color: #cdd6f4;
+        color: #ffffff;
       }
 
       #workspaces button:hover {
@@ -80,20 +80,8 @@
         border-radius: 8px;
       }
 
-      #clock {
-        color: #cdd6f4;
-        font-weight: 500;
-      }
-
-      #cpu,
-      #memory,
-      #pulseaudio {
-        color: #6c7086;
-        padding: 0 6px;
-      }
-
       #pulseaudio.muted {
-        color: #45475a;
+        color: rgba(255, 255, 255, 0.3);
       }
     '';
   };
