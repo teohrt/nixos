@@ -13,7 +13,7 @@
 
       modules-left = [ "hyprland/workspaces" ];
       modules-center = [ "clock" ];
-      modules-right = [ "cpu" "memory" "pulseaudio" ];
+      modules-right = [ "battery" "network" "pulseaudio" ];
 
       "hyprland/workspaces" = {
         format = "{id}";
@@ -26,14 +26,16 @@
         tooltip = false;
       };
 
-      cpu = {
-        format = "cpu {usage}%";
-        interval = 5;
+      battery = {
+        format = "bat {capacity}%";
+        format-charging = "bat {capacity}% +";
+        interval = 30;
       };
 
-      memory = {
-        format = "mem {percentage}%";
-        interval = 5;
+      network = {
+        format-wifi = "{essid}";
+        format-disconnected = "disconnected";
+        tooltip = false;
       };
 
       pulseaudio = {
