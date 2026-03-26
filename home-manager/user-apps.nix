@@ -19,6 +19,7 @@
     nerd-fonts.jetbrains-mono
 
     # wayland / hyprland ecosystem
+    impala        # network manager TUI
     wofi          # app launcher
     mako          # notification daemon
     hyprpaper     # wallpaper
