@@ -22,7 +22,7 @@
       };
 
       clock = {
-        format = "{:%a %b %d  %I:%M %p}";
+        format = "{:%I:%M %p}";
         tooltip = false;
       };
 
