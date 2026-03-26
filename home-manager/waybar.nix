@@ -57,14 +57,19 @@
       }
 
       window#waybar {
-        background: rgba(10, 10, 15, 0.85);
-        border-radius: 12px;
+        background: transparent;
       }
 
       .modules-left,
       .modules-center,
       .modules-right {
-        padding: 0 8px;
+        padding: 0 4px;
+      }
+
+      #workspaces {
+        background: rgba(10, 10, 15, 0.85);
+        border-radius: 12px;
+        padding: 0 4px;
       }
 
       #workspaces button {
@@ -80,6 +85,15 @@
       #workspaces button:hover {
         background: rgba(255, 255, 255, 0.05);
         border-radius: 8px;
+      }
+
+      #clock,
+      #battery,
+      #network,
+      #pulseaudio {
+        background: rgba(10, 10, 15, 0.85);
+        border-radius: 12px;
+        padding: 0 12px;
       }
 
       #pulseaudio.muted {
