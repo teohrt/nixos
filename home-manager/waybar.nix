@@ -45,9 +45,15 @@ in
       margin-right = 16;
       spacing = 8;
 
-      modules-left = [ "hyprland/workspaces" ];
+      modules-left = [ "custom/launcher" "hyprland/workspaces" ];
       modules-center = [ "clock" ];
       modules-right = [ "custom/weather" "battery" "network" "pulseaudio" ];
+
+      "custom/launcher" = {
+        format = "󱄅";
+        on-click = "pkill -x wofi || ${pkgs.wofi}/bin/wofi --show drun";
+        tooltip = false;
+      };
 
       "hyprland/workspaces" = {
         format = "{id}";
@@ -107,6 +113,17 @@ in
       .modules-center,
       .modules-right {
         padding: 0 4px;
+      }
+
+      #custom-launcher {
+        background: rgba(10, 10, 15, 0.85);
+        border-radius: 12px;
+        padding: 0 12px;
+        font-size: 16px;
+      }
+
+      #custom-launcher:hover {
+        background: rgba(126, 186, 228, 0.15);
       }
 
       #workspaces {
