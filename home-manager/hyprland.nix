@@ -25,6 +25,7 @@ in
       exec-once = [
         "${pkgs.mako}/bin/mako"
         "${pkgs.hyprpaper}/bin/hyprpaper"
+        "waybar"
       ];
 
       env = [
