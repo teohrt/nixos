@@ -27,8 +27,8 @@
       };
 
       battery = {
-        format = "bat {capacity}%";
-        format-charging = "bat {capacity}% +";
+        format = "󰚥 {capacity}%";
+        format-charging = "󱐋 {capacity}%";
         interval = 30;
       };
 
