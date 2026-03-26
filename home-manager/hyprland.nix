@@ -1,10 +1,9 @@
 { pkgs, ... }:
 
 let
-  # Kill any stuck wofi before opening; stale layer-shell instances often stop the menu from appearing again.
-  hyprWofiMenu = pkgs.writeShellScript "hypr-wofi-menu" ''
-    pkill -x wofi 2>/dev/null || true
-    exec ${pkgs.wofi}/bin/wofi --show drun
+  hyprRofiMenu = pkgs.writeShellScript "hypr-rofi-menu" ''
+    pkill -x rofi 2>/dev/null || true
+    exec ${pkgs.rofi-wayland}/bin/rofi -show drun
   '';
 
   hyprScreenshot = pkgs.writeShellScript "hypr-screenshot" ''
@@ -19,7 +18,7 @@ in
       monitor = ",preferred,auto,auto";
 
       "$terminal" = "${pkgs.kitty}/bin/kitty";
-      "$menu" = "${hyprWofiMenu}";
+      "$menu" = "${hyprRofiMenu}";
       "$mod" = "SUPER";
 
       exec-once = [
