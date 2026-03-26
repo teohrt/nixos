@@ -63,7 +63,7 @@ in
       battery = {
         format = "󰚥 {capacity}%";
         format-charging = "󱐋 {capacity}%";
-        interval = 30;
+        interval = 2;
       };
 
       network = {
