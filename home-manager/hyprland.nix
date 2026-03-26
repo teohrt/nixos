@@ -23,7 +23,6 @@ in
       "$mod" = "SUPER";
 
       exec-once = [
-        "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP DISPLAY"
         "${pkgs.mako}/bin/mako"
         "${pkgs.hyprpaper}/bin/hyprpaper"
         "waybar"

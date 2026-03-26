@@ -37,7 +37,7 @@
         format-disconnected = "󰤭";
         tooltip-format-wifi = "{essid}  {signalStrength}%";
         tooltip-format-disconnected = "disconnected";
-        on-click = "kitty -e impala";
+        on-click = "nm-connection-editor";
       };
 
       pulseaudio = {
