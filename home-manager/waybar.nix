@@ -23,7 +23,7 @@
 
       clock = {
         format = "{:%I:%M %p}";
-        tooltip = false;
+        tooltip-format = "{:%A: %m/%d/%Y}";
       };
 
       battery = {
