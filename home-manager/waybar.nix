@@ -37,7 +37,7 @@
         format-disconnected = "󰤭";
         tooltip-format-wifi = "{essid}  {signalStrength}%";
         tooltip-format-disconnected = "disconnected";
-        on-click = "nm-connection-editor";
+        on-click = "kitty -e nmtui";
       };
 
       pulseaudio = {
