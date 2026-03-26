@@ -51,7 +51,7 @@ in
 
       "custom/launcher" = {
         format = "󱄅";
-        on-click = "pkill -x rofi || ${pkgs.rofi-wayland}/bin/rofi -show drun";
+        on-click = "pkill -x rofi || ${pkgs.rofi}/bin/rofi -show drun";
         tooltip = false;
       };
 
