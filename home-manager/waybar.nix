@@ -33,9 +33,11 @@
       };
 
       network = {
-        format-wifi = "{essid}";
-        format-disconnected = "disconnected";
-        tooltip = false;
+        format-wifi = "󰤨";
+        format-disconnected = "󰤭";
+        tooltip-format-wifi = "{essid}  {signalStrength}%";
+        tooltip-format-disconnected = "disconnected";
+        on-click = "nm-connection-editor";
       };
 
       pulseaudio = {
