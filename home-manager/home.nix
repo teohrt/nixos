@@ -9,6 +9,7 @@
     ./git.nix
     ./hyprland.nix
     ./waybar.nix
+    ./rofi-app-launcher.nix
   ];
 
   # This value determines the home Manager release that your

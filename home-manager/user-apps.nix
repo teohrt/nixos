@@ -16,7 +16,6 @@
     # wayland / hyprland ecosystem
     networkmanagerapplet  # nm-connection-editor GUI
     pavucontrol           # PulseAudio volume control GUI
-    rofi                  # app launcher
     mako                  # notification daemon
     hyprpaper             # wallpaper
     grim                  # screenshot tool
