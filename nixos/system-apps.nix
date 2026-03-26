@@ -5,5 +5,7 @@
     neovim
     eza # A modern replacement for ‘ls’
     kitty
+    gnumake
+    stow
   ];
 }
