@@ -41,9 +41,9 @@
       };
 
       pulseaudio = {
-        format = "vol {volume}%";
-        format-muted = "muted";
-        on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        format = "󰕾 {volume}%";
+        format-muted = "󰝟";
+        on-click = "pavucontrol";
       };
     }];
 
