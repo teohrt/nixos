@@ -5,6 +5,7 @@
     neovim
     eza # A modern replacement for ‘ls’
     kitty
+    alacritty
     gnumake
     stow
   ];

@@ -17,7 +17,7 @@ in
     settings = {
       monitor = ",preferred,auto,auto";
 
-      "$terminal" = "${pkgs.kitty}/bin/kitty";
+      "$terminal" = "alacritty";
       "$menu" = "${hyprRofiMenu}";
       "$mod" = "SUPER";
 
