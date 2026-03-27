@@ -5,6 +5,8 @@
   home.username = "trace";
   home.homeDirectory = "/home/trace";
 
+  gtk.enable = true;
+
   home.pointerCursor = {
     gtk.enable = true;
     x11.enable = true;
