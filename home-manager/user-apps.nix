@@ -15,6 +15,7 @@
 
     # wayland / hyprland ecosystem
     networkmanagerapplet  # nm-connection-editor GUI
+    blueman               # Bluetooth manager GUI
     pavucontrol           # PulseAudio volume control GUI
     mako                  # notification daemon
     grim                  # screenshot tool
