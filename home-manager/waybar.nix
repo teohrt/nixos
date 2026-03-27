@@ -62,7 +62,7 @@ in
 
       modules-left = [ "custom/launcher" "clock" "custom/weather" ];
       modules-center = [ "hyprland/workspaces" ];
-      modules-right = [ "cpu" "memory" "network" "pulseaudio" "battery" "custom/power" ];
+      modules-right = [ "cpu" "memory" "network" "bluetooth" "pulseaudio" "battery" "custom/power" ];
 
       "custom/launcher" = {
         format = "󱄅";
@@ -105,6 +105,16 @@ in
         tooltip-format-wifi = "{essid}  {signalStrength}%\n↑ {bandwidthUpBits}  ↓ {bandwidthDownBits}";
         tooltip-format-disconnected = "disconnected";
         on-click = "nm-connection-editor";
+      };
+
+      bluetooth = {
+        format = "󰂯";
+        format-connected = "󰂱";
+        format-disabled = "󰂲";
+        tooltip-format = "{controller_alias}\n{num_connections} connected";
+        tooltip-format-connected = "{controller_alias}\n{num_connections} connected\n{device_enumerate}";
+        tooltip-format-enumerate-connected = "  {device_alias}";
+        on-click = "blueman-manager";
       };
 
       pulseaudio = {
@@ -161,6 +171,7 @@ in
       #clock:hover,
       #battery:hover,
       #network:hover,
+      #bluetooth:hover,
       #pulseaudio:hover,
       #cpu:hover,
       #memory:hover,
@@ -207,6 +218,7 @@ in
       }
 
       #battery,
+      #bluetooth,
       #pulseaudio,
       #cpu,
       #memory,
