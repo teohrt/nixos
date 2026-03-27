@@ -2,28 +2,30 @@
 
 let
   weatherScript = pkgs.writeShellScript "waybar-weather" ''
-    WEATHER=$(${pkgs.curl}/bin/curl -sf "wttr.in/?format=j1")
+    WEATHER=$(${pkgs.curl}/bin/curl -sf "https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph")
     if [ -z "$WEATHER" ]; then
       echo '{"text": "󰖑 --", "tooltip": "Weather unavailable"}'
       exit
     fi
 
-    CODE=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current_condition[0].weatherCode')
-    TEMP=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current_condition[0].temp_F')
-    FEELS=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current_condition[0].FeelsLikeF')
-    HUMIDITY=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current_condition[0].humidity')
-    DESC=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current_condition[0].weatherDesc[0].value')
-    WIND=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current_condition[0].windspeedMiles')
+    CODE=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current.weather_code')
+    TEMP=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current.temperature_2m | round')
+    FEELS=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current.apparent_temperature | round')
+    HUMIDITY=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current.relative_humidity_2m')
+    WIND=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current.wind_speed_10m | round')
 
     case $CODE in
-      113)                   ICON="󰖙" ;;  # Clear/Sunny
-      116)                   ICON="󰖕" ;;  # Partly cloudy
-      119|122)               ICON="󰖐" ;;  # Cloudy/Overcast
-      143|248|260)           ICON="󰖑" ;;  # Mist/Fog
-      200|386|389|392|395)   ICON="󰖓" ;;  # Thunder
-      263|266|281|293|296|299|302|305|308|311|314|317|350|353|356|359|362|365|374|377) ICON="󰖗" ;;  # Rain
-      179|182|185|227|230|323|326|329|332|335|338|368|371) ICON="󰖘" ;;  # Snow/Sleet
-      *)                     ICON="󰖐" ;;
+      0)                     ICON="󰖙" DESC="Clear" ;;
+      1|2)                   ICON="󰖕" DESC="Partly cloudy" ;;
+      3)                     ICON="󰖐" DESC="Overcast" ;;
+      45|48)                 ICON="󰖑" DESC="Fog" ;;
+      51|53|55|56|57)        ICON="󰖗" DESC="Drizzle" ;;
+      61|63|65|66|67)        ICON="󰖗" DESC="Rain" ;;
+      71|73|75|77)           ICON="󰖘" DESC="Snow" ;;
+      80|81|82)              ICON="󰖗" DESC="Showers" ;;
+      85|86)                 ICON="󰖘" DESC="Snow showers" ;;
+      95|96|99)              ICON="󰖓" DESC="Thunderstorm" ;;
+      *)                     ICON="!" DESC="Unknown" ;;
     esac
 
     TEXT="$ICON ''${TEMP}°F"
