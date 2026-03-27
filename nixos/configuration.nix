@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
@@ -33,7 +33,8 @@
         fit = "Cover";
       };
       GTK = {
-        application_prefer_dark_theme = true;
+        application_prefer_dark_theme = lib.mkForce true;
+        font_name = lib.mkForce "JetBrains Mono 12";
       };
     };
   };

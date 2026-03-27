@@ -8,7 +8,6 @@
     vscode
     gnumake
     stow
-    bibata-cursors
     nerd-fonts.jetbrains-mono
   ];
 }
