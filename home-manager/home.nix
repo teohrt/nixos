@@ -7,12 +7,12 @@
 
   gtk.enable = true;
 
-home.pointerCursor = {
-  gtk.enable = true;
-  package = pkgs.vanilla-dmz;
-  name = "Vanilla-DMZ";
-  size = 24;
-};
+  home.pointerCursor = {
+    gtk.enable = true;
+    package = pkgs.bibata-cursors;
+    name = "Bibata-Modern-Classic";
+    size = 24;
+  };
 
   imports = [
     ./user-apps.nix
