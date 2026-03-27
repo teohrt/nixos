@@ -134,7 +134,7 @@ in
       #custom-launcher {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
-        padding: 4px 14px 4px 10px;
+        padding: 2px 8px 2px 6px;
         font-size: 16px;
       }
 
@@ -156,7 +156,7 @@ in
       }
 
       #workspaces button {
-        padding: 0 8px;
+        padding: 0 4px;
         color: rgba(255, 255, 255, 0.3);
         box-shadow: none;
       }
@@ -178,7 +178,7 @@ in
       #network {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
-        padding: 4px 14px 4px 10px;
+        padding: 2px 8px 2px 6px;
       }
 
       #battery,
@@ -188,7 +188,7 @@ in
       #custom-weather {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
-        padding: 4px 12px;
+        padding: 2px 6px;
       }
 
       tooltip {
