@@ -1,7 +1,7 @@
 { pkgs, ... }: {
   programs.rofi = {
     enable = true;
-    package = pkgs.rofi-wayland;
+    package = pkgs.rofi;
     plugins = [ pkgs.rofi-calc ];
     extraConfig = {
       modi = "drun,window,calc";
