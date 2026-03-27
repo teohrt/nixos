@@ -4,7 +4,7 @@
     package = pkgs.rofi;
     extraConfig = {
       modi = "drun,window";
-      show-icons = false;
+      show-icons = true;
       drun-display-format = "{name}";
       disable-history = false;
       hide-scrollbar = true;
