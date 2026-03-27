@@ -47,9 +47,9 @@ in
       margin-right = 16;
       spacing = 8;
 
-      modules-left = [ "custom/launcher" "clock" ];
+      modules-left = [ "custom/launcher" "clock" "custom/weather" ];
       modules-center = [ "hyprland/workspaces" ];
-      modules-right = [ "custom/weather" "network" "pulseaudio" "battery" ];
+      modules-right = [ "cpu" "memory" "network" "pulseaudio" "battery" ];
 
       "custom/launcher" = {
         format = "󱄅";
@@ -72,6 +72,18 @@ in
         format = "󰚥 {capacity}%";
         format-charging = "󱐋 {capacity}%";
         interval = 2;
+      };
+
+      cpu = {
+        format = "󰻠 {usage}%";
+        interval = 2;
+        tooltip = false;
+      };
+
+      memory = {
+        format = "󰍛 {percentage}%";
+        interval = 2;
+        tooltip-format = "{used:0.1f}GB / {total:0.1f}GB";
       };
 
       network = {
@@ -131,6 +143,8 @@ in
       #battery:hover,
       #network:hover,
       #pulseaudio:hover,
+      #cpu:hover,
+      #memory:hover,
       #custom-weather:hover {
         background: rgba(126, 186, 228, 0.15);
       }
@@ -169,6 +183,8 @@ in
 
       #battery,
       #pulseaudio,
+      #cpu,
+      #memory,
       #custom-weather {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
