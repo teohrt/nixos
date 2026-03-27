@@ -34,7 +34,6 @@
       };
       GTK = {
         application_prefer_dark_theme = true;
-        font_name = "JetBrains Mono 12";
       };
     };
   };
