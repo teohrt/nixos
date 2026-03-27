@@ -47,9 +47,9 @@ in
       margin-right = 16;
       spacing = 8;
 
-      modules-left = [ "custom/launcher" "hyprland/workspaces" ];
-      modules-center = [ "clock" ];
-      modules-right = [ "custom/weather" "battery" "network" "pulseaudio" ];
+      modules-left = [ "custom/launcher" "clock" ];
+      modules-center = [ "hyprland/workspaces" ];
+      modules-right = [ "custom/weather" "network" "pulseaudio" "battery" ];
 
       "custom/launcher" = {
         format = "󱄅";
