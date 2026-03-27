@@ -3,7 +3,7 @@
 let
   hyprRofiMenu = pkgs.writeShellScript "hypr-rofi-menu" ''
     pkill -x rofi 2>/dev/null || true
-    exec ${pkgs.rofi}/bin/rofi -show drun
+    exec rofi -show drun
   '';
 
   hyprScreenshot = pkgs.writeShellScript "hypr-screenshot" ''
