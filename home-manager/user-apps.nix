@@ -1,6 +1,9 @@
 # Packages that should be installed to the user profile.
 { pkgs, ... }: {
   home.packages = with pkgs; [
+    # rofi-calc backend
+    qalculate-gtk
+
     # cli utilities
     ripgrep
     jq
