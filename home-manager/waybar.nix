@@ -83,8 +83,9 @@ in
       };
 
       pulseaudio = {
-        format = "󰕾 {volume}%";
+        format = "󰕾";
         format-muted = "󰝟";
+        tooltip-format = "{volume}%: {desc}";
         on-click = "pavucontrol";
       };
 
