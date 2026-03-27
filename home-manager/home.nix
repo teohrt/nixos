@@ -21,6 +21,7 @@
     ./waybar.nix
     ./rofi-app-launcher.nix
     ./hyprpaper.nix
+    ./alacritty.nix
   ];
 
   # This value determines the home Manager release that your
