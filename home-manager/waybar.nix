@@ -150,9 +150,12 @@ in
         color: #ffffff;
       }
 
+      #workspaces:hover {
+        background: rgba(126, 186, 228, 0.15);
+      }
+
       #workspaces button:hover {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 8px;
+        background: transparent;
       }
 
       #clock,
