@@ -210,11 +210,16 @@ in
       #pulseaudio,
       #cpu,
       #memory,
-      #custom-weather,
-      #custom-power {
+      #custom-weather {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
         padding: 0 14px;
+      }
+
+      #custom-power {
+        background: rgba(10, 10, 15, 0.85);
+        border-radius: 12px;
+        padding: 0 16px 0 12px;
       }
 
       tooltip {
