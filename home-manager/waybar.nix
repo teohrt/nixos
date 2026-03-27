@@ -134,7 +134,7 @@ in
       #custom-launcher {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
-        padding: 0 18px 0 10px;
+        padding: 0 13px 0 15px;
         font-size: 16px;
       }
 
@@ -178,7 +178,7 @@ in
       #network {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
-        padding: 0 18px 0 10px;
+        padding: 0 13px 0 15px;
       }
 
       #battery,
