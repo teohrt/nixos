@@ -51,7 +51,7 @@ in
 
       "custom/launcher" = {
         format = "󱄅";
-        on-click = "pkill -x rofi || rofi -show drun";
+        on-click = "pkill -x rofi || rofi -show combi";
         tooltip = false;
       };
 

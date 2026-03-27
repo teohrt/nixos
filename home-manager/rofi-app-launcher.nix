@@ -6,7 +6,8 @@
       (pkgs.rofi-calc.override { rofi-unwrapped = pkgs.rofi-unwrapped; })
     ];
     extraConfig = {
-      modi = "drun,window,calc";
+      modi = "combi,window,calc";
+      combi-modi = "drun,calc";
       show-icons = true;
       drun-display-format = "{icon} {name}";
       disable-history = false;
