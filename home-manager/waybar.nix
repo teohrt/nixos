@@ -89,7 +89,7 @@ in
       network = {
         format-wifi = "󰤨";
         format-disconnected = "󰤭";
-        tooltip-format-wifi = "{essid}  {signalStrength}%";
+        tooltip-format-wifi = "{essid}  {signalStrength}%\n↑ {bandwidthUpBits}  ↓ {bandwidthDownBits}";
         tooltip-format-disconnected = "disconnected";
         on-click = "nm-connection-editor";
       };
