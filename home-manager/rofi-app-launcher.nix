@@ -56,7 +56,16 @@
 
       element {
         border-radius: 8px;
-        padding:       8px 12px;
+        padding:       10px 12px;
+        spacing:       10px;
+      }
+
+      element-icon {
+        size:          20px;
+      }
+
+      element-text {
+        vertical-align: 0.5;
       }
 
       element normal normal {
