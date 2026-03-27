@@ -40,6 +40,17 @@ in
         layout = "dwindle";
       };
 
+      animations = {
+        enabled = true;
+        bezier = "easeOutQuart, 0.25, 1, 0.5, 1";
+        animation = [
+          "windows, 1, 4, easeOutQuart, slide"
+          "windowsOut, 1, 4, easeOutQuart, slide"
+          "fade, 1, 4, easeOutQuart"
+          "workspaces, 1, 4, easeOutQuart, slide"
+        ];
+      };
+
       decoration = {
         rounding = 10;
         blur = {
