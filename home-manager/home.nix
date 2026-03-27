@@ -4,6 +4,7 @@
 {
   home.username = "trace";
   home.homeDirectory = "/home/trace";
+  home.backupFileExtension = "nixos-hm-backup";
 
   gtk.enable = true;
 
