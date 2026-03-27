@@ -75,15 +75,15 @@ in
       };
 
       cpu = {
-        format = "󰻠 {usage}%";
+        format = "󰘚 {usage}%";
         interval = 2;
-        tooltip = false;
+        tooltip-format = "CPU: {usage}%\nLoad: {load}";
       };
 
       memory = {
-        format = "󰍛 {percentage}%";
+        format = "󰻠 {percentage}%";
         interval = 2;
-        tooltip-format = "{used:0.1f}GB / {total:0.1f}GB";
+        tooltip-format = "RAM: {percentage}%\nUsed: {used:0.1f}GB / {total:0.1f}GB\nAvailable: {avail:0.1f}GB";
       };
 
       network = {
