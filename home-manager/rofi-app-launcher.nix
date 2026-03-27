@@ -11,6 +11,9 @@
       show-icons = true;
       drun-display-format = "{icon} {name}";
       disable-history = false;
+      calc-qalc-binary = "${pkgs.qalculate-gtk}/bin/qalc";
+      calc-hint-result = "= ";
+      calc-hint-welcome = "Calc";
     };
   };
 }
