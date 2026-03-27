@@ -134,7 +134,7 @@ in
       #custom-launcher {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
-        padding: 0 9px 0 5px;
+        padding: 0 18px 0 10px;
         font-size: 16px;
       }
 
@@ -178,7 +178,7 @@ in
       #network {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
-        padding: 0 9px 0 5px;
+        padding: 0 18px 0 10px;
       }
 
       #battery,
@@ -188,7 +188,7 @@ in
       #custom-weather {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
-        padding: 0 7px;
+        padding: 0 14px;
       }
 
       tooltip {
