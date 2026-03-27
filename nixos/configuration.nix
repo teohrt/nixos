@@ -35,8 +35,6 @@
       GTK = {
         application_prefer_dark_theme = true;
         font_name = "JetBrains Mono 12";
-        cursor_theme_name = "Bibata-Modern-Classic";
-        icon_theme_name = "Adwaita";
       };
     };
   };
