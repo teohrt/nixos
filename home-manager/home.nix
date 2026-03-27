@@ -7,13 +7,12 @@
 
   gtk.enable = true;
 
-  home.pointerCursor = {
-    gtk.enable = true;
-    x11.enable = true;
-    package = pkgs.vimix-cursors;
-    name = "Vimix-black-cursors";
-    size = 24;
-  };
+home.pointerCursor = {
+  gtk.enable = true;
+  package = pkgs.vanilla-dmz;
+  name = "Vanilla-DMZ";
+  size = 24;
+};
 
   imports = [
     ./user-apps.nix
