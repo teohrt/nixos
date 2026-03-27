@@ -1,6 +1,19 @@
 { pkgs, ... }:
 
 let
+  powerMenu = pkgs.writeShellScript "waybar-power-menu" ''
+    CHOICE=$(printf "  Shutdown\n  Restart\n  Lock\n  Suspend\n  Log Out" \
+      | ${pkgs.rofi}/bin/rofi -dmenu -p "" \
+          -theme-str 'window { width: 200px; } listview { lines: 5; }')
+    case "$CHOICE" in
+      *Shutdown) systemctl poweroff ;;
+      *Restart)  systemctl reboot ;;
+      *Lock)     loginctl lock-session ;;
+      *Suspend)  systemctl suspend ;;
+      *"Log Out") hyprctl dispatch exit ;;
+    esac
+  '';
+
   weatherScript = pkgs.writeShellScript "waybar-weather" ''
     WEATHER=$(${pkgs.curl}/bin/curl -sf "https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph")
     if [ -z "$WEATHER" ]; then
@@ -49,7 +62,7 @@ in
 
       modules-left = [ "custom/launcher" "clock" "custom/weather" ];
       modules-center = [ "hyprland/workspaces" ];
-      modules-right = [ "cpu" "memory" "network" "pulseaudio" "battery" ];
+      modules-right = [ "cpu" "memory" "network" "pulseaudio" "battery" "custom/power" ];
 
       "custom/launcher" = {
         format = "󱄅";
@@ -101,6 +114,12 @@ in
         on-click = "pavucontrol";
       };
 
+      "custom/power" = {
+        format = "⏻";
+        on-click = "${powerMenu}";
+        tooltip = false;
+      };
+
       "custom/weather" = {
         exec = "${weatherScript}";
         return-type = "json";
@@ -145,7 +164,8 @@ in
       #pulseaudio:hover,
       #cpu:hover,
       #memory:hover,
-      #custom-weather:hover {
+      #custom-weather:hover,
+      #custom-power:hover {
         background: rgba(126, 186, 228, 0.15);
       }
 
@@ -190,7 +210,8 @@ in
       #pulseaudio,
       #cpu,
       #memory,
-      #custom-weather {
+      #custom-weather,
+      #custom-power {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
         padding: 0 14px;
