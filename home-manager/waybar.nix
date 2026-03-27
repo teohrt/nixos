@@ -188,7 +188,7 @@ in
       #custom-weather {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
-        padding: 0 6px;
+        padding: 0 7px;
       }
 
       tooltip {
