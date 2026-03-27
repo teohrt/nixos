@@ -23,6 +23,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.backupFileExtension = "nixos-hm-backup";
 
             home-manager.users.trace = import ./home-manager/home.nix;
 
