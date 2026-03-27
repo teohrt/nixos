@@ -1,8 +1,17 @@
 { config, pkgs, ... }:
 
+
 {
   home.username = "trace";
   home.homeDirectory = "/home/trace";
+
+  home.pointerCursor = {
+    gtk.enable = true;
+    x11.enable = true;
+    package = pkgs.bibata-cursors;
+    name = "Bibata-Modern-Classic";
+    size = 24;
+  };
 
   imports = [
     ./user-apps.nix
