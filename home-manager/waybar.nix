@@ -125,7 +125,12 @@ in
         font-size: 16px;
       }
 
-      #custom-launcher:hover {
+      #custom-launcher:hover,
+      #clock:hover,
+      #battery:hover,
+      #network:hover,
+      #pulseaudio:hover,
+      #custom-weather:hover {
         background: rgba(126, 186, 228, 0.15);
       }
 
