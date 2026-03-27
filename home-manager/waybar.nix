@@ -83,7 +83,7 @@ in
       memory = {
         format = "󰻠 {percentage}%";
         interval = 2;
-        tooltip-format = "RAM\n{percentage}%  {used:0.1f}GB / {total:0.1f}GB  Avail: {avail:0.1f}GB";
+        tooltip-format = "RAM\n{percentage}%  {used:0.1f}GB / {total:0.1f}GB\nAvail: {avail:0.1f}GB";
       };
 
       network = {
