@@ -107,6 +107,13 @@ in
         color: #ffffff;
       }
 
+      .modules-left > widget,
+      .modules-center > widget,
+      .modules-right > widget {
+        display: flex;
+        align-items: center;
+      }
+
       window#waybar {
         background: transparent;
       }
@@ -122,6 +129,9 @@ in
         border-radius: 12px;
         padding: 0 12px;
         font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       #custom-launcher:hover {
@@ -157,6 +167,9 @@ in
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
         padding: 0 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       #pulseaudio.muted {
