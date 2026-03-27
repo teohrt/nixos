@@ -17,7 +17,6 @@
     networkmanagerapplet  # nm-connection-editor GUI
     pavucontrol           # PulseAudio volume control GUI
     mako                  # notification daemon
-    hyprpaper             # wallpaper
     grim                  # screenshot tool
     slurp                 # screen area selection
     wl-clipboard          # clipboard utilities (wl-copy / wl-paste)
