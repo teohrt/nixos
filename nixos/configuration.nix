@@ -24,9 +24,21 @@
     xwayland.enable = true;
   };
 
-  services.displayManager.sddm = {
+  # Login manager
+  programs.regreet = {
     enable = true;
-    wayland.enable = true;
+    settings = {
+      background = {
+        path = ../assets/wallpaper.png;
+        fit = "Cover";
+      };
+      GTK = {
+        application_prefer_dark_theme = true;
+        font_name = "JetBrains Mono 12";
+        cursor_theme_name = "Bibata-Modern-Classic";
+        icon_theme_name = "Adwaita";
+      };
+    };
   };
 
   # XDG portal for Hyprland
