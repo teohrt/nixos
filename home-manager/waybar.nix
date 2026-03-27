@@ -171,6 +171,14 @@ in
         padding: 4px 12px;
       }
 
+      tooltip {
+        background: rgba(10, 10, 15, 0.85);
+        border: none;
+        border-radius: 8px;
+        color: #ffffff;
+        padding: 4px 8px;
+      }
+
       #pulseaudio.muted {
         color: rgba(255, 255, 255, 0.3);
       }
