@@ -134,7 +134,7 @@ in
       #custom-launcher {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
-        padding: 0 13px 0 15px;
+        padding: 0 14px 0 14px;
         font-size: 16px;
       }
 
@@ -174,11 +174,16 @@ in
       }
 
       #clock,
-      #battery,
-      #network {
+      #battery {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
         padding: 0 13px 0 15px;
+      }
+
+      #network {
+        background: rgba(10, 10, 15, 0.85);
+        border-radius: 12px;
+        padding: 0 14px 0 14px;
       }
 
       #battery,
