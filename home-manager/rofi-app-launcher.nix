@@ -1,8 +1,9 @@
 { pkgs, ... }: {
   programs.rofi = {
     enable = true;
-    package = pkgs.rofi;
-    plugins = [ pkgs.rofi-calc ];
+    package = pkgs.rofi.override {
+      plugins = [ pkgs.rofi-calc ];
+    };
     extraConfig = {
       modi = "drun,window,calc";
       show-icons = true;
