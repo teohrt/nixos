@@ -1,11 +1,6 @@
 { pkgs, ... }:
 
 let
-  hyprRofiMenu = pkgs.writeShellScript "hypr-rofi-menu" ''
-    pkill -x rofi 2>/dev/null || true
-    exec rofi -show drun
-  '';
-
   hyprScreenshot = pkgs.writeShellScript "hypr-screenshot" ''
     ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)" - | ${pkgs.wl-clipboard}/bin/wl-copy
   '';
@@ -18,7 +13,7 @@ in
       monitor = ",preferred,auto,1.2";
 
       "$terminal" = "alacritty";
-      "$menu" = "${hyprRofiMenu}";
+      "$menu" = "walker";
       "$mod" = "SUPER";
 
       exec-once = [

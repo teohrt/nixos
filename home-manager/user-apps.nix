@@ -13,6 +13,9 @@
     # apps
     google-chrome
 
+    # app launcher / menus
+    walker
+
     # wayland / hyprland ecosystem
     impala                # wifi TUI
     bluetui               # bluetooth TUI

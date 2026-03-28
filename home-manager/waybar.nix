@@ -3,8 +3,7 @@
 let
   powerMenu = pkgs.writeShellScript "waybar-power-menu" ''
     CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nLog Out" \
-      | ${pkgs.rofi}/bin/rofi -dmenu -p "" -matching fuzzy \
-          -theme-str 'window { width: 200px; } listview { lines: 5; }')
+      | ${pkgs.walker}/bin/walker --dmenu -p "Power" --width 200)
     case "$CHOICE" in
       Shutdown) systemctl poweroff ;;
       Restart)  systemctl reboot ;;
@@ -66,7 +65,7 @@ in
 
       "custom/launcher" = {
         format = "󱄅";
-        on-click = "pkill -x rofi || rofi -show drun";
+        on-click = "walker";
         tooltip = false;
       };
 

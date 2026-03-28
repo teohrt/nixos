@@ -19,7 +19,6 @@
     ./git.nix
     ./hyprland.nix
     ./waybar.nix
-    ./rofi-app-launcher.nix
     ./hyprpaper.nix
     ./alacritty.nix
   ];
