@@ -27,6 +27,8 @@
     wiremix               # audio TUI
     mako                  # notification daemon
     hyprshot              # screenshot tool (wraps grim/slurp)
+    swayosd               # OSD popup for volume/brightness
+    brightnessctl         # brightness control (requires video group)
     wl-clipboard          # clipboard utilities (wl-copy / wl-paste)
     wl-clip-persist       # keeps clipboard alive after source process exits
 

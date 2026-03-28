@@ -13,6 +13,7 @@
       "$mod" = "SUPER";
 
       exec-once = [
+        "swayosd-server"                                   # OSD server for volume/brightness popups
         "${pkgs.mako}/bin/mako"                            # notification daemon
         "waybar"                                           # status bar
         "elephant"                                         # indexes apps for walker to search

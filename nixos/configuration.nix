@@ -40,8 +40,6 @@
 
   programs.git.prompt.enable = true;
 
-  programs.swayosd.enable = true;
-
   # Hyprland
   programs.hyprland = {
     enable = true;
@@ -122,7 +120,7 @@
   users.users.trace = {
     isNormalUser = true;
     description = "trace";
-    extraGroups = [ "wheel" ];
+    extraGroups = [ "wheel" "video" ]; # video group allows brightnessctl without sudo
     packages = [];
   };
 
