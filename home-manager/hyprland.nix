@@ -71,6 +71,13 @@ in
         preserve_split = true;
       };
 
+      # window rules
+      windowrulev2 = [
+        "float, title:^(wifi)$"
+        "size 600 400, title:^(wifi)$"
+        "center, title:^(wifi)$"
+      ];
+
       # key bindings
       bind = [
         "$mod, Return, exec, $terminal"
