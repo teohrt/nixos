@@ -13,6 +13,8 @@
 
   networking.hostName = "my-nixos";
   networking.networkmanager.enable = true;
+  networking.networkmanager.wifi.backend = "iwd";
+  services.iwd.enable = true;
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
 
