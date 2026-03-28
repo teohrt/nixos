@@ -74,7 +74,7 @@ in
       # window rules
       windowrulev2 = [
         "float, title:^(wifi)$"
-        "size 600 400, title:^(wifi)$"
+        "size 900 600, title:^(wifi)$"
         "center, title:^(wifi)$"
         "float, title:^(bluetooth)$"
         "size 600 400, title:^(bluetooth)$"
