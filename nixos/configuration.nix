@@ -13,6 +13,7 @@
 
   networking.hostName = "my-nixos";
   networking.networkmanager.enable = true;
+  # Use iwd as the wifi backend so the impala TUI can manage wifi connections
   networking.networkmanager.wifi.backend = "iwd";
   services.iwd.enable = true;
   time.timeZone = "America/New_York";
