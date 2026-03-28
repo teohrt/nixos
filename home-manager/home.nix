@@ -7,7 +7,7 @@ let
     case "$CHOICE" in
       Shutdown)  systemctl poweroff ;;
       Restart)   systemctl reboot ;;
-      Lock)      loginctl lock-session ;;
+      Lock)      hyprlock ;;
       Suspend)   systemctl suspend ;;
       "Log Out") hyprctl dispatch exit ;;
     esac
@@ -34,6 +34,7 @@ in
     ./hyprpaper.nix
     ./alacritty.nix
     ./walker.nix
+    ./hyprlock.nix
   ];
 
   home.packages = [ powerMenu ];

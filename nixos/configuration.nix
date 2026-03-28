@@ -90,6 +90,8 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
+  security.pam.services.hyprlock = {};
+
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
