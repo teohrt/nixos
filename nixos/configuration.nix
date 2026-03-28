@@ -51,8 +51,8 @@
     enable = true;
     wayland.enable = true;
     theme = "where_is_my_sddm_theme";
-    extraPackages = [ pkgs.where-is-my-sddm-theme ];
   };
+  environment.systemPackages = [ pkgs.where-is-my-sddm-theme ];
 
   # XDG portal for Hyprland
   xdg.portal = {
