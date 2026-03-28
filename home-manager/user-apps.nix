@@ -17,7 +17,7 @@
     networkmanagerapplet  # nm-connection-editor GUI
     impala                # wifi TUI
     bluetui               # bluetooth TUI
-    pavucontrol           # PulseAudio volume control GUI
+    wiremix               # audio TUI
     mako                  # notification daemon
     grim                  # screenshot tool
     slurp                 # screen area selection

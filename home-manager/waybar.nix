@@ -121,7 +121,7 @@ in
         format = "󰕾";
         format-muted = "󰝟";
         tooltip-format = "{volume}%: {desc}";
-        on-click = "pavucontrol";
+        on-click = "alacritty --title audio -e wiremix";
       };
 
       "custom/power" = {

@@ -79,6 +79,9 @@ in
         "float, title:^(bluetooth)$"
         "size 600 400, title:^(bluetooth)$"
         "center, title:^(bluetooth)$"
+        "float, title:^(audio)$"
+        "size 600 400, title:^(audio)$"
+        "center, title:^(audio)$"
       ];
 
       # key bindings
