@@ -114,7 +114,7 @@ in
         tooltip-format = "{controller_alias}\n{num_connections} connected";
         tooltip-format-connected = "{controller_alias}\n{num_connections} connected\n{device_enumerate}";
         tooltip-format-enumerate-connected = "  {device_alias}";
-        on-click = "blueman-manager";
+        on-click = "rfkill unblock bluetooth && alacritty --title bluetooth -e bluetui";
       };
 
       pulseaudio = {

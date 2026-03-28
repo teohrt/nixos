@@ -76,6 +76,9 @@ in
         "float, title:^(wifi)$"
         "size 600 400, title:^(wifi)$"
         "center, title:^(wifi)$"
+        "float, title:^(bluetooth)$"
+        "size 600 400, title:^(bluetooth)$"
+        "center, title:^(bluetooth)$"
       ];
 
       # key bindings

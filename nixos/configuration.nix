@@ -50,7 +50,6 @@
 
   # Bluetooth
   hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
