@@ -1,5 +1,5 @@
 # Packages that should be installed to the user profile.
-{ pkgs, ... }: {
+{ pkgs, pkgs-walker, ... }: {
   home.packages = with pkgs; [
     # cli utilities
     ripgrep
@@ -14,7 +14,7 @@
     google-chrome
 
     # app launcher / menus
-    walker
+    pkgs-walker.walker
 
     # wayland / hyprland ecosystem
     impala                # wifi TUI
