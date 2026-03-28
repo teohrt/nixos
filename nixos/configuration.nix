@@ -49,6 +49,7 @@
   # Login manager — minimal black screen with password input, auto-selects hyprland session
   services.displayManager.sddm = {
     enable = true;
+    wayland.enable = true;
     theme = "nixos";
     extraPackages = [ (import ./sddm-theme.nix { inherit pkgs; }) ];
   };
