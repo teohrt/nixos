@@ -35,7 +35,6 @@
     top = 200
 
     [ui.window.box.scroll.list]
-    max_height = 300
 
     [ui.window.box.scroll.list.item.activation_label]
     h_align = "fill"
