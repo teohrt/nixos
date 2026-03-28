@@ -31,7 +31,7 @@ in
     enable = true;
     style = {
       name = "adwaita-dark";
-      package = pkgs.adwaita-qt;
+      package = pkgs.adwaita-qt6;
     };
   };
 
