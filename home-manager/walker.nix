@@ -19,6 +19,9 @@
   xdg.configFile."walker/themes/default/style.css".text = ''
     * {
       all: unset;
+    }
+
+    * {
       font-family: "JetBrains Mono", monospace;
       font-size: 14px;
       color: #ffffff;
@@ -28,49 +31,58 @@
       opacity: 0;
     }
 
-    .box-wrapper {
-      background: rgba(10, 10, 15, 0.95);
-      border-radius: 12px;
-      padding: 12px;
+    .normal-icons {
+      -gtk-icon-size: 16px;
     }
 
-    .input image {
-      opacity: 0;
-      min-width: 0;
-      min-height: 0;
+    .large-icons {
+      -gtk-icon-size: 32px;
+    }
+
+    .box-wrapper {
+      background: rgba(10, 10, 15, 0.95);
+      padding: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.15);
     }
 
     .search-container {
       background: rgba(17, 17, 24, 0.9);
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 8px;
+      padding: 10px;
     }
 
     .input placeholder {
-      color: rgba(255, 255, 255, 0.35);
+      opacity: 0.5;
     }
 
-    child:selected .item-box {
-      background: rgba(17, 17, 24, 0.9);
-      border-radius: 8px;
+    .input:focus,
+    .input:active {
+      box-shadow: none;
+      outline: none;
     }
 
     child:selected .item-box * {
-      color: #ffffff;
+      color: #7ebae4;
     }
 
-    child .item-box {
-      padding: 8px 10px;
-      border-radius: 8px;
+    .item-box {
+      padding-left: 14px;
     }
 
-    child .item-box * {
-      color: rgba(255, 255, 255, 0.35);
+    .item-text-box {
+      all: unset;
+      padding: 14px 0;
     }
 
-    .normal-icons {
-      -gtk-icon-size: 16px;
+    .item-subtext {
+      font-size: 0px;
+      min-height: 0px;
+      margin: 0px;
+      padding: 0px;
+    }
+
+    .item-image {
+      margin-right: 14px;
+      -gtk-icon-transform: scale(0.9);
     }
   '';
 
