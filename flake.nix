@@ -26,8 +26,6 @@
             home-manager.backupFileExtension = "nixos-hm-backup";
 
             home-manager.users.trace = import ./home-manager/home.nix;
-
-            # Optionally, use home-manager.extraSpecialArgs to pass arguments to home.nix
           }
         ];
       };

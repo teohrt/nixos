@@ -46,7 +46,7 @@
     }
 
     .search-container {
-      background: rgba(17, 17, 24, 0.9);
+      background: rgba(10, 10, 15, 0.95);
       padding: 10px;
     }
 
@@ -73,6 +73,9 @@
       padding: 14px 0;
     }
 
+    .item-text {
+    }
+
     .item-subtext {
       font-size: 0px;
       min-height: 0px;
@@ -85,12 +88,17 @@
       -gtk-icon-transform: scale(0.9);
     }
 
-    .keybind-hints,
-    .item-keybinds,
-    .global-keybinds {
+    .current {
+      font-style: italic;
+    }
+
+    .keybind-hints {
       opacity: 0;
-      min-width: 0;
-      min-height: 0;
+      min-height: 0px;
+      min-width: 0px;
+    }
+
+    .preview {
     }
   '';
 
