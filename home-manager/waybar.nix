@@ -104,7 +104,7 @@ in
         format-disconnected = "󰤭";
         tooltip-format-wifi = "{essid}  {signalStrength}%\n↑ {bandwidthUpBits}  ↓ {bandwidthDownBits}";
         tooltip-format-disconnected = "disconnected";
-        on-click = "nm-connection-editor";
+        on-click = "rfkill unblock wifi && alacritty -e impala";
       };
 
       bluetooth = {
