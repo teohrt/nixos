@@ -87,6 +87,7 @@ in
       # key bindings
       bind = [
         "$mod, Return, exec, $terminal"
+        "$mod SHIFT, Return, exec, google-chrome-stable"
         "$mod, W, killactive"
         "$mod, ESC, exit"
         "$mod, V, togglefloating"
