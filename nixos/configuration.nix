@@ -40,6 +40,8 @@
 
   programs.git.prompt.enable = true;
 
+  programs.swayosd.enable = true;
+
   # Hyprland
   programs.hyprland = {
     enable = true;
