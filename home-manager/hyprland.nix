@@ -31,6 +31,8 @@
         # tell nixpkgs Electron apps (Spotify, Slack, VS Code, etc.) to use native
         # Wayland rendering — avoids XWayland upscaling blur at fractional scales
         "NIXOS_OZONE_WL,1"
+        # force Qt apps (Zoom, etc.) to use native Wayland — falls back to X11 if needed
+        "QT_QPA_PLATFORM,wayland;xcb"
       ];
 
       general = {
