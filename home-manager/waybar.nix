@@ -65,7 +65,7 @@ in
 
       "custom/launcher" = {
         format = "󱄅";
-        on-click = "walker --modules applications";
+        on-click = "walker";
         tooltip = false;
       };
 
