@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
@@ -46,19 +46,11 @@
     xwayland.enable = true;
   };
 
-  # Login manager
-  programs.regreet = {
+  # Login manager — minimal black screen with password input, auto-selects hyprland session
+  services.displayManager.sddm = {
     enable = true;
-    settings = {
-      background = {
-        path = ../assets/wallpaper.png;
-        fit = "Cover";
-      };
-      GTK = {
-        application_prefer_dark_theme = lib.mkForce true;
-        font_name = lib.mkForce "JetBrains Mono 12";
-      };
-    };
+    theme = "nixos";
+    extraPackages = [ (import ./sddm-theme.nix { inherit pkgs; }) ];
   };
 
   # XDG portal for Hyprland
