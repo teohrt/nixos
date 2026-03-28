@@ -11,6 +11,7 @@
       display-drun = "";
       display-window = "";
       scroll-method = 0;
+      matching = "fuzzy";
       font = "JetBrains Mono 13";
     };
     theme = builtins.toFile "rofi-theme.rasi" ''
