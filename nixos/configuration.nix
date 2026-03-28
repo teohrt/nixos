@@ -56,7 +56,7 @@
   environment.systemPackages = [
     (pkgs.where-is-my-sddm-theme.override {
       themeConfig.General = {
-        backgroundFill = "#2E3440";
+        backgroundFill = "#000000";
         basicTextColor = "#ECEFF4";
         passwordCursorColor = "#88C0D0";
         passwordTextColor = "#ECEFF4";
