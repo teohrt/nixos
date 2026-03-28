@@ -183,7 +183,7 @@ in
       #workspaces button.active {
         padding: 2px 16px;
         color: #ffffff;
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.05);
       }
 
       #workspaces button:hover {
