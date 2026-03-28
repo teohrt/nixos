@@ -14,7 +14,6 @@
     google-chrome
 
     # wayland / hyprland ecosystem
-    networkmanagerapplet  # nm-connection-editor GUI
     impala                # wifi TUI
     bluetui               # bluetooth TUI
     wiremix               # audio TUI

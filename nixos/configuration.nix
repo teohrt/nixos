@@ -12,14 +12,29 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "my-nixos";
-  networking.networkmanager.enable = true;
-  # Use iwd as the wifi backend so the impala TUI can manage wifi connections
-  networking.networkmanager.wifi.backend = "iwd";
-  networking.wireless.iwd.enable = true;
+
   # Disable WiFi 6 (802.11ax) parsing in the iwlwifi driver — iwd fails to
   # parse HE capabilities on this adapter (Intel 8265/8275), causing connect-failed
   boot.extraModprobeConfig = "options iwlwifi disable_11ax=1";
-  networking.wireless.iwd.settings.General.EnableNetworkConfiguration = false;
+
+  # iwd manages wifi (required by the impala TUI — impala talks directly to iwd
+  # over D-Bus and cannot coexist with NetworkManager)
+  networking.wireless.iwd.enable = true;
+  networking.wireless.iwd.settings = {
+    General = {
+      EnableNetworkConfiguration = true;  # iwd handles DHCP for wifi
+    };
+    Settings.AutoConnect = true;
+  };
+
+  # systemd-networkd handles wired ethernet, systemd-resolved handles DNS
+  networking.useNetworkd = true;
+  networking.useDHCP = false;
+  services.resolved.enable = true;
+  systemd.network.networks."10-wired" = {
+    matchConfig.Name = "en*";
+    networkConfig.DHCP = "yes";
+  };
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
 
@@ -90,7 +105,7 @@
   users.users.trace = {
     isNormalUser = true;
     description = "trace";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "wheel" ];
     packages = [];
   };
 
