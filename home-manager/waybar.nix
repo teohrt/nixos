@@ -3,7 +3,7 @@
 let
   powerMenu = pkgs.writeShellScript "waybar-power-menu" ''
     CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nLog Out" \
-      | ${pkgs-walker.walker}/bin/walker -n --dmenu -t power -N -H)
+      | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
     case "$CHOICE" in
       Shutdown) systemctl poweroff ;;
       Restart)  systemctl reboot ;;
