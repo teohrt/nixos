@@ -65,7 +65,7 @@ in
 
       "custom/launcher" = {
         format = "󱄅";
-        on-click = "walker --width 500 --maxheight 300 -N -H";
+        on-click = "walker --width 250 --maxheight 300 -N -H";
         tooltip = false;
       };
 
