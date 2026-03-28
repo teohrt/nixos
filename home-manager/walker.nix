@@ -30,6 +30,7 @@
 
     [ui.window.box]
     h_align = "center"
+    width = 250
 
     [ui.window.box.margins]
     top = 200
