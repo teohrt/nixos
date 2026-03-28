@@ -74,6 +74,12 @@
         preserve_split = true; # keep split direction when moving windows
       };
 
+      xwayland = {
+        # render XWayland apps at native pixel resolution instead of upscaling from 1x
+        # fixes blurriness in apps like Zoom that can't use native Wayland
+        force_zero_scaling = true;
+      };
+
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
         "float, title:^(wifi)$"
