@@ -50,10 +50,9 @@
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
-    theme = "nixos";
-    extraPackages = [ (import ./sddm-theme.nix { inherit pkgs; }) ];
+    theme = "where_is_my_sddm_theme";
+    extraPackages = [ pkgs.where-is-my-sddm-theme ];
   };
-  environment.systemPackages = [ (import ./sddm-theme.nix { inherit pkgs; }) ];
 
   # XDG portal for Hyprland
   xdg.portal = {
