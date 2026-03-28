@@ -94,6 +94,10 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true; # enables network printer discovery on the local network
+  };
 
   # Enable sound with pipewire.
   security.pam.services.hyprlock = {};

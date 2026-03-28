@@ -13,7 +13,8 @@
 
     # apps
     google-chrome
-    imv        # image viewer
+    imv                    # image viewer
+    system-config-printer  # printer management GUI
     evince     # PDF viewer
     vlc        # video player
     slack
