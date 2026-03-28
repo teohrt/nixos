@@ -38,7 +38,9 @@
       general = {
         gaps_in = 5;   # gap between tiled windows
         gaps_out = 10; # gap between windows and screen edge
-        border_size = 0;
+        border_size = 1;
+        "col.active_border" = "rgba(ffffff40)";   # subtle white border on focused window
+        "col.inactive_border" = "rgba(00000000)"; # no border on unfocused windows
         layout = "dwindle"; # binary space partitioning layout
       };
 
