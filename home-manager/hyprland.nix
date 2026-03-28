@@ -28,8 +28,6 @@
         "XCURSOR_THEME,Adwaita"
         "HYPRCURSOR_SIZE,24"
         "HYPRCURSOR_THEME,Adwaita"
-        # force dark theme for Qt apps (polkit agent, etc.)
-        "QT_STYLE_OVERRIDE,adwaita-dark"
       ];
 
       general = {
