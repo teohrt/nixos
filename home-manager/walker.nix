@@ -16,91 +16,126 @@
     default = ["desktopapplications"]
   '';
 
-  xdg.configFile."walker/themes/default/style.css".text = ''
-    * {
+  # Layout: controls sizing, positioning, and which UI elements appear
+  xdg.configFile."walker/themes/default.toml".text = ''
+    [ui.anchors]
+    bottom = true
+    left = true
+    right = true
+    top = true
+
+    [ui.window]
+    h_align = "fill"
+    v_align = "fill"
+
+    [ui.window.box]
+    h_align = "center"
+    width = 500
+
+    [ui.window.box.margins]
+    top = 200
+
+    [ui.window.box.scroll.list]
+    max_height = 300
+    max_width = 480
+    min_width = 480
+    width = 480
+
+    [ui.window.box.scroll.list.item.activation_label]
+    h_align = "fill"
+    v_align = "fill"
+    width = 0
+
+    [ui.window.box.scroll.list.item.icon]
+    pixel_size = 26
+    theme = ""
+
+    [ui.window.box.scroll.list.margins]
+    top = 8
+
+    # prompt icon removed to hide the search icon
+    [ui.window.box.search.input]
+    h_align = "fill"
+    h_expand = true
+    icons = false
+
+    [ui.window.box.search.spinner]
+    hide = true
+  '';
+
+  # Styles: colors, fonts, and appearance
+  xdg.configFile."walker/themes/default.css".text = ''
+    #window,
+    #box,
+    #search,
+    #input,
+    #prompt,
+    #clear,
+    #typeahead,
+    #list,
+    child,
+    scrollbar,
+    slider,
+    #item,
+    #text,
+    #label,
+    #bar,
+    #sub,
+    #activationlabel {
       all: unset;
     }
 
-    * {
+    #window {
+      color: #ffffff;
       font-family: "JetBrains Mono", monospace;
       font-size: 14px;
-      color: #ffffff;
     }
 
-    scrollbar {
-      opacity: 0;
-    }
-
-    .normal-icons {
-      -gtk-icon-size: 16px;
-    }
-
-    .large-icons {
-      -gtk-icon-size: 32px;
-    }
-
-    .box-wrapper {
+    #box {
       background: rgba(10, 10, 15, 0.95);
       padding: 20px;
-      border: 2px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .search-container {
-      background: rgba(10, 10, 15, 0.95);
+    #search {
+      background: rgba(17, 17, 24, 0.9);
       padding: 10px;
+      margin-bottom: 8px;
     }
 
-    .input placeholder {
+    #input placeholder {
       opacity: 0.5;
     }
 
-    .input:focus,
-    .input:active {
-      box-shadow: none;
-      outline: none;
+    child {
+      padding: 4px 8px;
     }
 
-    child:selected .item-box * {
+    child:selected,
+    child:hover {
+      background: rgba(17, 17, 24, 0.9);
+    }
+
+    child:selected #label,
+    child:hover #label {
       color: #7ebae4;
     }
 
-    .item-box {
-      padding-left: 14px;
+    #label {
+      font-weight: 500;
     }
 
-    .item-text-box {
-      all: unset;
-      padding: 14px 0;
-    }
-
-    .item-text {
-    }
-
-    .item-subtext {
+    #sub {
       font-size: 0px;
-      min-height: 0px;
-      margin: 0px;
-      padding: 0px;
     }
 
-    .item-image {
-      margin-right: 14px;
-      -gtk-icon-transform: scale(0.9);
+    #icon {
+      margin-right: 8px;
     }
 
-    .current {
-      font-style: italic;
-    }
-
-    .keybind-hints {
+    #activationlabel {
       opacity: 0;
-      min-height: 0px;
-      min-width: 0px;
-    }
-
-    .preview {
+      min-width: 0;
     }
   '';
-
-  xdg.configFile."walker/themes/default/layout.xml".source = ./walker-layout.xml;
 }

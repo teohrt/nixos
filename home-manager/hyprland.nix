@@ -19,6 +19,7 @@ in
       exec-once = [
         "${pkgs.mako}/bin/mako"
         "waybar"
+        "walker --gapplication-service"
       ];
 
       env = [
