@@ -51,6 +51,7 @@
     enable = true;
     wayland.enable = true;
     theme = "nixos";
+    extraPackages = [ (import ./sddm-theme.nix { inherit pkgs; }) ];
   };
   environment.systemPackages = [ (import ./sddm-theme.nix { inherit pkgs; }) ];
 

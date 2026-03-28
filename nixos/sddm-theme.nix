@@ -1,25 +1,7 @@
 { pkgs }:
 
-pkgs.stdenvNoCC.mkDerivation {
-  name = "sddm-nixos-theme";
-
-  dontUnpack = true;
-
-  installPhase = ''
-    mkdir -p $out/share/sddm/themes/nixos
-
-    cat > $out/share/sddm/themes/nixos/metadata.desktop << 'EOF'
-    [SddmGreeterTheme]
-    Name=nixos
-    Description=Minimal NixOS login theme
-    Type=sddm-theme
-    EOF
-
-    cat > $out/share/sddm/themes/nixos/theme.conf << 'EOF'
-    [General]
-    EOF
-
-    cat > $out/share/sddm/themes/nixos/Main.qml << 'EOF'
+let
+  mainQml = pkgs.writeText "Main.qml" ''
     import QtQuick 2.0
     import SddmComponents 2.0
 
@@ -119,6 +101,27 @@ pkgs.stdenvNoCC.mkDerivation {
 
         Component.onCompleted: password.forceActiveFocus()
     }
-    EOF
+  '';
+
+  metadata = pkgs.writeText "metadata.desktop" ''
+    [SddmGreeterTheme]
+    Name=nixos
+    Description=Minimal NixOS login theme
+    Type=sddm-theme
+  '';
+
+  themeConf = pkgs.writeText "theme.conf" ''
+    [General]
+  '';
+in
+
+pkgs.stdenvNoCC.mkDerivation {
+  name = "sddm-nixos-theme";
+  dontUnpack = true;
+  installPhase = ''
+    mkdir -p $out/share/sddm/themes/nixos
+    cp ${mainQml} $out/share/sddm/themes/nixos/Main.qml
+    cp ${metadata} $out/share/sddm/themes/nixos/metadata.desktop
+    cp ${themeConf} $out/share/sddm/themes/nixos/theme.conf
   '';
 }
