@@ -19,8 +19,8 @@ in
       exec-once = [
         "${pkgs.mako}/bin/mako"
         "waybar"
-        "elephant"                      # indexes apps for walker to search
-        "walker --gapplication-service" # walker background service
+        "elephant"                                        # indexes apps for walker to search
+        "sleep 2 && walker --gapplication-service"        # walker background service (delayed to let elephant index first)
       ];
 
       env = [
