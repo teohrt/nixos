@@ -51,6 +51,7 @@
     enable = true;
     wayland.enable = true;
     theme = "where_is_my_sddm_theme";
+    extraPackages = with pkgs; [ kdePackages.qt5compat ];
   };
   environment.systemPackages = [ pkgs.where-is-my-sddm-theme ];
 
