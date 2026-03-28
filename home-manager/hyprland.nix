@@ -16,6 +16,7 @@
         "waybar"
         "elephant"                                        # indexes apps for walker to search
         "sleep 2 && walker --gapplication-service"        # walker background service (delayed to let elephant index first)
+        "wl-clip-persist --clipboard regular"             # keep clipboard alive after source process exits
       ];
 
       env = [
@@ -110,9 +111,9 @@
         "$mod SHIFT, 5, movetoworkspace, 5"
 
         # screenshot
-        ", Print,       exec, hyprshot -m region --clipboard-only"
-        "SHIFT, Print,  exec, hyprshot -m window --clipboard-only"
-        "$mod, Print,   exec, hyprshot -m output --clipboard-only"
+        ", Print,       exec, hyprshot -m region -o ~/Pictures"
+        "SHIFT, Print,  exec, hyprshot -m window -o ~/Pictures"
+        "$mod, Print,   exec, hyprshot -m output -o ~/Pictures"
       ];
 
       # mouse bindings

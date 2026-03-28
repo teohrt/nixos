@@ -28,6 +28,7 @@
     mako                  # notification daemon
     hyprshot              # screenshot tool (wraps grim/slurp)
     wl-clipboard          # clipboard utilities (wl-copy / wl-paste)
+    wl-clip-persist       # keeps clipboard alive after source process exits
 
     # fonts
     nerd-fonts.jetbrains-mono
