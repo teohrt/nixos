@@ -2,6 +2,7 @@
 { pkgs, pkgs-walker, ... }: {
   home.packages = with pkgs; [
     # cli utilities
+    lazydocker
     ripgrep
     jq
     fzf
