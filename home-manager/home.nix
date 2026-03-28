@@ -1,6 +1,18 @@
-{ config, pkgs, ... }:
+{ config, pkgs, pkgs-walker, ... }:
 
-
+let
+  powerMenu = pkgs.writeShellScriptBin "power-menu" ''
+    CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nLog Out" \
+      | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
+    case "$CHOICE" in
+      Shutdown)  systemctl poweroff ;;
+      Restart)   systemctl reboot ;;
+      Lock)      loginctl lock-session ;;
+      Suspend)   systemctl suspend ;;
+      "Log Out") hyprctl dispatch exit ;;
+    esac
+  '';
+in
 {
   home.username = "trace";
   home.homeDirectory = "/home/trace";
@@ -32,5 +44,7 @@
   # You can update home Manager without changing this value. See
   # the home Manager release notes for a list of state version
   # changes in each release.
+  home.packages = [ powerMenu ];
+
   home.stateVersion = "25.11";
 }

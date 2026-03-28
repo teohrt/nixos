@@ -1,18 +1,6 @@
-{ pkgs, pkgs-walker, ... }:
+{ pkgs, ... }:
 
 let
-  powerMenu = pkgs.writeShellScript "waybar-power-menu" ''
-    CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nLog Out" \
-      | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
-    case "$CHOICE" in
-      Shutdown) systemctl poweroff ;;
-      Restart)  systemctl reboot ;;
-      Lock)     loginctl lock-session ;;
-      Suspend)  systemctl suspend ;;
-      "Log Out") hyprctl dispatch exit ;;
-    esac
-  '';
-
   weatherScript = pkgs.writeShellScript "waybar-weather" ''
     WEATHER=$(${pkgs.curl}/bin/curl -sf "https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph")
     if [ -z "$WEATHER" ]; then
@@ -125,7 +113,7 @@ in
 
       "custom/power" = {
         format = "⏻";
-        on-click = "${powerMenu}";
+        on-click = "power-menu";
         tooltip = false;
       };
 
