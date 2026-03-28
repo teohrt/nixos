@@ -13,6 +13,9 @@
 
     # apps
     google-chrome
+    imv        # image viewer
+    evince     # PDF viewer
+    vlc        # video player
     slack
     zoom-us
     spotify
