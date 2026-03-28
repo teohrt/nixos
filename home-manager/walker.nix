@@ -6,7 +6,7 @@
     hide_action_hints = true
 
     [placeholders]
-    "default" = { input = " Search...", list = "No Results" }
+    "default" = { input = "Search...", list = "No Results" }
 
     [keybinds]
     quick_activate = []
@@ -32,6 +32,12 @@
       background: rgba(10, 10, 15, 0.95);
       border-radius: 12px;
       padding: 12px;
+    }
+
+    .input image {
+      opacity: 0;
+      min-width: 0;
+      min-height: 0;
     }
 
     .search-container {
