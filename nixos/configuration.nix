@@ -16,6 +16,7 @@
   # Use iwd as the wifi backend so the impala TUI can manage wifi connections
   networking.networkmanager.wifi.backend = "iwd";
   networking.wireless.iwd.enable = true;
+  networking.wireless.iwd.settings.General.EnableNetworkConfiguration = false;
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
 
