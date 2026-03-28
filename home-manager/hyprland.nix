@@ -86,6 +86,8 @@ in
         "$mod, Return, exec, $terminal"
         "$mod, Escape, exec, power-menu"
         "$mod SHIFT, Return, exec, google-chrome-stable"
+        "$mod, F, fullscreen"
+        "$mod SHIFT, F, exec, thunar"
         "$mod, W, killactive"
         "$mod, ESC, exit"
         "$mod, V, togglefloating"

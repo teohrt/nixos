@@ -92,6 +92,9 @@
   # Enable sound with pipewire.
   security.pam.services.hyprlock = {};
 
+  # Required for Thunar: trash, removable media, MTP, network shares
+  services.gvfs.enable = true;
+
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;

@@ -12,6 +12,10 @@
 
     # apps
     google-chrome
+    xfce.thunar
+    xfce.thunar-volman          # auto-mount removable drives
+    xfce.thunar-archive-plugin  # right-click archive support
+    gvfs                        # trash, MTP devices, network shares
 
     # app launcher / menus
     pkgs-walker.walker    # app launcher / dmenu replacement
