@@ -3,7 +3,7 @@
 let
   powerMenu = pkgs.writeShellScript "waybar-power-menu" ''
     CHOICE=$(printf "  Shutdown\n  Restart\n  Lock\n  Suspend\n  Log Out" \
-      | ${pkgs.rofi}/bin/rofi -dmenu -p "" -config ~/.config/rofi/config.rasi \
+      | ${pkgs.rofi}/bin/rofi -dmenu -p "" -matching fuzzy \
           -theme-str 'window { width: 200px; } listview { lines: 5; }')
     case "$CHOICE" in
       *Shutdown) systemctl poweroff ;;
