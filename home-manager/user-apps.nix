@@ -26,8 +26,7 @@
     bluetui               # bluetooth TUI
     wiremix               # audio TUI
     mako                  # notification daemon
-    grim                  # screenshot tool
-    slurp                 # screen area selection
+    hyprshot              # screenshot tool (wraps grim/slurp)
     wl-clipboard          # clipboard utilities (wl-copy / wl-paste)
 
     # fonts

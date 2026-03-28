@@ -1,10 +1,5 @@
-{ pkgs, ... }:
+{ ... }:
 
-let
-  hyprScreenshot = pkgs.writeShellScript "hypr-screenshot" ''
-    ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)" - | ${pkgs.wl-clipboard}/bin/wl-copy
-  '';
-in
 {
   wayland.windowManager.hyprland = {
     enable = true;
@@ -115,7 +110,9 @@ in
         "$mod SHIFT, 5, movetoworkspace, 5"
 
         # screenshot
-        ", Print, exec, ${hyprScreenshot}"
+        ", Print,       exec, hyprshot -m region --clipboard-only"
+        "SHIFT, Print,  exec, hyprshot -m window --clipboard-only"
+        "$mod, Print,   exec, hyprshot -m output --clipboard-only"
       ];
 
       # mouse bindings
