@@ -2,15 +2,15 @@
 
 let
   powerMenu = pkgs.writeShellScript "waybar-power-menu" ''
-    CHOICE=$(printf "  Shutdown\n  Restart\n  Lock\n  Suspend\n  Log Out" \
+    CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nLog Out" \
       | ${pkgs.rofi}/bin/rofi -dmenu -p "" -matching fuzzy \
           -theme-str 'window { width: 200px; } listview { lines: 5; }')
     case "$CHOICE" in
-      *Shutdown) systemctl poweroff ;;
-      *Restart)  systemctl reboot ;;
-      *Lock)     loginctl lock-session ;;
-      *Suspend)  systemctl suspend ;;
-      *"Log Out") hyprctl dispatch exit ;;
+      Shutdown) systemctl poweroff ;;
+      Restart)  systemctl reboot ;;
+      Lock)     loginctl lock-session ;;
+      Suspend)  systemctl suspend ;;
+      "Log Out") hyprctl dispatch exit ;;
     esac
   '';
 
