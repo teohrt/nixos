@@ -14,11 +14,7 @@
     google-chrome
     slack
     zoom-us
-    # force native Wayland rendering — without this Spotify runs through XWayland
-    # and gets upscaled from 1x, causing blurriness at fractional monitor scales
-    (spotify.override {
-      commandLineArgs = "--ozone-platform=wayland --enable-features=WaylandWindowDecorations";
-    })
+    spotify
 
     # wayland / hyprland ecosystem
     pkgs-walker.walker          # app launcher / dmenu replacement

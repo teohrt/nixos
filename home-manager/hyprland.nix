@@ -28,6 +28,9 @@
         "XCURSOR_THEME,Adwaita"
         "HYPRCURSOR_SIZE,24"
         "HYPRCURSOR_THEME,Adwaita"
+        # tell nixpkgs Electron apps (Spotify, Slack, VS Code, etc.) to use native
+        # Wayland rendering — avoids XWayland upscaling blur at fractional scales
+        "NIXOS_OZONE_WL,1"
       ];
 
       general = {
