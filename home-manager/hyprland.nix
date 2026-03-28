@@ -19,7 +19,8 @@ in
       exec-once = [
         "${pkgs.mako}/bin/mako"
         "waybar"
-        "walker --gapplication-service"
+        "elephant"                      # indexes apps for walker to search
+        "walker --gapplication-service" # walker background service
       ];
 
       env = [

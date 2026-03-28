@@ -14,7 +14,8 @@
     google-chrome
 
     # app launcher / menus
-    pkgs-walker.walker
+    pkgs-walker.walker    # app launcher / dmenu replacement
+    pkgs-walker.elephant  # data provider service that indexes apps for walker
 
     # wayland / hyprland ecosystem
     impala                # wifi TUI
