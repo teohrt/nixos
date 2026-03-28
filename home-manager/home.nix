@@ -35,6 +35,7 @@ in
     ./alacritty.nix
     ./walker.nix
     ./hyprlock.nix
+    ./hypridle.nix
   ];
 
   home.packages = [ powerMenu ];
