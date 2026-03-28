@@ -126,11 +126,16 @@
     ];
   };
 
+  virtualisation.docker = {
+    enable = true;
+    enableOnBoot = false; # start daemon on-demand via socket activation instead of at boot
+  };
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.trace = {
     isNormalUser = true;
     description = "trace";
-    extraGroups = [ "wheel" "video" ]; # video group allows brightnessctl without sudo
+    extraGroups = [ "wheel" "video" "docker" ]; # video group allows brightnessctl without sudo; docker allows running docker without sudo
     packages = [];
   };
 
