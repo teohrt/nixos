@@ -50,6 +50,12 @@
 
   # Bluetooth
   hardware.bluetooth.enable = true;
+  hardware.bluetooth.settings = {
+    General = {
+      # Enables AAC codec negotiation, battery reporting, and other modern features
+      Experimental = true;
+    };
+  };
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -61,6 +67,19 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    wireplumber.configPackages = [
+      (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/51-airpods.conf" ''
+        monitor.bluez.properties = {
+          # AAC codec for high-quality audio (AirPods' preferred codec)
+          bluez5.codecs = [ aac sbc sbc_xq ]
+          # mSBC enables wideband audio on the mic (HFP), improving mic quality
+          bluez5.enable-msbc = true
+          bluez5.enable-hw-volume = true
+          # Enable all headset roles so mic and audio both work
+          bluez5.headset-roles = [ hsp_hs hsp_ag hfp_hf hfp_ag ]
+        }
+      '')
+    ];
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
