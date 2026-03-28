@@ -3,7 +3,7 @@
 let
   powerMenu = pkgs.writeShellScript "waybar-power-menu" ''
     CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nLog Out" \
-      | ${pkgs-walker.walker}/bin/walker --dmenu --width 125 --maxheight 200 -N -H)
+      | ${pkgs-walker.walker}/bin/walker --dmenu -t power --width 125 --maxheight 200 -N -H)
     case "$CHOICE" in
       Shutdown) systemctl poweroff ;;
       Restart)  systemctl reboot ;;
@@ -65,7 +65,7 @@ in
 
       "custom/launcher" = {
         format = "󱄅";
-        on-click = "walker -N -H";
+        on-click = "walker --width 500 --maxheight 300 -N -H";
         tooltip = false;
       };
 

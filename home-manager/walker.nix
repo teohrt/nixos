@@ -112,16 +112,12 @@ in
 
     [ui.window.box]
     h_align = "center"
-    width = 500
 
     [ui.window.box.margins]
     top = 200
 
     [ui.window.box.scroll.list]
     max_height = 300
-    max_width = 480
-    min_width = 480
-    width = 480
 
     [ui.window.box.scroll.list.item.activation_label]
     h_align = "fill"
@@ -144,7 +140,7 @@ in
     hide = true
   '';
 
-  # Smaller layout for the power menu
+  # Layout for the power menu (width controlled per-invocation via --width flag)
   xdg.configFile."walker/themes/power.toml".text = ''
     [ui.anchors]
     bottom = true
@@ -158,16 +154,12 @@ in
 
     [ui.window.box]
     h_align = "center"
-    width = 250
 
     [ui.window.box.margins]
     top = 200
 
     [ui.window.box.scroll.list]
-    max_height = 300
-    max_width = 230
-    min_width = 230
-    width = 230
+    max_height = 200
 
     [ui.window.box.scroll.list.item.activation_label]
     h_align = "fill"

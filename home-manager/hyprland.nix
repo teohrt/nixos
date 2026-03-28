@@ -13,7 +13,7 @@ in
       monitor = ",preferred,auto,1.2";
 
       "$terminal" = "alacritty";
-      "$menu" = "walker -N -H";
+      "$menu" = "walker --width 500 --maxheight 300 -N -H";
       "$mod" = "SUPER";
 
       exec-once = [
