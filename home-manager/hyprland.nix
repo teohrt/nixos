@@ -14,7 +14,7 @@
 
       exec-once = [
         "swayosd-server"                                   # OSD server for volume/brightness popups
-        "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1" # auth agent for privilege escalation prompts
+        "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" # auth agent for privilege escalation prompts
         "${pkgs.mako}/bin/mako"                            # notification daemon
         "waybar"                                           # status bar
         "elephant"                                         # indexes apps for walker to search
