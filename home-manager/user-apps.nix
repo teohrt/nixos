@@ -32,5 +32,8 @@
     xfce.thunar-volman          # auto-mount removable drives
     xfce.thunar-archive-plugin  # right-click archive support
     gvfs                        # trash, MTP devices, network shares
+
+    # fonts
+    nerd-fonts.jetbrains-mono
   ];
 }
