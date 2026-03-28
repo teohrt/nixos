@@ -75,6 +75,12 @@
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-hyprland ];
+    # explicitly route screensharing/remotedesktop to hyprland portal, everything else to gtk
+    config.common = {
+      "org.freedesktop.impl.portal.ScreenCast" = "hyprland";
+      "org.freedesktop.impl.portal.RemoteDesktop" = "hyprland";
+      default = [ "gtk" ];
+    };
   };
 
   # Bluetooth
