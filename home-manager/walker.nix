@@ -84,6 +84,14 @@
       margin-right: 14px;
       -gtk-icon-transform: scale(0.9);
     }
+
+    .keybind-hints,
+    .item-keybinds,
+    .global-keybinds {
+      opacity: 0;
+      min-width: 0;
+      min-height: 0;
+    }
   '';
 
   xdg.configFile."walker/themes/default/layout.xml".source = ./walker-layout.xml;
