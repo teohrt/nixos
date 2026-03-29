@@ -174,25 +174,28 @@ in
 
       #workspaces {
         background: rgba(10, 10, 15, 0.85);
-        border-radius: 12px;
-        padding: 2px 4px;
+        border-radius: 20px;
+        padding: 3px 5px;
       }
 
       #workspaces button {
-        padding: 2px 8px;
-        color: rgba(255, 255, 255, 0.35);
+        padding: 2px 7px;
+        color: rgba(255, 255, 255, 0.5);
         box-shadow: none;
-        border-radius: 8px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.08);
+        margin: 0 2px;
       }
 
       #workspaces button.active {
         padding: 2px 16px;
         color: #ffffff;
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.18);
+        border-radius: 20px;
       }
 
       #workspaces button:hover {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.13);
       }
 
       #clock,
