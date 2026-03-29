@@ -71,19 +71,14 @@
     })
   ];
 
-  # Required for dconf/gsettings to work without GNOME (needed by xdg-desktop-portal-gtk
-  # to serve theme/color-scheme settings to Flutter apps like LocalSend)
-  programs.dconf.enable = true;
-
   # XDG portal for Hyprland
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-hyprland ];
+    # explicitly route screensharing/remotedesktop to hyprland portal, everything else to gtk
     config.common = {
       "org.freedesktop.impl.portal.ScreenCast" = "hyprland";
       "org.freedesktop.impl.portal.RemoteDesktop" = "hyprland";
-      # explicitly route Settings to gtk so Flutter apps can read gtk-theme via dbus
-      "org.freedesktop.impl.portal.Settings" = "gtk";
       default = [ "gtk" ];
     };
   };

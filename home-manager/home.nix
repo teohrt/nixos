@@ -27,17 +27,6 @@ in
     gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
   };
 
-  # Populate the dconf database so xdg-desktop-portal-gtk can serve the theme name
-  # and color-scheme to Flutter apps (like LocalSend) via dbus. The gtk.theme option
-  # above only writes GTK config files — Flutter reads via the portal → dconf instead.
-  dconf.settings = {
-    "org/gnome/desktop/interface" = {
-      gtk-theme = "Adwaita-dark";
-      color-scheme = "prefer-dark";
-    };
-  };
-
-
   home.pointerCursor = {
     gtk.enable = true;
     package = pkgs.adwaita-icon-theme;
