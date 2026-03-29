@@ -42,7 +42,7 @@ in
       layer = "top";
       position = "top";
       height = 32;
-      margin-top = 4;
+      margin-top = 6;
       margin-left = 4;
       margin-right = 4;
       spacing = 8;
