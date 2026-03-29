@@ -188,7 +188,7 @@ in
       }
 
       #workspaces button.active {
-        padding: 2px 16px;
+        padding: 2px 22px;
         color: #ffffff;
         background: rgba(255, 255, 255, 0.18);
         border-radius: 20px;
