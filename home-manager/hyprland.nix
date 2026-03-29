@@ -33,6 +33,8 @@
         "NIXOS_OZONE_WL,1"
         # force Qt apps (Zoom, etc.) to use native Wayland — falls back to X11 if needed
         "QT_QPA_PLATFORM,wayland;xcb"
+        # force dark GTK theme for apps that read GTK_THEME (e.g. LocalSend/Flutter)
+        "GTK_THEME,Adwaita:dark"
       ];
 
       general = {

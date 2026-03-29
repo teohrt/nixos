@@ -27,9 +27,6 @@ in
     gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
   };
 
-  home.sessionVariables = {
-    GTK_THEME = "Adwaita:dark";
-  };
 
   home.pointerCursor = {
     gtk.enable = true;
