@@ -42,9 +42,9 @@ in
       layer = "top";
       position = "top";
       height = 32;
-      margin-top = 8;
-      margin-left = 8;
-      margin-right = 8;
+      margin-top = 4;
+      margin-left = 4;
+      margin-right = 4;
       spacing = 8;
 
       modules-left = [ "custom/launcher" "clock" "custom/weather" "hyprland/workspaces" ];
