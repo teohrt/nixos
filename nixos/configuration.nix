@@ -71,9 +71,6 @@
     })
   ];
 
-  # Required for dconf/gsettings to work (e.g. GTK dark mode, color-scheme for apps like LocalSend)
-  programs.dconf.enable = true;
-
   # XDG portal for Hyprland
   xdg.portal = {
     enable = true;
