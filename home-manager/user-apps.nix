@@ -2,6 +2,7 @@
 { pkgs, pkgs-walker, ... }: {
   home.packages = with pkgs; [
     # cli utilities
+    claude-code
     lazydocker
     ripgrep
     jq
@@ -13,6 +14,10 @@
 
     # apps
     google-chrome
+    firefox
+    _1password-gui
+    obsidian
+    localsend
     imv                    # image viewer
     system-config-printer  # printer management GUI
     evince     # PDF viewer
