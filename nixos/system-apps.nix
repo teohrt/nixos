@@ -4,5 +4,10 @@
     git
     neovim
     eza # A modern replacement for ‘ls’
+    alacritty
+    vscode
+    gnumake
+    stow
+    nerd-fonts.jetbrains-mono
   ];
 }

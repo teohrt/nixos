@@ -1,27 +1,52 @@
-{ config, pkgs, ... }:
+{ config, pkgs, pkgs-walker, ... }:
 
+let
+  powerMenu = pkgs.writeShellScriptBin "power-menu" ''
+    CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nLog Out" \
+      | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
+    case "$CHOICE" in
+      Shutdown)  systemctl poweroff ;;
+      Restart)   systemctl reboot ;;
+      Lock)      hyprlock ;;
+      Suspend)   systemctl suspend ;;
+      "Log Out") hyprctl dispatch exit ;;
+    esac
+  '';
+in
 {
   home.username = "trace";
   home.homeDirectory = "/home/trace";
 
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
+    };
+    gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
+    gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
+  };
+
+  home.pointerCursor = {
+    gtk.enable = true;
+    package = pkgs.adwaita-icon-theme;
+    name = "Adwaita";
+    size = 24;
+  };
+
   imports = [
     ./user-apps.nix
     ./git.nix
+    ./hyprland.nix
+    ./waybar.nix
+    ./hyprpaper.nix
+    ./alacritty.nix
+    ./walker.nix
+    ./hyprlock.nix
+    ./hypridle.nix
   ];
 
-  # alacritty - a cross-platform, GPU-accelerated terminal emulator
-  programs.alacritty = {
-    enable = true;
-    settings = {
-      env.TERM = "xterm-256color";
-      font = {
-        size = 12;
-        draw_bold_text_with_bright_colors = true;
-      };
-      scrolling.multiplier = 5;
-      selection.save_to_clipboard = true;
-    };
-  };
+  home.packages = [ powerMenu ];
 
   # This value determines the home Manager release that your
   # configuration is compatible with. This helps avoid breakage

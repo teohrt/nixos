@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs-walker.url = "github:nixos/nixpkgs/46db2e09e1d3f113a13c0d7b81e2f221c63b8ce9";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       # The `follows` keyword in inputs is used for inheritance.
@@ -13,9 +14,16 @@
     };
   };
 
-  outputs = inputs@{ nixpkgs, home-manager, ... }: {
+  outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, ... }:
+  let
+    system = "x86_64-linux";
+    pkgs-walker = nixpkgs-walker.legacyPackages.${system};
+  in
+  {
     nixosConfigurations = {
       my-nixos = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit pkgs-walker; };
         modules = [
           ./nixos/configuration.nix
 
@@ -23,10 +31,10 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.backupFileExtension = "nixos-hm-backup";
 
+            home-manager.extraSpecialArgs = { inherit pkgs-walker; };
             home-manager.users.trace = import ./home-manager/home.nix;
-
-            # Optionally, use home-manager.extraSpecialArgs to pass arguments to home.nix
           }
         ];
       };
