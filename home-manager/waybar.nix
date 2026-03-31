@@ -62,10 +62,12 @@ let
 
   # Waybar's built-in network module reads signal strength from NetworkManager,
   # which uses a different dBm-to-percentage formula than iwd. This script reads
-  # RSSI directly from iwctl (same source as impala) and applies iwd's formula
-  # (-100 dBm = 0%, -40 dBm = 100%) so the displayed percentage matches.
+  # RSSI directly from iwctl (same source as impala) and applies impala's formula
+  # (>= -50 dBm = 100%, else 2 * (100 + RSSI)) so the displayed percentage matches.
   wifiScript = pkgs.writeShellScript "waybar-wifi" ''
-    IFACE=$(${pkgs.iwd}/bin/iwctl station list 2>/dev/null | awk '/wlan/{print $1; exit}')
+    IFACE=$(for dev in /sys/class/net/*/wireless; do
+      [ -d "$dev" ] && basename "$(dirname "$dev")" && break
+    done)
 
     if [ -z "$IFACE" ]; then
       echo '{"text": "<span size=\"large\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
@@ -73,19 +75,18 @@ let
     fi
 
     INFO=$(${pkgs.iwd}/bin/iwctl station "$IFACE" show 2>/dev/null)
-    SSID=$(echo "$INFO" | awk -F'  +' '/Connected network/{gsub(/^[ \t]+|[ \t]+$/, "", $NF); print $NF}')
-    RSSI=$(echo "$INFO" | awk '/RSSI/{print $2}')
+    SSID=$(echo "$INFO" | awk '/Connected network/{sub(/.*Connected network[[:space:]]+/, ""); sub(/[[:space:]]*$/, ""); print}')
+    RSSI=$(echo "$INFO" | awk '$1 == "RSSI" {print $2}')
 
     if [ -z "$SSID" ]; then
       echo '{"text": "<span size=\"large\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
       exit
     fi
 
-    # iwd formula: -100 dBm = 0%, -40 dBm = 100%
+    # impala formula: >= -50 dBm = 100%, else 2 * (100 + RSSI)
     PCT=$(awk -v r="$RSSI" 'BEGIN {
-      p = int((r + 100) * 100 / 60)
+      p = (r >= -50) ? 100 : 2 * (100 + r)
       if (p < 0) p = 0
-      if (p > 100) p = 100
       print p
     }')
 
