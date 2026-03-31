@@ -40,6 +40,7 @@
         gaps_out = 10; # gap between windows and screen edge
         border_size = 1;
         "col.active_border" = "rgba(ffffff66)";
+        "col.inactive_border" = "rgba(00000000)";
         layout = "dwindle"; # binary space partitioning layout
       };
 
@@ -83,8 +84,7 @@
 
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
-        "bordersize 0, focus:0" # no border on unfocused windows
-        "float, title:^(wifi)$"
+"float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"
         "center, title:^(wifi)$"
         "float, title:^(bluetooth)$"
