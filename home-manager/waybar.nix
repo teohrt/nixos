@@ -10,15 +10,15 @@ let
   '';
 
   cpuScript = pkgs.writeShellScript "waybar-cpu" ''
-    read1=$(awk '/^cpu / {printf "%d %d", $2+$3+$4+$5+$6+$7+$8, $5}' /proc/stat)
+    t1=$(awk '/^cpu /{printf "%d %d", $2+$3+$4+$5+$6+$7+$8, $5; exit}' /proc/stat)
     sleep 1
-    read2=$(awk '/^cpu / {printf "%d %d", $2+$3+$4+$5+$6+$7+$8, $5}' /proc/stat)
-    load=$(awk '{print $1}' /proc/loadavg)
-    awk -v r1="$read1" -v r2="$read2" -v load="$load" 'BEGIN {
-      split(r1, a, " "); split(r2, b, " ")
-      dtotal = b[1] - a[1]; didle = b[2] - a[2]
-      usage = (dtotal - didle) / dtotal * 100
-      printf "{\"text\": \"󰘚 %.2f%%\", \"tooltip\": \"CPU\\n%.2f%%  Load: %s\"}\n", usage, usage, load
+    t2=$(awk '/^cpu /{printf "%d %d", $2+$3+$4+$5+$6+$7+$8, $5; exit}' /proc/stat)
+    lavg=$(awk '{print $1; exit}' /proc/loadavg)
+    printf '%s %s\n' "$t1" "$t2" | awk -v lavg="$lavg" '{
+      dtotal = $3 - $1
+      didle  = $4 - $2
+      usage  = dtotal > 0 ? (dtotal - didle) / dtotal * 100 : 0
+      printf "{\"text\": \"󰘚 %.2f%%\", \"tooltip\": \"CPU\\n%.2f%%  Load: %s\"}\n", usage, usage, lavg
     }'
   '';
 
