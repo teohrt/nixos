@@ -38,7 +38,7 @@ let
       tooltip = sprintf("CPU\\n%.2f%%  Load: %s", pct["cpu"], la[1])
       for (i = 2; i <= nc; i++)
         tooltip = tooltip sprintf("\\n%s: %.2f%%", order[i], pct[order[i]])
-      printf "{\"text\": \"󰘚 %.2f%%\", \"tooltip\": \"%s\"}\n", pct["cpu"], tooltip
+      printf "{\"text\": \"<span size='large'>󰘚</span> %.2f%%\", \"tooltip\": \"%s\"}\n", pct["cpu"], tooltip
       exit
     }
   '';
@@ -54,7 +54,7 @@ let
       END {
         used = total - avail
         pct  = used / total * 100
-        printf "{\"text\": \"󰻠 %.2f%%\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
+        printf "{\"text\": \"<span size='large'>󰻠</span> %.2f%%\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
           pct, pct, used/1024/1024, total/1024/1024, avail/1024/1024
       }
     ' /proc/meminfo
@@ -128,8 +128,8 @@ in
       };
 
       battery = {
-        format = "󰚥 {capacity}%";
-        format-charging = "󱐋 {capacity}%";
+        format = "<span size=\"large\">󰚥</span> {capacity}%";
+        format-charging = "<span size=\"large\">󱐋</span> {capacity}%";
         interval = 2;
       };
 
@@ -146,8 +146,8 @@ in
       };
 
       network = {
-        format-wifi = "{icon} {signalStrength}% <span color=\"#b3b3b3\" size=\"xx-large\">↑</span><span color=\"#8c8c8c\">{bandwidthUpBits}</span> <span color=\"#b3b3b3\" size=\"xx-large\">↓</span><span color=\"#8c8c8c\">{bandwidthDownBits}</span>";
-        format-disconnected = "󰤭";
+        format-wifi = "<span size=\"large\">{icon}</span> {signalStrength}% <span color=\"#ffffff\" size=\"xx-large\">↑</span><span color=\"#8c8c8c\">{bandwidthUpBits}</span> <span color=\"#ffffff\" size=\"xx-large\">↓</span><span color=\"#8c8c8c\">{bandwidthDownBits}</span>";
+        format-disconnected = "<span size=\"large\">󰤭</span>";
         format-icons = [ "󰤟" "󰤢" "󰤥" "󰤨" ];
         tooltip-format-wifi = "{essid}";
         tooltip-format-disconnected = "disconnected";
@@ -155,10 +155,10 @@ in
       };
 
       bluetooth = {
-        format = "󰂯";
-        format-connected = "󰂱 {device_alias}";
-        format-connected-battery = "󰂱 {device_alias} {device_battery_percentage}%";
-        format-disabled = "󰂲";
+        format = "<span size=\"large\">󰂯</span>";
+        format-connected = "<span size=\"large\">󰂱</span> {device_alias}";
+        format-connected-battery = "<span size=\"large\">󰂱</span> {device_alias} {device_battery_percentage}%";
+        format-disabled = "<span size=\"large\">󰂲</span>";
         tooltip-format-connected = "{device_enumerate}";
         tooltip-format-enumerate-connected = "{device_alias} ({device_address})";
         tooltip-format-enumerate-connected-battery = "{device_alias} ({device_address}) {device_battery_percentage}%";
@@ -166,14 +166,14 @@ in
       };
 
       pulseaudio = {
-        format = "󰕾 {volume}%";
-        format-muted = "󰝟 {volume}%";
+        format = "<span size=\"large\">󰕾</span> {volume}%";
+        format-muted = "<span size=\"large\">󰝟</span> {volume}%";
         tooltip = false;
         on-click = "${mkToggle "audio" "alacritty --title audio -e wiremix"}";
       };
 
       "custom/power" = {
-        format = "⏻";
+        format = "<span size=\"large\">⏻</span>";
         on-click = "power-menu";
         tooltip = false;
       };
