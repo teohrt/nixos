@@ -211,7 +211,7 @@ in
       }
 
       #custom-launcher {
-        padding: 0 16px 0 12px;
+        padding: 2px 16px 2px 12px;
         font-size: 16px;
       }
 
@@ -257,11 +257,11 @@ in
 
       #clock,
       #battery {
-        padding: 0 13px 0 15px;
+        padding: 2px 13px 2px 15px;
       }
 
       #network {
-        padding: 0 16px 0 12px;
+        padding: 2px 16px 2px 12px;
       }
 
       #battery,
@@ -270,11 +270,11 @@ in
       #custom-cpu,
       #custom-mem,
       #custom-weather {
-        padding: 0 14px;
+        padding: 2px 14px;
       }
 
       #custom-power {
-        padding: 0 16px 0 12px;
+        padding: 2px 16px 2px 12px;
       }
 
       tooltip {
