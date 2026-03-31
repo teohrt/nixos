@@ -9,6 +9,32 @@ let
     fi
   '';
 
+  cpuScript = pkgs.writeShellScript "waybar-cpu" ''
+    read1=$(awk '/^cpu / {printf "%d %d", $2+$3+$4+$5+$6+$7+$8, $5}' /proc/stat)
+    sleep 1
+    read2=$(awk '/^cpu / {printf "%d %d", $2+$3+$4+$5+$6+$7+$8, $5}' /proc/stat)
+    load=$(awk '{print $1}' /proc/loadavg)
+    awk -v r1="$read1" -v r2="$read2" -v load="$load" 'BEGIN {
+      split(r1, a, " "); split(r2, b, " ")
+      dtotal = b[1] - a[1]; didle = b[2] - a[2]
+      usage = (dtotal - didle) / dtotal * 100
+      printf "{\"text\": \"󰘚 %.2f%%\", \"tooltip\": \"CPU\\n%.2f%%  Load: %s\"}\n", usage, usage, load
+    }'
+  '';
+
+  memScript = pkgs.writeShellScript "waybar-mem" ''
+    awk '
+      /MemTotal/     { total = $2 }
+      /MemAvailable/ { avail  = $2 }
+      END {
+        used = total - avail
+        pct  = used / total * 100
+        printf "{\"text\": \"󰻠 %.2f%%\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
+          pct, pct, used/1024/1024, total/1024/1024, avail/1024/1024
+      }
+    ' /proc/meminfo
+  '';
+
   weatherScript = pkgs.writeShellScript "waybar-weather" ''
     WEATHER=$(${pkgs.curl}/bin/curl -sf "https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph")
     if [ -z "$WEATHER" ]; then
@@ -57,7 +83,7 @@ in
 
       modules-left = [ "custom/launcher" "custom/weather" "hyprland/workspaces" ];
       modules-center = [ "clock" ];
-      modules-right = [ "cpu" "memory" "network" "bluetooth" "pulseaudio" "battery" "custom/power" ];
+      modules-right = [ "custom/cpu" "custom/mem" "network" "bluetooth" "pulseaudio" "battery" "custom/power" ];
 
       "custom/launcher" = {
         format = "󱄅";
@@ -82,16 +108,16 @@ in
         interval = 2;
       };
 
-      cpu = {
-        format = "󰘚 {usage:.2f}%";
+      "custom/cpu" = {
+        exec = "${cpuScript}";
+        return-type = "json";
         interval = 2;
-        tooltip-format = "CPU\n{usage}%  Load: {load}";
       };
 
-      memory = {
-        format = "󰻠 {percentage:.2f}%";
+      "custom/mem" = {
+        exec = "${memScript}";
+        return-type = "json";
         interval = 2;
-        tooltip-format = "RAM\n{percentage}%  {used:0.1f}GB / {total:0.1f}GB\nAvail: {avail:0.1f}GB";
       };
 
       network = {
@@ -168,8 +194,8 @@ in
       #network:hover,
       #bluetooth:hover,
       #pulseaudio:hover,
-      #cpu:hover,
-      #memory:hover,
+      #custom-cpu:hover,
+      #custom-mem:hover,
       #custom-weather:hover,
       #custom-power:hover {
         background: rgba(126, 186, 228, 0.15);
@@ -218,8 +244,8 @@ in
       #battery,
       #bluetooth,
       #pulseaudio,
-      #cpu,
-      #memory,
+      #custom-cpu,
+      #custom-mem,
       #custom-weather {
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
