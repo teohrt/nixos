@@ -160,15 +160,15 @@ in
         format-connected-battery = "󰂱 {device_alias} {device_battery_percentage}%";
         format-disabled = "󰂲";
         tooltip-format-connected = "{device_enumerate}";
-        tooltip-format-enumerate-connected = "{device_alias}";
-        tooltip-format-enumerate-connected-battery = "{device_alias} {device_battery_percentage}%";
+        tooltip-format-enumerate-connected = "{device_alias} ({device_address})";
+        tooltip-format-enumerate-connected-battery = "{device_alias} ({device_address}) {device_battery_percentage}%";
         on-click = "${mkToggle "bluetooth" "rfkill unblock bluetooth && alacritty --title bluetooth -e bluetui"}";
       };
 
       pulseaudio = {
-        format = "󰕾";
-        format-muted = "󰝟";
-        tooltip-format = "{volume}%: {desc}";
+        format = "󰕾 {volume}%";
+        format-muted = "󰝟 {volume}%";
+        tooltip = false;
         on-click = "${mkToggle "audio" "alacritty --title audio -e wiremix"}";
       };
 
