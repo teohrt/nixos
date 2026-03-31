@@ -180,6 +180,7 @@ in
         border-radius: 20px;
         background: rgba(255, 255, 255, 0.08);
         margin: 0 2px;
+        transition: all 0.2s ease;
       }
 
       #workspaces button.active {
