@@ -146,10 +146,10 @@ in
       };
 
       network = {
-        format-wifi = "{icon} {signalStrength}%";
+        format-wifi = "{icon} {signalStrength}% ↑{bandwidthUpBits} ↓{bandwidthDownBits}";
         format-disconnected = "󰤭";
         format-icons = [ "󰤟" "󰤢" "󰤥" "󰤨" ];
-        tooltip-format-wifi = "{essid}\n↑ {bandwidthUpBits}  ↓ {bandwidthDownBits}";
+        tooltip-format-wifi = "{essid}";
         tooltip-format-disconnected = "disconnected";
         on-click = "${mkToggle "wifi" "rfkill unblock wifi && alacritty --title wifi -e impala"}";
       };
