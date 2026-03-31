@@ -229,17 +229,16 @@ in
       }
 
       #workspaces {
-        background: rgba(10, 10, 15, 0.85);
-        border-radius: 20px;
+        background: transparent;
         padding: 3px 5px;
       }
 
       #workspaces button {
         padding: 2px 7px;
-        color: rgba(255, 255, 255, 0.5);
+        color: #b3b3b3;
         box-shadow: none;
         border-radius: 20px;
-        background: rgba(255, 255, 255, 0.08);
+        background: transparent;
         margin: 0 2px;
         transition: all 0.2s ease;
       }
@@ -252,7 +251,7 @@ in
       }
 
       #workspaces button:hover {
-        background: rgba(255, 255, 255, 0.13);
+        background: rgba(255, 255, 255, 0.08);
       }
 
       #clock,
