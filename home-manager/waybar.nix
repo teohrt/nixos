@@ -60,6 +60,68 @@ let
     ' /proc/meminfo
   '';
 
+  # Waybar's built-in network module reads signal strength from NetworkManager,
+  # which uses a different dBm-to-percentage formula than iwd. This script reads
+  # RSSI directly from iwctl (same source as impala) and applies iwd's formula
+  # (-100 dBm = 0%, -40 dBm = 100%) so the displayed percentage matches.
+  wifiScript = pkgs.writeShellScript "waybar-wifi" ''
+    IFACE=$(${pkgs.iwd}/bin/iwctl station list 2>/dev/null | awk '/wlan/{print $1; exit}')
+
+    if [ -z "$IFACE" ]; then
+      echo '{"text": "<span size=\"large\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
+      exit
+    fi
+
+    INFO=$(${pkgs.iwd}/bin/iwctl station "$IFACE" show 2>/dev/null)
+    SSID=$(echo "$INFO" | awk -F'  +' '/Connected network/{gsub(/^[ \t]+|[ \t]+$/, "", $NF); print $NF}')
+    RSSI=$(echo "$INFO" | awk '/RSSI/{print $2}')
+
+    if [ -z "$SSID" ]; then
+      echo '{"text": "<span size=\"large\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
+      exit
+    fi
+
+    # iwd formula: -100 dBm = 0%, -40 dBm = 100%
+    PCT=$(awk -v r="$RSSI" 'BEGIN {
+      p = int((r + 100) * 100 / 60)
+      if (p < 0) p = 0
+      if (p > 100) p = 100
+      print p
+    }')
+
+    # Bandwidth from /proc/net/dev (sleep 1 to compute per-second rate)
+    RX1=$(awk -F'[: ]+' "/^ *$IFACE:/{print \$3}" /proc/net/dev)
+    TX1=$(awk -F'[: ]+' "/^ *$IFACE:/{print \$11}" /proc/net/dev)
+    sleep 1
+    RX2=$(awk -F'[: ]+' "/^ *$IFACE:/{print \$3}" /proc/net/dev)
+    TX2=$(awk -F'[: ]+' "/^ *$IFACE:/{print \$11}" /proc/net/dev)
+
+    RX_BITS=$(( (RX2 - RX1) * 8 ))
+    TX_BITS=$(( (TX2 - TX1) * 8 ))
+
+    fmt_bits() {
+      awk -v b="$1" 'BEGIN {
+        if (b >= 1000000) printf "%.1f Mb/s", b/1000000
+        else if (b >= 1000) printf "%.0f Kb/s", b/1000
+        else printf "%d b/s", b
+      }'
+    }
+
+    TX_FMT=$(fmt_bits "$TX_BITS")
+    RX_FMT=$(fmt_bits "$RX_BITS")
+
+    if   [ "$PCT" -ge 75 ]; then ICON="󰤨"
+    elif [ "$PCT" -ge 50 ]; then ICON="󰤥"
+    elif [ "$PCT" -ge 25 ]; then ICON="󰤢"
+    else                         ICON="󰤟"
+    fi
+
+    TEXT="<span size=\"large\">$ICON</span> ''${PCT}% <span color=\"#ffffff\" size=\"xx-large\">↑</span><span color=\"#8c8c8c\">''${TX_FMT}</span> <span color=\"#ffffff\" size=\"xx-large\">↓</span><span color=\"#8c8c8c\">''${RX_FMT}</span>"
+    TOOLTIP="''${SSID}\n''${RSSI} dBm"
+
+    printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
+  '';
+
   weatherScript = pkgs.writeShellScript "waybar-weather" ''
     WEATHER=$(${pkgs.curl}/bin/curl -sf "https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph")
     if [ -z "$WEATHER" ]; then
@@ -108,7 +170,7 @@ in
 
       modules-left = [ "custom/launcher" "hyprland/workspaces" ];
       modules-center = [ "battery" "clock" "custom/weather" ];
-      modules-right = [ "custom/cpu" "custom/mem" "bluetooth" "network" "pulseaudio" "custom/power" ];
+      modules-right = [ "custom/cpu" "custom/mem" "bluetooth" "custom/wifi" "pulseaudio" "custom/power" ];
 
       "custom/launcher" = {
         format = "󱄅";
@@ -145,12 +207,10 @@ in
         interval = 2;
       };
 
-      network = {
-        format-wifi = "<span size=\"large\">{icon}</span> {signalStrength}% <span color=\"#ffffff\" size=\"xx-large\">↑</span><span color=\"#8c8c8c\">{bandwidthUpBits}</span> <span color=\"#ffffff\" size=\"xx-large\">↓</span><span color=\"#8c8c8c\">{bandwidthDownBits}</span>";
-        format-disconnected = "<span size=\"large\">󰤭</span>";
-        format-icons = [ "󰤟" "󰤢" "󰤥" "󰤨" ];
-        tooltip-format-wifi = "{essid}";
-        tooltip-format-disconnected = "disconnected";
+      "custom/wifi" = {
+        exec = "${wifiScript}";
+        return-type = "json";
+        interval = 2;
         on-click = "${mkToggle "wifi" "rfkill unblock wifi && alacritty --title wifi -e impala"}";
       };
 
@@ -218,7 +278,7 @@ in
       #custom-launcher:hover,
       #clock:hover,
       #battery:hover,
-      #network:hover,
+      #custom-wifi:hover,
       #bluetooth:hover,
       #pulseaudio:hover,
       #custom-cpu:hover,
@@ -260,7 +320,7 @@ in
         padding: 2px 13px 2px 15px;
       }
 
-      #network {
+      #custom-wifi {
         padding: 2px 16px 2px 12px;
       }
 
