@@ -199,7 +199,8 @@ in
 
 
       window#waybar {
-        background: transparent;
+        background: rgba(10, 10, 15, 0.5);
+        border-radius: 16px;
       }
 
       .modules-left,

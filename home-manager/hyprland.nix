@@ -85,6 +85,11 @@
         force_zero_scaling = true;
       };
 
+      layerrule = [
+        "blur, waybar"
+        "ignorezero, waybar"
+      ];
+
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
 "float, title:^(wifi)$"
