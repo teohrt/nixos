@@ -156,7 +156,8 @@ in
 
       bluetooth = {
         format = "󰂯";
-        format-connected = "󰂱";
+        format-connected = "󰂱 {device_alias}";
+        format-connected-battery = "󰂱 {device_alias} {device_battery_percentage}%";
         format-disabled = "󰂲";
         tooltip-format = "{controller_alias}\n{num_connections} connected";
         tooltip-format-connected = "{controller_alias}\n{num_connections} connected\n{device_enumerate}";
