@@ -47,19 +47,14 @@ in
       margin-right = 4;
       spacing = 8;
 
-      modules-left = [ "custom/launcher" "clock" "custom/weather" "hyprland/workspaces" ];
-      modules-center = [ "hyprland/window" ];
+      modules-left = [ "custom/launcher" "custom/weather" "hyprland/workspaces" ];
+      modules-center = [ "clock" ];
       modules-right = [ "cpu" "memory" "network" "bluetooth" "pulseaudio" "battery" "custom/power" ];
 
       "custom/launcher" = {
         format = "󱄅";
         on-click = "walker -N -H";
         tooltip = false;
-      };
-
-      "hyprland/window" = {
-        max-length = 50;
-        separate-outputs = true;
       };
 
       "hyprland/workspaces" = {
@@ -226,11 +221,6 @@ in
         background: rgba(10, 10, 15, 0.85);
         border-radius: 12px;
         padding: 0 16px 0 12px;
-      }
-
-      #window {
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 12px;
       }
 
       tooltip {
