@@ -60,8 +60,11 @@
         rounding = 10; # rounded corners radius (px)
         blur = {
           enabled = true;
-          size = 3;
+          size = 8;
           passes = 3;
+          vibrancy = 0.2;
+          contrast = 1.1;
+          noise = 0.02;
         };
       };
 
