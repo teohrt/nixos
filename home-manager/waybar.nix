@@ -146,7 +146,7 @@ in
       };
 
       network = {
-        format-wifi = "{icon} {signalStrength}% ↑{bandwidthUpBits} ↓{bandwidthDownBits}";
+        format-wifi = "{icon} {signalStrength}% <span color=\"#b3b3b3\">↑</span>{bandwidthUpBits} <span color=\"#b3b3b3\">↓</span>{bandwidthDownBits}";
         format-disconnected = "󰤭";
         format-icons = [ "󰤟" "󰤢" "󰤥" "󰤨" ];
         tooltip-format-wifi = "{essid}";
