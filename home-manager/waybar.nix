@@ -9,8 +9,7 @@ let
     fi
   '';
 
-  cpuScript = pkgs.writeShellScript "waybar-cpu" ''
-    awk '''
+  cpuAwk = pkgs.writeText "waybar-cpu.awk" ''
     BEGIN {
       while ((getline line < "/proc/stat") > 0) {
         if (line ~ /^cpu/) {
@@ -42,7 +41,10 @@ let
       printf "{\"text\": \"󰘚 %.2f%%\", \"tooltip\": \"%s\"}\n", pct["cpu"], tooltip
       exit
     }
-    '''
+  '';
+
+  cpuScript = pkgs.writeShellScript "waybar-cpu" ''
+    awk -f ${cpuAwk}
   '';
 
   memScript = pkgs.writeShellScript "waybar-mem" ''
