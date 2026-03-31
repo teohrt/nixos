@@ -54,7 +54,7 @@ let
       END {
         used = total - avail
         pct  = used / total * 100
-        printf "{\"text\": \"<span size='large'>󰻠</span> %.2f%%\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
+        printf "{\"text\": \"<span size=\\\"large\\\">󰻠</span> %.2f%%\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
           pct, pct, used/1024/1024, total/1024/1024, avail/1024/1024
       }
     ' /proc/meminfo
