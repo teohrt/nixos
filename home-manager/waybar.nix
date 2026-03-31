@@ -10,16 +10,39 @@ let
   '';
 
   cpuScript = pkgs.writeShellScript "waybar-cpu" ''
-    t1=$(awk '/^cpu /{printf "%d %d", $2+$3+$4+$5+$6+$7+$8, $5; exit}' /proc/stat)
-    sleep 1
-    t2=$(awk '/^cpu /{printf "%d %d", $2+$3+$4+$5+$6+$7+$8, $5; exit}' /proc/stat)
-    lavg=$(awk '{print $1; exit}' /proc/loadavg)
-    printf '%s %s\n' "$t1" "$t2" | awk -v lavg="$lavg" '{
-      dtotal = $3 - $1
-      didle  = $4 - $2
-      usage  = dtotal > 0 ? (dtotal - didle) / dtotal * 100 : 0
-      printf "{\"text\": \"󰘚 %.2f%%\", \"tooltip\": \"CPU\\n%.2f%%  Load: %s\"}\n", usage, usage, lavg
-    }'
+    awk '''
+    BEGIN {
+      while ((getline line < "/proc/stat") > 0) {
+        if (line ~ /^cpu/) {
+          split(line, a, " ")
+          nm = a[1]
+          tot1[nm] = a[2]+a[3]+a[4]+a[5]+a[6]+a[7]+a[8]
+          idl1[nm] = a[5]
+          order[++nc] = nm
+        }
+      }
+      close("/proc/stat")
+      system("sleep 1")
+      while ((getline line < "/proc/stat") > 0) {
+        if (line ~ /^cpu/) {
+          split(line, a, " ")
+          nm = a[1]
+          tot2 = a[2]+a[3]+a[4]+a[5]+a[6]+a[7]+a[8]
+          idl2 = a[5]
+          dt = tot2 - tot1[nm]
+          di = idl2 - idl1[nm]
+          pct[nm] = dt > 0 ? (dt - di) / dt * 100 : 0
+        }
+      }
+      getline lavg < "/proc/loadavg"
+      split(lavg, la, " ")
+      tooltip = sprintf("CPU\\n%.2f%%  Load: %s", pct["cpu"], la[1])
+      for (i = 2; i <= nc; i++)
+        tooltip = tooltip sprintf("\\n%s: %.2f%%", order[i], pct[order[i]])
+      printf "{\"text\": \"󰘚 %.2f%%\", \"tooltip\": \"%s\"}\n", pct["cpu"], tooltip
+      exit
+    }
+    '''
   '';
 
   memScript = pkgs.writeShellScript "waybar-mem" ''
