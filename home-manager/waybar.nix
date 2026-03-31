@@ -159,9 +159,9 @@ in
         format-connected = "󰂱 {device_alias}";
         format-connected-battery = "󰂱 {device_alias} {device_battery_percentage}%";
         format-disabled = "󰂲";
-        tooltip-format = "{controller_alias}\n{num_connections} connected";
-        tooltip-format-connected = "{controller_alias}\n{num_connections} connected\n{device_enumerate}";
-        tooltip-format-enumerate-connected = "  {device_alias}";
+        tooltip-format-connected = "{device_enumerate}";
+        tooltip-format-enumerate-connected = "{device_alias}";
+        tooltip-format-enumerate-connected-battery = "{device_alias} {device_battery_percentage}%";
         on-click = "${mkToggle "bluetooth" "rfkill unblock bluetooth && alacritty --title bluetooth -e bluetui"}";
       };
 
