@@ -108,7 +108,7 @@ in
 
       modules-left = [ "custom/launcher" "custom/weather" "hyprland/workspaces" ];
       modules-center = [ "clock" ];
-      modules-right = [ "custom/cpu" "custom/mem" "network" "bluetooth" "pulseaudio" "battery" "custom/power" ];
+      modules-right = [ "custom/cpu" "custom/mem" "bluetooth" "network" "pulseaudio" "battery" "custom/power" ];
 
       "custom/launcher" = {
         format = "󱄅";
