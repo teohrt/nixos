@@ -211,8 +211,6 @@ in
       }
 
       #custom-launcher {
-        background: rgba(10, 10, 15, 0.85);
-        border-radius: 12px;
         padding: 0 16px 0 12px;
         font-size: 16px;
       }
@@ -227,7 +225,8 @@ in
       #custom-mem:hover,
       #custom-weather:hover,
       #custom-power:hover {
-        background: rgba(126, 186, 228, 0.15);
+        background: rgba(10, 10, 15, 0.85);
+        border-radius: 12px;
       }
 
       #workspaces {
@@ -258,14 +257,10 @@ in
 
       #clock,
       #battery {
-        background: rgba(10, 10, 15, 0.85);
-        border-radius: 12px;
         padding: 0 13px 0 15px;
       }
 
       #network {
-        background: rgba(10, 10, 15, 0.85);
-        border-radius: 12px;
         padding: 0 16px 0 12px;
       }
 
@@ -275,14 +270,10 @@ in
       #custom-cpu,
       #custom-mem,
       #custom-weather {
-        background: rgba(10, 10, 15, 0.85);
-        border-radius: 12px;
         padding: 0 14px;
       }
 
       #custom-power {
-        background: rgba(10, 10, 15, 0.85);
-        border-radius: 12px;
         padding: 0 16px 0 12px;
       }
 
