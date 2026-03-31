@@ -106,8 +106,8 @@ in
       margin-right = 4;
       spacing = 8;
 
-      modules-left = [ "custom/launcher" "custom/weather" "hyprland/workspaces" ];
-      modules-center = [ "battery" "clock" ];
+      modules-left = [ "custom/launcher" "hyprland/workspaces" ];
+      modules-center = [ "battery" "clock" "custom/weather" ];
       modules-right = [ "custom/cpu" "custom/mem" "bluetooth" "network" "pulseaudio" "custom/power" ];
 
       "custom/launcher" = {
@@ -177,6 +177,7 @@ in
         on-click = "power-menu";
         tooltip = false;
       };
+
 
       "custom/weather" = {
         exec = "${weatherScript}";
@@ -296,6 +297,7 @@ in
       #pulseaudio.muted {
         color: rgba(255, 255, 255, 0.3);
       }
+
     '';
   };
 }
