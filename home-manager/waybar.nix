@@ -1,6 +1,14 @@
 { pkgs, ... }:
 
 let
+  mkToggle = title: openCmd: pkgs.writeShellScript "toggle-${title}" ''
+    if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.title == "${title}")' > /dev/null 2>&1; then
+      hyprctl dispatch closewindow "title:^(${title})$"
+    else
+      ${openCmd}
+    fi
+  '';
+
   weatherScript = pkgs.writeShellScript "waybar-weather" ''
     WEATHER=$(${pkgs.curl}/bin/curl -sf "https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph")
     if [ -z "$WEATHER" ]; then
@@ -91,7 +99,7 @@ in
         format-disconnected = "󰤭";
         tooltip-format-wifi = "{essid}  {signalStrength}%\n↑ {bandwidthUpBits}  ↓ {bandwidthDownBits}";
         tooltip-format-disconnected = "disconnected";
-        on-click = "rfkill unblock wifi && alacritty --title wifi -e impala";
+        on-click = "${mkToggle "wifi" "rfkill unblock wifi && alacritty --title wifi -e impala"}";
       };
 
       bluetooth = {
@@ -101,14 +109,14 @@ in
         tooltip-format = "{controller_alias}\n{num_connections} connected";
         tooltip-format-connected = "{controller_alias}\n{num_connections} connected\n{device_enumerate}";
         tooltip-format-enumerate-connected = "  {device_alias}";
-        on-click = "rfkill unblock bluetooth && alacritty --title bluetooth -e bluetui";
+        on-click = "${mkToggle "bluetooth" "rfkill unblock bluetooth && alacritty --title bluetooth -e bluetui"}";
       };
 
       pulseaudio = {
         format = "󰕾";
         format-muted = "󰝟";
         tooltip-format = "{volume}%: {desc}";
-        on-click = "alacritty --title audio -e wiremix";
+        on-click = "${mkToggle "audio" "alacritty --title audio -e wiremix"}";
       };
 
       "custom/power" = {
