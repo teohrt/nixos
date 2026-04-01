@@ -60,7 +60,7 @@ in
     }
 
     #search {
-      background: #${config.lib.stylix.colors.base01}E6;
+      background: #${config.lib.stylix.colors.base01}${alphaHex};
       border-radius: 8px;
       padding: 10px 14px;
       margin-bottom: 8px;
@@ -76,7 +76,7 @@ in
 
     child:selected,
     child:hover {
-      background: #${config.lib.stylix.colors.base01}E6;
+      background: #${config.lib.stylix.colors.base01}${alphaHex};
       border-radius: 6px;
     }
 
