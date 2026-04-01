@@ -38,11 +38,11 @@ let
       tooltip = sprintf("CPU\\n%.2f%%  Load: %s", pct["cpu"], la[1])
       for (i = 2; i <= nc; i++)
         tooltip = tooltip sprintf("\\n%s: %.2f%%", order[i], pct[order[i]])
-      num = sprintf("%.2f%%", pct["cpu"])
-      pad = 7 - length(num)
+      num = sprintf(" %.2f%%", pct["cpu"])
+      pad = 8 - length(num)
       spaces = ""
       for (i = 0; i < pad; i++) spaces = spaces " "
-      printf "{\"text\": \"%s<span size='large'>󰘚</span> %s\", \"tooltip\": \"%s\"}\n", spaces, num, tooltip
+      printf "{\"text\": \"%s<span size='large'>󰘚</span>%s\", \"tooltip\": \"%s\"}\n", spaces, num, tooltip
       exit
     }
   '';
@@ -58,10 +58,10 @@ let
       END {
         used = total - avail
         pct  = used / total * 100
-        num = sprintf("%.2f%%", pct)
-        pad = 7 - length(num); spaces = ""
+        num = sprintf(" %.2f%%", pct)
+        pad = 8 - length(num); spaces = ""
         for (i = 0; i < pad; i++) spaces = spaces " "
-        printf "{\"text\": \"%s<span size=\\\"large\\\">󰻠</span> %s\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
+        printf "{\"text\": \"%s<span size=\\\"large\\\">󰻠</span>%s\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
           spaces, num, pct, used/1024/1024, total/1024/1024, avail/1024/1024
       }
     ' /proc/meminfo
