@@ -206,8 +206,9 @@ in
       };
 
       battery = {
-        format = "<span size=\"large\" color=\"#ffffff99\">󰚥</span> <span color=\"#ffffff99\">{capacity}%</span>";
-        format-charging = "<span size=\"large\" color=\"#ffffff99\">󱐋</span> <span color=\"#ffffff99\">{capacity}%</span>";
+        format = "<span size=\"large\" color=\"#ffffff99\">{icon}</span> <span color=\"#ffffff99\">{capacity}%</span>";
+        format-charging = "<span size=\"large\" color=\"#ffffff99\">󰂄</span> <span color=\"#ffffff99\">{capacity}%</span>";
+        format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         interval = 2;
       };
 
