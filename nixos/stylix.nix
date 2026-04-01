@@ -16,7 +16,7 @@ in {
 
     opacity = {
       terminal     = 0.6;
-      applications = 0.8;
+      applications = 0.6;
       popups       = 0.7;
       desktop      = 1.0;
     };
