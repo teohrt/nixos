@@ -93,7 +93,6 @@
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
         "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
-        "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(Spotify)$"
 "float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"
         "center, title:^(wifi)$"
