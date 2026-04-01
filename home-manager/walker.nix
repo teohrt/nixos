@@ -76,6 +76,7 @@
 
     #label {
       font-weight: 500;
+      color: #${config.lib.stylix.colors.base05};
     }
 
     #sub {
