@@ -84,6 +84,7 @@ let
     fi
 
     # impala formula: >= -50 dBm = 100%, else 2 * (100 + RSSI)
+    # https://github.com/pythops/impala/blob/1f0f04f45c9722e7f4d2922f98dadaa0e7c92255/src/mode/station.rs#L494-L498
     PCT=$(awk -v r="$RSSI" 'BEGIN {
       p = (r >= -50) ? 100 : 2 * (100 + r)
       if (p < 0) p = 0
