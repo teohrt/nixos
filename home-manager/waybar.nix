@@ -151,7 +151,7 @@ let
       *)                     ICON="!" DESC="Unknown" ;;
     esac
 
-    TEXT="$ICON ''${TEMP}°F"
+    TEXT="$ICON <span color='#8c8c8c'>''${TEMP}°F</span>"
     TOOLTIP="$DESC\nFeels like: ''${FEELS}°F\nHumidity: ''${HUMIDITY}%\nWind: ''${WIND} mph"
 
     echo "{\"text\": \"$TEXT\", \"tooltip\": \"$TOOLTIP\"}"
@@ -192,8 +192,8 @@ in
       };
 
       battery = {
-        format = "<span size=\"large\">󰚥</span> {capacity}%";
-        format-charging = "<span size=\"large\">󱐋</span> {capacity}%";
+        format = "<span size=\"large\">󰚥</span> <span color=\"#8c8c8c\">{capacity}%</span>";
+        format-charging = "<span size=\"large\">󱐋</span> <span color=\"#8c8c8c\">{capacity}%</span>";
         interval = 2;
       };
 
