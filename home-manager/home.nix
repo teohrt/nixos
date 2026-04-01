@@ -37,6 +37,7 @@ in
     ./hyprlock.nix
     ./hypridle.nix
     ./vscode.nix
+    ./obsidian.nix
   ];
 
   home.packages = [ powerMenu ];
