@@ -102,14 +102,14 @@ let
     TX_BITS=$(( (TX2 - TX1) * 8 ))
 
     fmt_bits() {
-      awk -v b="$1" 'BEGIN {
-        if (b >= 1000000) printf "%5.1f Mb/s", b/1000000
-        else              printf "%5.0f Kb/s", b/1000
+      awk -v b="$1" -v dir="$2" 'BEGIN {
+        if (b >= 1000000) printf "%s%4.1f Mb/s", dir, b/1000000
+        else              printf "%s%4.0f Kb/s", dir, b/1000
       }'
     }
 
-    TX_FMT=$(fmt_bits "$TX_BITS")
-    RX_FMT=$(fmt_bits "$RX_BITS")
+    TX_FMT=$(fmt_bits "$TX_BITS" "↑")
+    RX_FMT=$(fmt_bits "$RX_BITS" "↓")
 
     if   [ "$PCT" -ge 75 ]; then ICON="󰤨"
     elif [ "$PCT" -ge 50 ]; then ICON="󰤥"
@@ -117,7 +117,7 @@ let
     else                         ICON="󰤟"
     fi
 
-    TEXT="<span size='large'>$ICON</span> ''${PCT}% <span color='#ffffff99' size='xx-large'>↑</span><span color='#ffffff99'>''${TX_FMT}</span> <span color='#ffffff99' size='xx-large'>↓</span><span color='#ffffff99'>''${RX_FMT}</span>"
+    TEXT="<span size='large'>$ICON</span> ''${PCT}% <span color='#ffffff99'>''${TX_FMT}</span> <span color='#ffffff99'>''${RX_FMT}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
