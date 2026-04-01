@@ -300,7 +300,7 @@ in
 
       #custom-launcher {
         padding: 2px 16px;
-        font-size: 16px;
+        font-size: 22px;
       }
 
       #custom-launcher:hover,
