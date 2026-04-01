@@ -38,6 +38,7 @@ in
     ./hypridle.nix
     ./vscode.nix
     ./obsidian.nix
+    ./spicetify.nix
   ];
 
   home.packages = [ powerMenu ];

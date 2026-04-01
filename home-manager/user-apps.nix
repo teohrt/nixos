@@ -23,7 +23,6 @@
     vlc        # video player
     slack
     zoom-us
-    spotify
 
     # wayland / hyprland ecosystem
     pkgs-walker.walker          # app launcher / dmenu replacement
