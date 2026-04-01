@@ -12,6 +12,7 @@ in
     force_keyboard_focus = true
     selection_wrap = true
     theme = "stylix-nixos"
+    additional_theme_location = "~/.config/walker/themes/"
     hide_action_hints = true
 
     [placeholders]
@@ -47,7 +48,7 @@ in
     }
 
     #window {
-      color: #ff0000;
+      color: #${config.lib.stylix.colors.base05};
       font-family: "${config.stylix.fonts.monospace.name}", monospace;
       font-size: ${toString config.stylix.fonts.sizes.applications}px;
     }
