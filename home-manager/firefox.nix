@@ -6,6 +6,7 @@
     profiles.default = {
       settings = {
         "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+        "ui.systemUsesDarkColors" = 1;
       };
     };
   };
