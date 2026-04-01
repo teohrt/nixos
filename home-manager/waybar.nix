@@ -103,9 +103,8 @@ let
 
     fmt_bits() {
       awk -v b="$1" 'BEGIN {
-        if (b >= 1000000) printf "%.1f Mb/s", b/1000000
-        else if (b >= 1000) printf "%.0f Kb/s", b/1000
-        else printf "%d b/s", b
+        if (b >= 1000000) printf "%5.1f Mb/s", b/1000000
+        else              printf "%5.0f Kb/s", b/1000
       }'
     }
 
