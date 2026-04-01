@@ -103,8 +103,12 @@ let
 
     fmt_bits() {
       awk -v b="$1" -v dir="$2" 'BEGIN {
-        if (b >= 1000000) printf "%s%4.1f Mb/s", dir, b/1000000
-        else              printf "%s%4.0f Kb/s", dir, b/1000
+        if (b >= 1000000) { num = sprintf("%.1f", b/1000000); unit = "Mb/s" }
+        else              { num = sprintf("%.0f", b/1000);    unit = "Kb/s" }
+        pad = 4 - length(num)
+        spaces = ""
+        for (i = 0; i < pad; i++) spaces = spaces " "
+        printf "%s%s%s %s", spaces, dir, num, unit
       }'
     }
 
