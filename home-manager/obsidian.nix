@@ -96,6 +96,10 @@ in
         [[ -d $vault/.obsidian ]] || continue
         theme_dir="$vault/.obsidian/themes/Stylix"
         $DRY_RUN_CMD mkdir -p "$theme_dir"
+        # install -m 644 rather than cp: files from the nix store are read-only,
+        # so a plain cp would produce read-only destinations that can't be
+        # overwritten on the next activation. install always writes the target
+        # with the specified permissions regardless of the source.
         $DRY_RUN_CMD install -m 644 ${themeCssFile} "$theme_dir/theme.css"
         $DRY_RUN_CMD install -m 644 ${manifestFile} "$theme_dir/manifest.json"
       done
