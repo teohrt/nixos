@@ -42,7 +42,7 @@ let
       pad = 7 - length(num)
       spaces = ""
       for (i = 0; i < pad; i++) spaces = spaces " "
-      printf "{\"text\": \"%s<span size='large'>󰘚</span>%s\", \"tooltip\": \"%s\"}\n", spaces, num, tooltip
+      printf "{\"text\": \" %s<span size='large'>󰘚</span>%s\", \"tooltip\": \"%s\"}\n", spaces, num, tooltip
       exit
     }
   '';
@@ -61,7 +61,7 @@ let
         num = sprintf("%.2f%%", pct)
         pad = 7 - length(num); spaces = ""
         for (i = 0; i < pad; i++) spaces = spaces " "
-        printf "{\"text\": \"%s<span size=\\\"large\\\">󰻠</span>%s\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
+        printf "{\"text\": \" %s<span size=\\\"large\\\">󰻠</span>%s\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
           spaces, num, pct, used/1024/1024, total/1024/1024, avail/1024/1024
       }
     ' /proc/meminfo
