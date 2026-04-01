@@ -118,8 +118,8 @@ let
     else                         ICON="󰤟"
     fi
 
-    TEXT="<span size='large'>$ICON</span> ''${PCT}% <span color='#ffffff' size='xx-large'>↑</span><span color='#8c8c8c'>''${TX_FMT}</span> <span color='#ffffff' size='xx-large'>↓</span><span color='#8c8c8c'>''${RX_FMT}</span>"
-    TOOLTIP="''${SSID}\n''${RSSI}"
+    TEXT="<span size='large'>$ICON</span> ''${PCT}% <span color='#8c8c8c' size='xx-large'>↑</span><span color='#8c8c8c'>''${TX_FMT}</span> <span color='#8c8c8c' size='xx-large'>↓</span><span color='#8c8c8c'>''${RX_FMT}</span>"
+    TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
   '';
@@ -172,7 +172,7 @@ in
 
       modules-left = [ "custom/launcher" "hyprland/workspaces" ];
       modules-center = [ "battery" "clock" "custom/weather" ];
-      modules-right = [ "custom/cpu" "custom/mem" "bluetooth" "custom/wifi" "pulseaudio" "custom/power" ];
+      modules-right = [ "custom/cpu" "custom/mem" "custom/wifi" "bluetooth" "pulseaudio" "custom/power" ];
 
       "custom/launcher" = {
         format = "󱄅";
