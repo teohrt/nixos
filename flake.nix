@@ -12,9 +12,17 @@
       # to avoid problems caused by different versions of nixpkgs.
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    stylix = {
+      url = "github:danth/stylix/release-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    spicetify-nix = {
+      url = "github:Gerg-L/spicetify-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, stylix, spicetify-nix, ... }:
   let
     system = "x86_64-linux";
     pkgs-walker = nixpkgs-walker.legacyPackages.${system};
@@ -26,6 +34,7 @@
         specialArgs = { inherit pkgs-walker; };
         modules = [
           ./nixos/configuration.nix
+          stylix.nixosModules.stylix
 
           home-manager.nixosModules.home-manager
           {
@@ -33,7 +42,7 @@
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "nixos-hm-backup";
 
-            home-manager.extraSpecialArgs = { inherit pkgs-walker; };
+            home-manager.extraSpecialArgs = { inherit pkgs-walker spicetify-nix; };
             home-manager.users.trace = import ./home-manager/home.nix;
           }
         ];

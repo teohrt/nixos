@@ -10,11 +10,9 @@
     which
     tree
     gawk
-    btop
 
     # apps
     google-chrome
-    firefox
     _1password-gui
     obsidian
     localsend
@@ -24,7 +22,8 @@
     vlc        # video player
     slack
     zoom-us
-    spotify
+
+    mpvpaper                # animated wallpaper via mpv (supports MP4/GIF)
 
     # wayland / hyprland ecosystem
     pkgs-walker.walker          # app launcher / dmenu replacement

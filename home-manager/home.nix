@@ -17,33 +17,29 @@ in
   home.username = "trace";
   home.homeDirectory = "/home/trace";
 
-  gtk = {
-    enable = true;
-    theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
-    };
-    gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
-    gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
-  };
 
-  home.pointerCursor = {
-    gtk.enable = true;
-    package = pkgs.adwaita-icon-theme;
-    name = "Adwaita";
-    size = 24;
+  programs.btop.enable = true;
+
+  dconf.settings = {
+    "org/gnome/nautilus/preferences" = {
+      default-folder-viewer = "list-view";
+    };
   };
 
   imports = [
     ./user-apps.nix
-    ./git.nix
-    ./hyprland.nix
-    ./waybar.nix
-    ./hyprpaper.nix
-    ./alacritty.nix
-    ./walker.nix
-    ./hyprlock.nix
-    ./hypridle.nix
+    ./desktop/hyprland.nix
+    ./desktop/waybar.nix
+    ./desktop/walker.nix
+    ./desktop/wallpaper.nix
+    ./desktop/hyprlock.nix
+    ./desktop/hypridle.nix
+    ./apps/git.nix
+    ./apps/alacritty.nix
+    ./apps/firefox.nix
+    ./apps/vscode.nix
+    ./apps/obsidian.nix
+    ./apps/spicetify.nix
   ];
 
   home.packages = [ powerMenu ];
