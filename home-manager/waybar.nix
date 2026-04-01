@@ -346,7 +346,7 @@ in
       }
 
       #custom-power {
-        padding: 2px 8px 2px 16px;
+        padding: 2px 16px 2px 16px;
       }
 
       tooltip {
