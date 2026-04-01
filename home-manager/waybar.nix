@@ -128,9 +128,11 @@ let
     else                         ICON="󰤟"
     fi
 
-    PCT_STR="''${PCT}%"
-    PCT_PAD=$(printf '%*s' $(( 4 - ''${#PCT_STR} )) '')
-    TEXT="''${PCT_PAD}<span size='large'>$ICON</span> ''${PCT_STR} <span color='#ffffff99'>''${TX_FMT}</span> <span color='#ffffff99'>''${RX_FMT}</span>"
+    if   [ "''${PCT}" -lt 10  ]; then PCT_PAD="  "
+    elif [ "''${PCT}" -lt 100 ]; then PCT_PAD=" "
+    else                               PCT_PAD=""
+    fi
+    TEXT="''${PCT_PAD}<span size='large'>$ICON</span> ''${PCT}% <span color='#ffffff99'>''${TX_FMT}</span> <span color='#ffffff99'>''${RX_FMT}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
