@@ -13,7 +13,6 @@
       "$mod" = "SUPER";
 
       exec-once = [
-        "mpvpaper -o 'loop' '*' ${../../assets/animated_nord_black_hole.mp4}" # animated wallpaper
         "swayosd-server"                                   # OSD server for volume/brightness popups
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" # auth agent for privilege escalation prompts
         "${pkgs.mako}/bin/mako"                            # notification daemon

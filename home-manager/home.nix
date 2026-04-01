@@ -31,7 +31,7 @@ in
     ./desktop/hyprland.nix
     ./desktop/waybar.nix
     ./desktop/walker.nix
-    ./desktop/hyprpaper.nix
+    ./desktop/wallpaper.nix
     ./desktop/hyprlock.nix
     ./desktop/hypridle.nix
     ./apps/git.nix
