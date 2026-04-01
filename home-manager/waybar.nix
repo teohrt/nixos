@@ -268,7 +268,7 @@ in
     style = ''
       * {
         font-family: "JetBrains Mono", monospace;
-        font-size: 22px;
+        font-size: 12px;
         border: none;
         border-radius: 0;
         min-height: 0;
@@ -300,6 +300,7 @@ in
 
       #custom-launcher {
         padding: 2px 16px;
+        font-size: 22px;
       }
 
       #custom-launcher:hover,
