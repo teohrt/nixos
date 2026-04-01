@@ -2,11 +2,11 @@
 
 {
   specialisation = {
-    everforest.configuration = {
+    gruvbox.configuration = {
       # mkForce overrides the base values set in stylix.nix.
       # Explicit base16Scheme is set so the palette is predictable and visually distinct
       # from Nord regardless of what the image auto-generates.
-      stylix.image = lib.mkForce ../assets/everforest/mist_forest.png;
+      stylix.image = lib.mkForce ../assets/gruvbox/mist_forest.png;
       stylix.base16Scheme = lib.mkForce "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
     };
   };
@@ -23,7 +23,7 @@
         options = [ "NOPASSWD" ];
       }
       {
-        command = "/run/current-system/specialisation/everforest/bin/switch-to-configuration switch";
+        command = "/run/current-system/specialisation/gruvbox/bin/switch-to-configuration switch";
         options = [ "NOPASSWD" ];
       }
     ];

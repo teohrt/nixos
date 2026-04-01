@@ -17,10 +17,11 @@ let
       ];
     }
     {
-      name = "Everforest";
-      specialisation = "everforest";
+      name = "Gruvbox";
+      specialisation = "gruvbox";
       wallpapers = [
-        { name = "Mist Forest"; path = ../../assets/everforest/mist_forest.png; animated = false; }
+        { name = "Mist Forest"; path = ../../assets/gruvbox/mist_forest.png; animated = false; }
+        { name = "Leaves";      path = ../../assets/gruvbox/leaves.mp4;       animated = true;  }
       ];
     }
   ];
