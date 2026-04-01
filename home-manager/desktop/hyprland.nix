@@ -112,7 +112,7 @@
         "$mod SHIFT, F,      exec, nautilus --new-window"  # file browser
         "$mod, W,            killactive"
         "$mod, ESC,          exit"
-        "$mod, V,            togglefloating"
+        "$mod SHIFT, V,      togglefloating"
         "$mod, SPACE,        exec, $menu"
         "$mod, J,            togglesplit"
 
