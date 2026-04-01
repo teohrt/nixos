@@ -23,6 +23,8 @@
     slack
     zoom-us
 
+    mpvpaper                # animated wallpaper via mpv (supports MP4/GIF)
+
     # wayland / hyprland ecosystem
     pkgs-walker.walker          # app launcher / dmenu replacement
     pkgs-walker.elephant        # data provider service that indexes apps for walker
