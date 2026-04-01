@@ -40,6 +40,7 @@
         gaps_out = 10; # gap between windows and screen edge
         border_size = 1;
         "col.active_border" = "rgba(ffffff66)";
+        "col.inactive_border" = "rgba(00000000)";
         layout = "dwindle"; # binary space partitioning layout
       };
 
@@ -59,8 +60,11 @@
         rounding = 10; # rounded corners radius (px)
         blur = {
           enabled = true;
-          size = 3;
-          passes = 1;
+          size = 4;
+          passes = 3;
+          vibrancy = 0.2;
+          contrast = 1.1;
+          noise = 0.02;
         };
       };
 
@@ -81,10 +85,14 @@
         force_zero_scaling = true;
       };
 
+      layerrule = [
+        "blur, waybar"
+        "ignorezero, waybar"
+      ];
+
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
-        "bordersize 0, focus:0" # no border on unfocused windows
-        "float, title:^(wifi)$"
+"float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"
         "center, title:^(wifi)$"
         "float, title:^(bluetooth)$"
@@ -101,7 +109,7 @@
         "$mod, Escape,       exec, power-menu"
         "$mod SHIFT, Return, exec, google-chrome-stable"
         "$mod, F,            fullscreen"
-        "$mod SHIFT, F,      exec, thunar"          # file browser
+        "$mod SHIFT, F,      exec, nautilus --new-window"  # file browser
         "$mod, W,            killactive"
         "$mod, ESC,          exit"
         "$mod, V,            togglefloating"

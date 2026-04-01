@@ -2,6 +2,7 @@
 { pkgs, pkgs-walker, ... }: {
   home.packages = with pkgs; [
     # cli utilities
+    claude-code
     lazydocker
     ripgrep
     jq
@@ -13,6 +14,10 @@
 
     # apps
     google-chrome
+    firefox
+    _1password-gui
+    obsidian
+    localsend
     imv                    # image viewer
     system-config-printer  # printer management GUI
     evince     # PDF viewer
@@ -33,9 +38,10 @@
     brightnessctl               # brightness control (requires video group)
     wl-clipboard                # clipboard utilities (wl-copy / wl-paste)
     wl-clip-persist             # keeps clipboard alive after source process exits
-    xfce.thunar                 # file manager
-    xfce.thunar-volman          # auto-mount removable drives
-    xfce.thunar-archive-plugin  # right-click archive support
+    nautilus                    # file manager
+    nautilus-python             # enables right-click extensions (e.g. open in terminal)
+    file-roller                 # right-click archive extract/compress
+    ffmpegthumbnailer           # video thumbnails in nautilus
     gvfs                        # trash, MTP devices, network shares
 
     # fonts
