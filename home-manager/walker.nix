@@ -3,7 +3,7 @@
   xdg.configFile."walker/config.toml".text = ''
     force_keyboard_focus = true
     selection_wrap = true
-    theme = "default"
+    theme = "stylix"
     hide_action_hints = true
 
     [placeholders]
@@ -17,7 +17,7 @@
     default = ["desktopapplications"]
   '';
 
-  xdg.configFile."walker/themes/default.css".text = ''
+  xdg.configFile."walker/themes/stylix.css".text = ''
     #window,
     #box,
     #search,
@@ -93,7 +93,7 @@
     }
   '';
 
-  xdg.configFile."walker/themes/default.toml".text = ''
+  xdg.configFile."walker/themes/stylix.toml".text = ''
     [ui.anchors]
     bottom = true
     left = true
