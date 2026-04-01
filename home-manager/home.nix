@@ -37,6 +37,7 @@ in
     ./hyprlock.nix
     ./hypridle.nix
     ./vscode.nix
+    ./firefox.nix
     ./obsidian.nix
     ./spicetify.nix
   ];

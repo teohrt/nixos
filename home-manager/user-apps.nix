@@ -13,7 +13,6 @@
 
     # apps
     google-chrome
-    firefox
     _1password-gui
     obsidian
     localsend
