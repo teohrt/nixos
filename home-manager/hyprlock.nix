@@ -9,16 +9,6 @@
         grace = 0;
       };
 
-      background = [
-        {
-          monitor = "";
-          path = "${../assets/wallpaper.png}";
-          blur_passes = 3;
-          blur_size = 8;
-          brightness = 0.5;
-        }
-      ];
-
       input-field = [
         {
           monitor = "";
