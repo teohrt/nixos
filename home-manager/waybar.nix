@@ -206,9 +206,10 @@ in
       };
 
       battery = {
-        format = "<span size=\"large\" color=\"#ffffff99\">{icon}</span> <span color=\"#ffffff99\">{capacity}%</span>";
-        format-charging = "<span size=\"large\" color=\"#ffffff99\">󰂄</span> <span color=\"#ffffff99\">{capacity}%</span>";
+        format = "<span size=\"large\">{icon}</span> <span color=\"#ffffff99\">{capacity}%</span>";
+        format-charging = "<span size=\"large\">󰂄</span> <span color=\"#ffffff99\">{capacity}%</span>";
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
+        states = { critical = 20; low = 40; medium = 70; high = 100; };
         interval = 2;
       };
 
@@ -375,6 +376,11 @@ in
         color: #ffffff;
         padding: 4px 8px;
       }
+
+      #battery.critical { color: #ff4444; }
+      #battery.low      { color: #ffaa44; }
+      #battery.medium   { color: #ffdd44; }
+      #battery.high     { color: #ffffff; }
 
       #pulseaudio.muted {
         color: rgba(255, 255, 255, 0.3);
