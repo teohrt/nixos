@@ -42,7 +42,9 @@ let
   # including re-running home-manager activation to update all app configs on disk.
   switchCmd = w:
     if w.specialisation == null
-    then "sudo /run/current-system/bin/switch-to-configuration switch"
+    # /nix/var/nix/profiles/system is the base system, stable even when a specialisation
+    # is active and /run/current-system points to the specialisation's store path.
+    then "sudo /nix/var/nix/profiles/system/bin/switch-to-configuration switch"
     else "sudo /run/current-system/specialisation/${w.specialisation}/bin/switch-to-configuration switch";
 
   # Walker dmenu picker — presents all wallpapers and switches to the chosen one.

@@ -17,7 +17,9 @@
     users = [ "trace" ];
     commands = [
       {
-        command = "/run/current-system/bin/switch-to-configuration switch";
+        # /nix/var/nix/profiles/system always points to the base system (no specialisation),
+        # even when a specialisation is currently active and /run/current-system points elsewhere.
+        command = "/nix/var/nix/profiles/system/bin/switch-to-configuration switch";
         options = [ "NOPASSWD" ];
       }
       {
