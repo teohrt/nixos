@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 {
   xdg.configFile."walker/config.toml".text = ''
     force_keyboard_focus = true
@@ -15,6 +15,81 @@
     [providers]
     max_results = 256
     default = ["desktopapplications"]
+  '';
+
+  xdg.configFile."walker/themes/default.css".text = ''
+    #window,
+    #box,
+    #search,
+    #input,
+    #prompt,
+    #clear,
+    #typeahead,
+    #list,
+    child,
+    scrollbar,
+    slider,
+    #item,
+    #text,
+    #label,
+    #bar,
+    #sub,
+    #activationlabel {
+      all: unset;
+    }
+
+    #window {
+      color: @window_fg_color;
+      font-family: "${config.stylix.fonts.monospace.name}", monospace;
+      font-size: ${toString config.stylix.fonts.sizes.applications}px;
+    }
+
+    #box {
+      background: @window_bg_color;
+      padding: 20px;
+      border: 1px solid @borders;
+    }
+
+    #search {
+      background: @view_bg_color;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+
+    #input placeholder {
+      opacity: 0.5;
+    }
+
+    child {
+      padding: 4px 8px;
+    }
+
+    child:selected,
+    child:hover {
+      background: @view_bg_color;
+    }
+
+    child:selected #label,
+    child:hover #label {
+      color: @accent_color;
+    }
+
+    #label {
+      font-weight: 500;
+    }
+
+    #sub {
+      font-size: 0px;
+    }
+
+    #icon {
+      margin-right: 8px;
+    }
+
+    #activationlabel {
+      opacity: 0;
+      min-width: 0;
+    }
   '';
 
   xdg.configFile."walker/themes/default.toml".text = ''
