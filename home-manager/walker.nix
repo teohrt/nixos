@@ -39,19 +39,19 @@
     }
 
     #window {
-      color: @window_fg_color;
+      color: #${config.lib.stylix.colors.base05};
       font-family: "${config.stylix.fonts.monospace.name}", monospace;
       font-size: ${toString config.stylix.fonts.sizes.applications}px;
     }
 
     #box {
-      background: @window_bg_color;
+      background: #${config.lib.stylix.colors.base00}F2;
       padding: 20px;
-      border: 1px solid @borders;
+      border: 1px solid #${config.lib.stylix.colors.base05}1A;
     }
 
     #search {
-      background: @view_bg_color;
+      background: #${config.lib.stylix.colors.base01}E6;
       padding: 10px;
       margin-bottom: 8px;
     }
@@ -66,12 +66,12 @@
 
     child:selected,
     child:hover {
-      background: @view_bg_color;
+      background: #${config.lib.stylix.colors.base01}E6;
     }
 
     child:selected #label,
     child:hover #label {
-      color: @accent_color;
+      color: #${config.lib.stylix.colors.base0D};
     }
 
     #label {
