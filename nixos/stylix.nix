@@ -6,7 +6,7 @@ in {
     enable = true;
     polarity = "dark";
 
-    image = ../assets/nord_mountain-wallpaper.png;
+    image = ../assets/nord-mountain-wallpaper.png;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
 
     fonts = {
