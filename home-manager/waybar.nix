@@ -323,7 +323,7 @@ in
       }
 
       #custom-wifi {
-        padding: 2px 16px 2px 12px;
+        padding: 2px 8px 2px 6px;
       }
 
       #battery,
@@ -332,11 +332,11 @@ in
       #custom-cpu,
       #custom-mem,
       #custom-weather {
-        padding: 2px 14px;
+        padding: 2px 7px;
       }
 
       #custom-power {
-        padding: 2px 16px 2px 12px;
+        padding: 2px 8px 2px 6px;
       }
 
       tooltip {
