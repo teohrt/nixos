@@ -1,4 +1,4 @@
-{ config, lib, pkgs-walker, osConfig, ... }:
+{ config, lib, osConfig, ... }:
 let
   # Full stylix application opacity as a float string for CSS alpha() calls.
   opacity    = toString osConfig.stylix.opacity.applications;
@@ -230,25 +230,6 @@ in
     </interface>
   '';
 
-  systemd.user.services.walker = {
-    Unit = {
-      Description = "Walker application launcher";
-      After = [ "graphical-session.target" ];
-      PartOf = [ "graphical-session.target" ];
-    };
-    Service = {
-      ExecStartPre = "${lib.getExe pkgs-walker.elephant}";
-      ExecStart = "${pkgs-walker.walker}/bin/walker --gapplication-service";
-      Restart = "on-failure";
-    };
-    Install.WantedBy = [ "graphical-session.target" ];
-  };
 
-  # Restart walker after every home-manager switch so theme changes take effect immediately.
-  home.activation.restartWalker = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    if $DRY_RUN_CMD systemctl --user -q is-active walker.service; then
-      $DRY_RUN_CMD systemctl --user restart walker.service
-    fi
-  '';
 
 }
