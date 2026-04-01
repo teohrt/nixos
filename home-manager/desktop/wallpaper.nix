@@ -41,15 +41,13 @@ let
         if !w.animated then ''
           "${w.label}")
               pkill mpvpaper 2>/dev/null || true
-              if ! pgrep -x hyprpaper > /dev/null; then
-                hyprpaper &
-                sleep 0.5
-              fi
+              systemctl --user start hyprpaper.service
+              sleep 0.5
               hyprctl hyprpaper wallpaper ",${toString w.path}"
               ;;''
         else ''
           "${w.label}")
-              pkill hyprpaper 2>/dev/null || true
+              systemctl --user stop hyprpaper.service
               pkill mpvpaper 2>/dev/null || true
               ${lib.getExe pkgs.mpvpaper} -o 'loop' '*' ${toString w.path} &
               ;;''
