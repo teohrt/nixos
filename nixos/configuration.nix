@@ -102,7 +102,7 @@
   # Enable sound with pipewire.
   security.pam.services.hyprlock = {};
 
-  # Required for Thunar: trash, removable media, MTP, network shares
+  # Required for Nautilus: trash, removable media, MTP, network shares
   services.gvfs.enable = true;
 
   security.rtkit.enable = true;

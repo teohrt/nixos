@@ -109,7 +109,7 @@
         "$mod, Escape,       exec, power-menu"
         "$mod SHIFT, Return, exec, google-chrome-stable"
         "$mod, F,            fullscreen"
-        "$mod SHIFT, F,      exec, thunar"          # file browser
+        "$mod SHIFT, F,      exec, nautilus --new-window"  # file browser
         "$mod, W,            killactive"
         "$mod, ESC,          exit"
         "$mod, V,            togglefloating"
