@@ -1,4 +1,4 @@
-{ config, ... }:
+{ ... }:
 {
   xdg.configFile."walker/config.toml".text = ''
     force_keyboard_focus = true
@@ -57,78 +57,4 @@
     hide = true
   '';
 
-  xdg.configFile."walker/themes/default.css".text = ''
-    #window,
-    #box,
-    #search,
-    #input,
-    #prompt,
-    #clear,
-    #typeahead,
-    #list,
-    child,
-    scrollbar,
-    slider,
-    #item,
-    #text,
-    #label,
-    #bar,
-    #sub,
-    #activationlabel {
-      all: unset;
-    }
-
-    #window {
-      color: #${config.lib.stylix.colors.base05};
-      font-family: "${config.stylix.fonts.monospace.name}", monospace;
-      font-size: ${toString config.stylix.fonts.sizes.applications}px;
-    }
-
-    #box {
-      background: #${config.lib.stylix.colors.base00}F2;
-      padding: 20px;
-      border: 1px solid #${config.lib.stylix.colors.base05}1A;
-    }
-
-    #search {
-      background: #${config.lib.stylix.colors.base01}E6;
-      padding: 10px;
-      margin-bottom: 8px;
-    }
-
-    #input placeholder {
-      opacity: 0.5;
-    }
-
-    child {
-      padding: 4px 8px;
-    }
-
-    child:selected,
-    child:hover {
-      background: #${config.lib.stylix.colors.base01}E6;
-    }
-
-    child:selected #label,
-    child:hover #label {
-      color: #${config.lib.stylix.colors.base0D};
-    }
-
-    #label {
-      font-weight: 500;
-    }
-
-    #sub {
-      font-size: 0px;
-    }
-
-    #icon {
-      margin-right: 8px;
-    }
-
-    #activationlabel {
-      opacity: 0;
-      min-width: 0;
-    }
-  '';
 }
