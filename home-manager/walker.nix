@@ -1,4 +1,4 @@
-{ config, lib, osConfig, ... }:
+{ config, lib, pkgs-walker, osConfig, ... }:
 let
   # Full stylix application opacity — used for interactive surfaces (search bar, hover).
   alpha    = builtins.floor (osConfig.stylix.opacity.applications * 255);
@@ -11,7 +11,7 @@ in
   xdg.configFile."walker/config.toml".text = ''
     force_keyboard_focus = true
     selection_wrap = true
-    theme = "stylix"
+    theme = "stylix-nixos"
     hide_action_hints = true
 
     [placeholders]
@@ -25,7 +25,7 @@ in
     default = ["desktopapplications"]
   '';
 
-  xdg.configFile."walker/themes/stylix.css".text = ''
+  xdg.configFile."walker/themes/stylix-nixos.css".text = ''
     #window,
     #box,
     #search,
@@ -105,7 +105,7 @@ in
     }
   '';
 
-  xdg.configFile."walker/themes/stylix.toml".text = ''
+  xdg.configFile."walker/themes/stylix-nixos.toml".text = ''
     [ui.anchors]
     bottom = true
     left = true
@@ -144,6 +144,28 @@ in
 
     [ui.window.box.search.spinner]
     hide = true
+  '';
+
+  systemd.user.services.walker = {
+    Unit = {
+      Description = "Walker application launcher";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStartPre = "${lib.getExe pkgs-walker.elephant}";
+      ExecStart = "${pkgs-walker.walker}/bin/walker --gapplication-service";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
+  # Restart walker after every home-manager switch so theme/config changes
+  # take effect immediately without requiring a logout.
+  home.activation.restartWalker = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if $DRY_RUN_CMD systemctl --user -q is-active walker.service; then
+      $DRY_RUN_CMD systemctl --user restart walker.service
+    fi
   '';
 
 }
