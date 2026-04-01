@@ -117,7 +117,7 @@ in
             <property name="overflow">hidden</property>
             <property name="orientation">horizontal</property>
             <property name="valign">fill</property>
-            <property name="halign">start</property>
+            <property name="halign">center</property>
             <child>
               <object class="GtkBox" id="Box">
                 <style><class name="box"></class></style>
