@@ -47,7 +47,7 @@ in
     }
 
     #window {
-      color: #${config.lib.stylix.colors.base05};
+      color: #ff0000;
       font-family: "${config.stylix.fonts.monospace.name}", monospace;
       font-size: ${toString config.stylix.fonts.sizes.applications}px;
     }
