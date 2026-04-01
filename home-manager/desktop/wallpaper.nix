@@ -65,6 +65,9 @@ let
               else
                 notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
               fi
+              # GTK4 apps (e.g. Nautilus) load CSS once at startup and don't reload on file
+              # changes — kill them so they pick up the new theme on next open.
+              pkill nautilus 2>/dev/null || true
               pkill mpvpaper 2>/dev/null || true
               systemctl --user start hyprpaper.service
               # Wait for hyprpaper socket to be ready before issuing commands
@@ -80,6 +83,7 @@ let
               else
                 notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
               fi
+              pkill nautilus 2>/dev/null || true
               systemctl --user stop hyprpaper.service
               pkill mpvpaper 2>/dev/null || true
               ${lib.getExe pkgs.mpvpaper} -o 'loop' '*' ${toString w.path} &
