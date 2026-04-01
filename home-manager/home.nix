@@ -28,18 +28,18 @@ in
 
   imports = [
     ./user-apps.nix
-    ./git.nix
-    ./hyprland.nix
-    ./waybar.nix
-    ./hyprpaper.nix
-    ./alacritty.nix
-    ./walker.nix
-    ./hyprlock.nix
-    ./hypridle.nix
-    ./vscode.nix
-    ./firefox.nix
-    ./obsidian.nix
-    ./spicetify.nix
+    ./desktop/hyprland.nix
+    ./desktop/waybar.nix
+    ./desktop/walker.nix
+    ./desktop/hyprpaper.nix
+    ./desktop/hyprlock.nix
+    ./desktop/hypridle.nix
+    ./apps/git.nix
+    ./apps/alacritty.nix
+    ./apps/firefox.nix
+    ./apps/vscode.nix
+    ./apps/obsidian.nix
+    ./apps/spicetify.nix
   ];
 
   home.packages = [ powerMenu ];
