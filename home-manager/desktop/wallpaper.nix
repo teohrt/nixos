@@ -56,6 +56,18 @@ let
     CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.label) allWallpapers)}' \
       | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
 
+    # Restart daemons that load their GTK theme or config once at startup.
+    # Heavy apps (VS Code, Obsidian, Firefox, Spotify) are left for the user to reopen.
+    restart_themed_daemons() {
+      systemctl --user restart waybar.service
+      systemctl --user restart mako.service
+      # Restart walker background service so it picks up the new GTK theme.
+      pkill -f "walker --gapplication-service" 2>/dev/null || true
+      sleep 0.5 && walker --gapplication-service &
+      # GTK4 apps load CSS once — kill so they get the new theme on next open.
+      pkill nautilus 2>/dev/null || true
+    }
+
     case "$CHOICE" in
       ${lib.concatStringsSep "\n      " (map (w:
         if !w.animated then ''
@@ -65,16 +77,13 @@ let
               else
                 notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
               fi
-              # GTK4 apps (e.g. Nautilus) load CSS once at startup and don't reload on file
-              # changes — kill them so they pick up the new theme on next open.
-              pkill nautilus 2>/dev/null || true
               pkill mpvpaper 2>/dev/null || true
               systemctl --user start hyprpaper.service
               # Wait for hyprpaper socket to be ready before issuing commands
               until hyprctl hyprpaper listloaded &>/dev/null; do sleep 0.1; done
               hyprctl hyprpaper preload "${toString w.path}"
               hyprctl hyprpaper wallpaper ",${toString w.path}"
-              systemctl --user restart waybar.service
+              restart_themed_daemons
               ;;''
         else ''
           "${w.label}")
@@ -83,11 +92,10 @@ let
               else
                 notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
               fi
-              pkill nautilus 2>/dev/null || true
               systemctl --user stop hyprpaper.service
               pkill mpvpaper 2>/dev/null || true
               ${lib.getExe pkgs.mpvpaper} -o 'loop' '*' ${toString w.path} &
-              systemctl --user restart waybar.service
+              restart_themed_daemons
               ;;''
       ) allWallpapers)}
     esac
