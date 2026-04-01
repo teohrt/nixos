@@ -311,7 +311,7 @@ in
       #custom-mem:hover,
       #custom-weather:hover,
       #custom-power:hover {
-        background: rgba(10, 10, 15, 0.85);
+        background: rgba(255, 255, 255, 0.08);
         border-radius: 20px;
         margin: 3px 0;
       }
