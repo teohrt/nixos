@@ -4,7 +4,7 @@ let
 in {
   stylix = {
     enable = true;
-    image = ../assets/nord-mountain-wallpaper.png;
+    image = ../assets/everforest_mist_forest.png;
     polarity = "dark";
 
     fonts = {
