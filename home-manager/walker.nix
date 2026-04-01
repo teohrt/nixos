@@ -52,18 +52,17 @@ in
 
     #box {
       background: #${config.lib.stylix.colors.base00}${alphaHex};
-      padding: 20px;
-      border: 1px solid #${config.lib.stylix.colors.base05}1A;
-      border-radius: 12px;
-      min-width: 420px;
-      max-width: 420px;
+      padding: 16px;
+      border-right: 1px solid #${config.lib.stylix.colors.base02}80;
+      min-width: 340px;
+      max-width: 340px;
     }
 
     #search {
       background: #${config.lib.stylix.colors.base01}${alphaHex};
-      border-radius: 8px;
+      border-radius: 6px;
       padding: 10px 14px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     #input placeholder {
@@ -71,13 +70,13 @@ in
     }
 
     child {
-      padding: 4px 8px;
+      padding: 6px 8px;
+      border-radius: 4px;
     }
 
     child:selected,
     child:hover {
-      background: #${config.lib.stylix.colors.base01}${alphaHex};
-      border-radius: 6px;
+      background: #${config.lib.stylix.colors.base02}${alphaHex};
     }
 
     child:selected #label,
@@ -108,7 +107,7 @@ in
     [ui.anchors]
     bottom = true
     left = true
-    right = true
+    right = false
     top = true
 
     [ui.window]
@@ -116,10 +115,11 @@ in
     v_align = "fill"
 
     [ui.window.box]
-    h_align = "center"
+    h_align = "start"
+    v_align = "fill"
 
-    [ui.window.box.margins]
-    top = 200
+    [ui.window.box.scroll]
+    v_expand = true
 
     [ui.window.box.scroll.list]
 
