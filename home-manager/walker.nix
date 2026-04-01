@@ -1,9 +1,11 @@
 { config, lib, osConfig, ... }:
 let
-  # Convert stylix.opacity.applications (0.0–1.0) to a two-digit hex alpha
-  # so the Walker background opacity stays in sync with other applications.
+  # Full stylix application opacity — used for interactive surfaces (search bar, hover).
   alpha    = builtins.floor (osConfig.stylix.opacity.applications * 255);
   alphaHex = lib.fixedWidthString 2 "0" (lib.toHexString alpha);
+  # Low-opacity tint for the pane background so Hyprland's blur shows through.
+  bgAlpha    = builtins.floor (osConfig.stylix.opacity.applications * 0.35 * 255);
+  bgAlphaHex = lib.fixedWidthString 2 "0" (lib.toHexString bgAlpha);
 in
 {
   xdg.configFile."walker/config.toml".text = ''
@@ -51,18 +53,18 @@ in
     }
 
     #box {
-      background: #${config.lib.stylix.colors.base00}${alphaHex};
-      padding: 16px;
-      border-right: 1px solid #${config.lib.stylix.colors.base02}80;
-      min-width: 340px;
-      max-width: 340px;
+      background: #${config.lib.stylix.colors.base00}${bgAlphaHex};
+      padding: 20px;
+      border-right: 2px solid #${config.lib.stylix.colors.base02}80;
+      min-width: 360px;
+      max-width: 360px;
     }
 
     #search {
       background: #${config.lib.stylix.colors.base01}${alphaHex};
       border-radius: 6px;
-      padding: 10px 14px;
-      margin-bottom: 10px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
     }
 
     #input placeholder {
@@ -70,7 +72,7 @@ in
     }
 
     child {
-      padding: 6px 8px;
+      padding: 10px 12px;
       border-radius: 4px;
     }
 
