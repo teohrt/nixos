@@ -128,7 +128,9 @@ let
     else                         ICON="󰤟"
     fi
 
-    TEXT="<span size='large'>$ICON</span> ''${PCT}% <span color='#ffffff99'>''${TX_FMT}</span> <span color='#ffffff99'>''${RX_FMT}</span>"
+    PCT_STR="''${PCT}%"
+    PCT_PAD=$(printf '%*s' $(( 4 - ''${#PCT_STR} )) '')
+    TEXT="''${PCT_PAD}<span size='large'>$ICON</span> ''${PCT_STR} <span color='#ffffff99'>''${TX_FMT}</span> <span color='#ffffff99'>''${RX_FMT}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
