@@ -195,6 +195,26 @@ in
                   </object>
                 </child>
                 <child>
+                  <object class="GtkBox" id="Keybinds">
+                    <style><class name="keybinds"></class></style>
+                    <property name="hexpand">true</property>
+                    <child>
+                      <object class="GtkBox" id="GlobalKeybinds">
+                        <style><class name="global-keybinds"></class></style>
+                        <property name="spacing">10</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="ItemKeybinds">
+                        <style><class name="item-keybinds"></class></style>
+                        <property name="hexpand">true</property>
+                        <property name="halign">end</property>
+                        <property name="spacing">10</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
                   <object class="GtkLabel" id="Error">
                     <style><class name="error"></class></style>
                     <property name="xalign">0</property>
