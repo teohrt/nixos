@@ -6,9 +6,9 @@
     base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
 
     opacity = {
-      terminal     = 0.85;
-      applications = 0.90;
-      popups       = 0.85;
+      terminal     = 0.6;
+      applications = 0.8;
+      popups       = 0.7;
       desktop      = 1.0;
     };
   };
