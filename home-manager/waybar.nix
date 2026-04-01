@@ -311,7 +311,8 @@ in
       #custom-weather:hover,
       #custom-power:hover {
         background: rgba(10, 10, 15, 0.85);
-        border-radius: 12px;
+        border-radius: 20px;
+        margin: 3px 0;
       }
 
       #workspaces {
