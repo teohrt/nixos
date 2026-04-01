@@ -36,6 +36,7 @@ in
     ./walker.nix
     ./hyprlock.nix
     ./hypridle.nix
+    ./vscode.nix
   ];
 
   home.packages = [ powerMenu ];
