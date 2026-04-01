@@ -289,6 +289,7 @@ in
       #custom-launcher,
       #custom-wifi,
       #bluetooth,
+      #pulseaudio,
       #custom-power {
         background: rgba(255, 255, 255, 0.18);
         border-radius: 20px;
