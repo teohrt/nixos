@@ -8,6 +8,13 @@ in {
     polarity = "dark";
     base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
 
+    fonts = {
+      monospace = {
+        package = pkgs.nerd-fonts.jetbrains-mono;
+        name = "JetBrainsMono Nerd Font Mono";
+      };
+    };
+
     cursor = {
       package = bibata;
       name = "Bibata-Modern-Ice";
