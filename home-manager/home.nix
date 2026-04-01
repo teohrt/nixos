@@ -18,6 +18,8 @@ in
   home.homeDirectory = "/home/trace";
 
 
+  programs.btop.enable = true;
+
   imports = [
     ./user-apps.nix
     ./git.nix

@@ -10,7 +10,6 @@
     which
     tree
     gawk
-    btop
 
     # apps
     google-chrome
