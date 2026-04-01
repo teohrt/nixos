@@ -62,7 +62,7 @@ in
 
   # Stylix's hyprpaper target is disabled so we can manage it ourselves.
   # Stylix still uses its static image (in stylix.nix) for color scheme generation.
-  stylix.targets.hyprpaper.enable = false;
+  stylix.targets.hyprpaper.enable = lib.mkForce false;
 
   services.hyprpaper = {
     enable = true;
