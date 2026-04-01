@@ -276,7 +276,7 @@ in
 
 
       window#waybar {
-        background: rgba(10, 10, 15, 0.5);
+        background: transparent;
         border-radius: 16px;
       }
 
