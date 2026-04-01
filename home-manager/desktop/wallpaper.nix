@@ -42,7 +42,9 @@ let
           "${w.label}")
               pkill mpvpaper 2>/dev/null || true
               systemctl --user start hyprpaper.service
-              sleep 0.5
+              # Wait for hyprpaper socket to be ready before issuing commands
+              until hyprctl hyprpaper listloaded &>/dev/null; do sleep 0.1; done
+              hyprctl hyprpaper preload "${toString w.path}"
               hyprctl hyprpaper wallpaper ",${toString w.path}"
               ;;''
         else ''
