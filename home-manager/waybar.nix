@@ -292,6 +292,7 @@ in
       #custom-power {
         background: rgba(255, 255, 255, 0.18);
         border-radius: 20px;
+        margin: 3px 0;
       }
 
       #custom-launcher {
