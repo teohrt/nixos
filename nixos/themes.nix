@@ -1,9 +1,10 @@
-{ ... }:
+{ lib, ... }:
 
 {
   specialisation = {
     everforest.configuration = {
-      stylix.image = ../assets/everforest/mist_forest.png;
+      # mkForce overrides the base stylix.image set in stylix.nix
+      stylix.image = lib.mkForce ../assets/everforest/mist_forest.png;
     };
   };
 
