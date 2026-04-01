@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 {
   xdg.configFile."walker/config.toml".text = ''
     force_keyboard_focus = true
@@ -79,19 +79,19 @@
     }
 
     #window {
-      color: #ffffff;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 14px;
+      color: #${config.lib.stylix.colors.base05};
+      font-family: "${config.stylix.fonts.monospace.name}", monospace;
+      font-size: ${toString config.stylix.fonts.sizes.applications}px;
     }
 
     #box {
-      background: rgba(10, 10, 15, 0.95);
+      background: #${config.lib.stylix.colors.base00}F2;
       padding: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid #${config.lib.stylix.colors.base05}1A;
     }
 
     #search {
-      background: rgba(17, 17, 24, 0.9);
+      background: #${config.lib.stylix.colors.base01}E6;
       padding: 10px;
       margin-bottom: 8px;
     }
@@ -106,12 +106,12 @@
 
     child:selected,
     child:hover {
-      background: rgba(17, 17, 24, 0.9);
+      background: #${config.lib.stylix.colors.base01}E6;
     }
 
     child:selected #label,
     child:hover #label {
-      color: #7ebae4;
+      color: #${config.lib.stylix.colors.base0D};
     }
 
     #label {
