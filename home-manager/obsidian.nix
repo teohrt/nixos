@@ -96,8 +96,8 @@ in
         [[ -d $vault/.obsidian ]] || continue
         theme_dir="$vault/.obsidian/themes/Stylix"
         $DRY_RUN_CMD mkdir -p "$theme_dir"
-        $DRY_RUN_CMD cp ${themeCssFile}   "$theme_dir/theme.css"
-        $DRY_RUN_CMD cp ${manifestFile}   "$theme_dir/manifest.json"
+        $DRY_RUN_CMD install -m 644 ${themeCssFile} "$theme_dir/theme.css"
+        $DRY_RUN_CMD install -m 644 ${manifestFile} "$theme_dir/manifest.json"
       done
     fi
   '';
