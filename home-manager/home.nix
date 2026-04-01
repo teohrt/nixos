@@ -17,22 +17,6 @@ in
   home.username = "trace";
   home.homeDirectory = "/home/trace";
 
-  gtk = {
-    enable = true;
-    theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
-    };
-    gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
-    gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
-  };
-
-  home.pointerCursor = {
-    gtk.enable = true;
-    package = pkgs.adwaita-icon-theme;
-    name = "Adwaita";
-    size = 24;
-  };
 
   imports = [
     ./user-apps.nix

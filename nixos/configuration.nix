@@ -4,6 +4,7 @@
   imports = [
     ./hardware-configuration.nix
     ./system-apps.nix
+    ./stylix.nix
   ];
   
   nix.settings.experimental-features = [ "nix-command" "flakes" ];

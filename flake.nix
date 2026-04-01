@@ -12,9 +12,13 @@
       # to avoid problems caused by different versions of nixpkgs.
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    stylix = {
+      url = "github:danth/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, stylix, ... }:
   let
     system = "x86_64-linux";
     pkgs-walker = nixpkgs-walker.legacyPackages.${system};
@@ -26,6 +30,7 @@
         specialArgs = { inherit pkgs-walker; };
         modules = [
           ./nixos/configuration.nix
+          stylix.nixosModules.stylix
 
           home-manager.nixosModules.home-manager
           {
