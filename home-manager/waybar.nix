@@ -299,7 +299,7 @@ in
       }
 
       #custom-launcher {
-        padding: 2px 16px 2px 12px;
+        padding: 2px 16px;
         font-size: 16px;
       }
 
