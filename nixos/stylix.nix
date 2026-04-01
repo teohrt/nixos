@@ -4,8 +4,10 @@ let
 in {
   stylix = {
     enable = true;
-    image = ../assets/everforest_mist_forest.png;
     polarity = "dark";
+
+    image = ../assets/nord_mountain-wallpaper.png;
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
 
     fonts = {
       monospace = {
