@@ -118,7 +118,7 @@ let
     else                         ICON="󰤟"
     fi
 
-    TEXT="<span size='large'>$ICON</span> ''${PCT}% <span color='#8c8c8c' size='xx-large'>↑</span><span color='#8c8c8c'>''${TX_FMT}</span> <span color='#8c8c8c' size='xx-large'>↓</span><span color='#8c8c8c'>''${RX_FMT}</span>"
+    TEXT="<span size='large'>$ICON</span> ''${PCT}% <span color='#a8a8a8' size='xx-large'>↑</span><span color='#a8a8a8'>''${TX_FMT}</span> <span color='#a8a8a8' size='xx-large'>↓</span><span color='#a8a8a8'>''${RX_FMT}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
@@ -151,7 +151,7 @@ let
       *)                     ICON="!" DESC="Unknown" ;;
     esac
 
-    TEXT="<span color='#8c8c8c'>$ICON ''${TEMP}°F</span>"
+    TEXT="<span color='#a8a8a8'>$ICON ''${TEMP}°F</span>"
     TOOLTIP="$DESC\nFeels like: ''${FEELS}°F\nHumidity: ''${HUMIDITY}%\nWind: ''${WIND} mph"
 
     echo "{\"text\": \"$TEXT\", \"tooltip\": \"$TOOLTIP\"}"
@@ -192,8 +192,8 @@ in
       };
 
       battery = {
-        format = "<span size=\"large\" color=\"#8c8c8c\">󰚥</span> <span color=\"#8c8c8c\">{capacity}%</span>";
-        format-charging = "<span size=\"large\" color=\"#8c8c8c\">󱐋</span> <span color=\"#8c8c8c\">{capacity}%</span>";
+        format = "<span size=\"large\" color=\"#a8a8a8\">󰚥</span> <span color=\"#a8a8a8\">{capacity}%</span>";
+        format-charging = "<span size=\"large\" color=\"#a8a8a8\">󱐋</span> <span color=\"#a8a8a8\">{capacity}%</span>";
         interval = 2;
       };
 
