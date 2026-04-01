@@ -6,11 +6,11 @@ in {
     enable = true;
     polarity = "dark";
 
-    # image = ../assets/nord-mountain-wallpaper.png;
-    # base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
+    image = ../assets/nord-mountain-wallpaper.png;
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
 
-    image = ../assets/everforest_mist_forest.png;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/everforest.yaml";
+    # image = ../assets/everforest_mist_forest.png;
+    # base16Scheme = "${pkgs.base16-schemes}/share/themes/everforest.yaml";
 
     fonts = {
       monospace = {
