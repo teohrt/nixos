@@ -118,7 +118,7 @@ let
     else                         ICON="󰤟"
     fi
 
-    TEXT="<span size=\"large\">$ICON</span> ''${PCT}% <span color=\"#ffffff\" size=\"xx-large\">↑</span><span color=\"#8c8c8c\">''${TX_FMT}</span> <span color=\"#ffffff\" size=\"xx-large\">↓</span><span color=\"#8c8c8c\">''${RX_FMT}</span>"
+    TEXT="<span size='large'>$ICON</span> ''${PCT}% <span color='#ffffff' size='xx-large'>↑</span><span color='#8c8c8c'>''${TX_FMT}</span> <span color='#ffffff' size='xx-large'>↓</span><span color='#8c8c8c'>''${RX_FMT}</span>"
     TOOLTIP="''${SSID}\n''${RSSI} dBm"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
