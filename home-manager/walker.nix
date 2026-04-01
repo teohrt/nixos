@@ -41,7 +41,7 @@ in
 
     * {
       font-family: "${config.stylix.fonts.monospace.name}", monospace;
-      font-size: ${toString config.stylix.fonts.sizes.applications}px;
+      font-size: ${toString (config.stylix.fonts.sizes.applications + 4)}px;
       color: @text;
     }
 
@@ -116,7 +116,7 @@ in
             <style><class name="box-wrapper"></class></style>
             <property name="overflow">hidden</property>
             <property name="orientation">horizontal</property>
-            <property name="valign">fill</property>
+            <property name="valign">center</property>
             <property name="halign">center</property>
             <child>
               <object class="GtkBox" id="Box">
@@ -172,10 +172,10 @@ in
                       <object class="GtkScrolledWindow" id="Scroll">
                         <style><class name="scroll"></class></style>
                         <property name="hexpand">true</property>
-                        <property name="vexpand">true</property>
-                        <property name="vexpand-set">true</property>
                         <property name="can_focus">false</property>
                         <property name="overlay-scrolling">true</property>
+                        <property name="max-content-height">500</property>
+                        <property name="propagate-natural-height">true</property>
                         <property name="hscrollbar-policy">automatic</property>
                         <property name="vscrollbar-policy">automatic</property>
                         <child>
