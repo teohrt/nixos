@@ -352,12 +352,15 @@ in
       }
 
       #battery,
-      #bluetooth,
       #pulseaudio,
       #custom-cpu,
       #custom-mem,
       #custom-weather {
         padding: 2px 7px;
+      }
+
+      #bluetooth {
+        padding: 2px 16px;
       }
 
       #custom-power {
