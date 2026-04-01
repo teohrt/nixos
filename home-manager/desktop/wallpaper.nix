@@ -49,7 +49,7 @@ let
   # Order of operations:
   #   1. Activate the NixOS specialisation first — this may restart systemd services.
   #   2. Set the wallpaper after — so any service restarts don't conflict with our state.
-  #   3. Restart waybar — it reads its config on startup so it picks up the new color scheme.
+  #   3. Restart waybar via systemd — it reads its config on startup so it picks up the new colors.
   wallpaperPicker = pkgs.writeShellScriptBin "wallpaper-picker" ''
     CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.label) allWallpapers)}' \
       | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
@@ -58,7 +58,11 @@ let
       ${lib.concatStringsSep "\n      " (map (w:
         if !w.animated then ''
           "${w.label}")
-              ${switchCmd w}
+              if ${switchCmd w}; then
+                notify-send "Theme" "Switched to ${w.label}"
+              else
+                notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
+              fi
               pkill mpvpaper 2>/dev/null || true
               systemctl --user start hyprpaper.service
               # Wait for hyprpaper socket to be ready before issuing commands
@@ -69,7 +73,11 @@ let
               ;;''
         else ''
           "${w.label}")
-              ${switchCmd w}
+              if ${switchCmd w}; then
+                notify-send "Theme" "Switched to ${w.label}"
+              else
+                notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
+              fi
               systemctl --user stop hyprpaper.service
               pkill mpvpaper 2>/dev/null || true
               ${lib.getExe pkgs.mpvpaper} -o 'loop' '*' ${toString w.path} &
