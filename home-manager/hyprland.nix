@@ -86,6 +86,8 @@
       layerrule = [
         "blur, waybar"
         "ignorezero, waybar"
+        "blur, walker"          # walker is a layer surface — blur must be set via layerrule, not windowrulev2
+        "ignorezero, walker"   # don't blur fully-transparent pixels (outside the rounded box)
       ];
 
       # floating window rules for TUI apps launched in titled windows

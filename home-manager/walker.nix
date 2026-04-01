@@ -1,4 +1,10 @@
-{ config, ... }:
+{ config, lib, osConfig, ... }:
+let
+  # Convert stylix.opacity.applications (0.0–1.0) to a two-digit hex alpha
+  # so the Walker background opacity stays in sync with other applications.
+  alpha    = builtins.floor (osConfig.stylix.opacity.applications * 255);
+  alphaHex = lib.fixedWidthString 2 "0" (lib.toHexString alpha);
+in
 {
   xdg.configFile."walker/config.toml".text = ''
     force_keyboard_focus = true
@@ -45,14 +51,18 @@
     }
 
     #box {
-      background: #${config.lib.stylix.colors.base00}F2;
+      background: #${config.lib.stylix.colors.base00}${alphaHex};
       padding: 20px;
       border: 1px solid #${config.lib.stylix.colors.base05}1A;
+      border-radius: 12px;
+      min-width: 420px;
+      max-width: 420px;
     }
 
     #search {
       background: #${config.lib.stylix.colors.base01}E6;
-      padding: 10px;
+      border-radius: 8px;
+      padding: 10px 14px;
       margin-bottom: 8px;
     }
 
@@ -67,6 +77,7 @@
     child:selected,
     child:hover {
       background: #${config.lib.stylix.colors.base01}E6;
+      border-radius: 6px;
     }
 
     child:selected #label,
