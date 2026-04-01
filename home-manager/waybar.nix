@@ -286,6 +286,14 @@ in
         padding: 0 4px;
       }
 
+      #custom-launcher,
+      #custom-wifi,
+      #bluetooth,
+      #custom-power {
+        background: rgba(255, 255, 255, 0.18);
+        border-radius: 20px;
+      }
+
       #custom-launcher {
         padding: 2px 16px 2px 12px;
         font-size: 16px;
