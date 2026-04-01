@@ -1,11 +1,9 @@
 { config, lib, pkgs-walker, osConfig, ... }:
 let
-  # Full stylix application opacity — used for interactive surfaces (search bar, hover).
-  alpha    = builtins.floor (osConfig.stylix.opacity.applications * 255);
-  alphaHex = lib.fixedWidthString 2 "0" (lib.toHexString alpha);
-  # Low-opacity tint for the pane background so Hyprland's blur shows through.
-  bgAlpha    = builtins.floor (osConfig.stylix.opacity.applications * 0.35 * 255);
-  bgAlphaHex = lib.fixedWidthString 2 "0" (lib.toHexString bgAlpha);
+  # Full stylix application opacity as a float string for CSS alpha() calls.
+  opacity    = toString osConfig.stylix.opacity.applications;
+  # Reduced opacity for the pane background so Hyprland's blur shows through.
+  bgOpacity  = toString (osConfig.stylix.opacity.applications * 0.35);
 in
 {
   xdg.configFile."walker/config.toml".text = ''
@@ -26,125 +24,189 @@ in
     default = ["desktopapplications"]
   '';
 
-  xdg.configFile."walker/themes/stylix-nixos.css".text = ''
-    #window,
-    #box,
-    #search,
-    #input,
-    #prompt,
-    #clear,
-    #typeahead,
-    #list,
-    child,
-    scrollbar,
-    slider,
-    #item,
-    #text,
-    #label,
-    #bar,
-    #sub,
-    #activationlabel {
+  # Walker 2.x themes are directories containing layout.xml + style.css.
+  # CSS uses class selectors (.box-wrapper, .input, etc.) and @define-color variables.
+
+  xdg.configFile."walker/themes/stylix-nixos/style.css".text = ''
+    @define-color text       #${config.lib.stylix.colors.base05};
+    @define-color base       #${config.lib.stylix.colors.base00};
+    @define-color surface    #${config.lib.stylix.colors.base01};
+    @define-color overlay    #${config.lib.stylix.colors.base02};
+    @define-color accent     #${config.lib.stylix.colors.base0D};
+    @define-color border     #${config.lib.stylix.colors.base02};
+
+    * {
       all: unset;
     }
 
-    #window {
-      color: #ff0000;
+    * {
       font-family: "${config.stylix.fonts.monospace.name}", monospace;
       font-size: ${toString config.stylix.fonts.sizes.applications}px;
+      color: @text;
     }
 
-    #box {
-      background: #${config.lib.stylix.colors.base00}${bgAlphaHex};
+    scrollbar {
+      opacity: 0;
+    }
+
+    .box-wrapper {
+      background: alpha(@base, ${bgOpacity});
       padding: 20px;
-      border-right: 2px solid #${config.lib.stylix.colors.base02}80;
+      border-right: 2px solid alpha(@border, 0.5);
       min-width: 360px;
       max-width: 360px;
     }
 
-    #search {
-      background: #${config.lib.stylix.colors.base01}${alphaHex};
+    .search-container {
+      background: alpha(@surface, ${opacity});
       border-radius: 6px;
       padding: 12px 16px;
-      margin-bottom: 12px;
     }
 
-    #input placeholder {
+    .input placeholder {
       opacity: 0.5;
     }
 
-    child {
-      padding: 10px 12px;
+    .input:focus,
+    .input:active {
+      box-shadow: none;
+      outline: none;
+    }
+
+    child:hover .item-box,
+    child:selected .item-box {
+      background: alpha(@overlay, ${opacity});
       border-radius: 4px;
     }
 
-    child:selected,
-    child:hover {
-      background: #${config.lib.stylix.colors.base02}${alphaHex};
+    child:selected .item-box * {
+      color: @accent;
     }
 
-    child:selected #label,
-    child:hover #label {
-      color: #${config.lib.stylix.colors.base0D};
+    .item-box {
+      padding: 10px 12px;
     }
 
-    #label {
-      font-weight: 500;
-      color: #${config.lib.stylix.colors.base05};
+    .item-text-box {
+      all: unset;
     }
 
-    #sub {
+    .item-subtext {
       font-size: 0px;
+      min-height: 0px;
+      margin: 0px;
+      padding: 0px;
     }
 
-    #icon {
-      margin-right: 8px;
-    }
-
-    #activationlabel {
-      opacity: 0;
-      min-width: 0;
+    .item-image {
+      margin-right: 10px;
     }
   '';
 
-  xdg.configFile."walker/themes/stylix-nixos.toml".text = ''
-    [ui.anchors]
-    bottom = true
-    left = true
-    right = false
-    top = true
-
-    [ui.window]
-    h_align = "fill"
-    v_align = "fill"
-
-    [ui.window.box]
-    h_align = "start"
-    v_align = "fill"
-
-    [ui.window.box.scroll]
-    v_expand = true
-
-    [ui.window.box.scroll.list]
-
-    [ui.window.box.scroll.list.item.activation_label]
-    h_align = "fill"
-    v_align = "fill"
-    width = 0
-
-    [ui.window.box.scroll.list.item.icon]
-    pixel_size = 26
-    theme = ""
-
-    [ui.window.box.scroll.list.margins]
-    top = 8
-
-    [ui.window.box.search.input]
-    h_align = "fill"
-    h_expand = true
-    icons = false
-
-    [ui.window.box.search.spinner]
-    hide = true
+  xdg.configFile."walker/themes/stylix-nixos/layout.xml".text = ''
+    <?xml version="1.0" encoding="UTF-8"?>
+    <interface>
+      <requires lib="gtk" version="4.0"></requires>
+      <object class="GtkWindow" id="Window">
+        <style><class name="window"></class></style>
+        <property name="resizable">true</property>
+        <property name="title">Walker</property>
+        <child>
+          <object class="GtkBox" id="BoxWrapper">
+            <style><class name="box-wrapper"></class></style>
+            <property name="overflow">hidden</property>
+            <property name="orientation">horizontal</property>
+            <property name="valign">fill</property>
+            <property name="halign">start</property>
+            <child>
+              <object class="GtkBox" id="Box">
+                <style><class name="box"></class></style>
+                <property name="orientation">vertical</property>
+                <property name="hexpand">true</property>
+                <property name="hexpand-set">true</property>
+                <property name="vexpand">true</property>
+                <property name="vexpand-set">true</property>
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkBox" id="SearchContainer">
+                    <style><class name="search-container"></class></style>
+                    <property name="overflow">hidden</property>
+                    <property name="orientation">horizontal</property>
+                    <property name="halign">fill</property>
+                    <property name="hexpand">true</property>
+                    <property name="hexpand-set">true</property>
+                    <child>
+                      <object class="GtkEntry" id="Input">
+                        <style><class name="input"></class></style>
+                        <property name="halign">fill</property>
+                        <property name="hexpand">true</property>
+                        <property name="hexpand-set">true</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="ContentContainer">
+                    <style><class name="content-container"></class></style>
+                    <property name="orientation">horizontal</property>
+                    <property name="spacing">10</property>
+                    <property name="vexpand">true</property>
+                    <property name="vexpand-set">true</property>
+                    <child>
+                      <object class="GtkLabel" id="ElephantHint">
+                        <style><class name="elephant-hint"></class></style>
+                        <property name="hexpand">true</property>
+                        <property name="height-request">100</property>
+                        <property name="label">Waiting for elephant...</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="Placeholder">
+                        <style><class name="placeholder"></class></style>
+                        <property name="label">No Results</property>
+                        <property name="yalign">0.0</property>
+                        <property name="hexpand">true</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScrolledWindow" id="Scroll">
+                        <style><class name="scroll"></class></style>
+                        <property name="hexpand">true</property>
+                        <property name="vexpand">true</property>
+                        <property name="vexpand-set">true</property>
+                        <property name="can_focus">false</property>
+                        <property name="overlay-scrolling">true</property>
+                        <property name="hscrollbar-policy">automatic</property>
+                        <property name="vscrollbar-policy">automatic</property>
+                        <child>
+                          <object class="GtkGridView" id="List">
+                            <style><class name="list"></class></style>
+                            <property name="max_columns">1</property>
+                            <property name="can_focus">false</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="Preview">
+                        <style><class name="preview"></class></style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="Error">
+                    <style><class name="error"></class></style>
+                    <property name="xalign">0</property>
+                    <property name="visible">false</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </interface>
   '';
 
   systemd.user.services.walker = {
@@ -161,8 +223,7 @@ in
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
-  # Restart walker after every home-manager switch so theme/config changes
-  # take effect immediately without requiring a logout.
+  # Restart walker after every home-manager switch so theme changes take effect immediately.
   home.activation.restartWalker = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if $DRY_RUN_CMD systemctl --user -q is-active walker.service; then
       $DRY_RUN_CMD systemctl --user restart walker.service

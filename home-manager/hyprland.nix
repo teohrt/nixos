@@ -18,7 +18,6 @@
         "${pkgs.mako}/bin/mako"                            # notification daemon
         "waybar"                                           # status bar
         "elephant"                                         # indexes apps for walker to search
-        "sleep 2 && walker --gapplication-service"         # walker background service (delayed to let elephant index first)
         "wl-clip-persist --clipboard regular"              # keep clipboard alive after source process exits
       ];
 
