@@ -44,12 +44,16 @@
       animations = {
         enabled = true;
         # smooth deceleration curve for all animations
-        bezier = "easeOutQuart, 0.25, 1, 0.5, 1";
+        bezier = [
+          "easeOutQuart, 0.25, 1, 0.5, 1"
+          "spring, 0.175, 0.885, 0.32, 1.275"
+        ];
         animation = [
           "windows, 1, 4, easeOutQuart, slide"
           "windowsOut, 1, 4, easeOutQuart, slide"
           "fade, 1, 4, easeOutQuart"
           "workspaces, 1, 4, easeOutQuart, slide"
+          "layers, 1, 4, spring, popin 80%"
         ];
       };
 
@@ -87,7 +91,6 @@
         "ignorezero, waybar"
         "blur, walker"          # walker is a layer surface — blur must be set via layerrule, not windowrulev2
         "ignorezero, walker"   # don't blur fully-transparent pixels (outside the rounded box)
-        "animation slide top, walker"  # slide down from top when opening
       ];
 
       # floating window rules for TUI apps launched in titled windows
