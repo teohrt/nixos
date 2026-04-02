@@ -46,14 +46,16 @@ let
   staticWallpapers = lib.filter (w: !w.animated) allWallpapers;
 
   # Emit the sudo command to activate a specialisation (or revert to default).
-  # This runs switch-to-configuration which activates the pre-built system config,
-  # including re-running home-manager activation to update all app configs on disk.
+  # Specialisations are always diffed against the base (Nord) system, not against each
+  # other — so we must return to Nord first before applying any non-Nord specialisation.
+  # For Nord itself, a single switch suffices.
   switchCmd = w:
     if w.specialisation == null
-    # /nix/var/nix/profiles/system is the base system, stable even when a specialisation
-    # is active and /run/current-system points to the specialisation's store path.
     then "sudo /nix/var/nix/profiles/system/bin/switch-to-configuration switch"
-    else "sudo /run/current-system/specialisation/${w.specialisation}/bin/switch-to-configuration switch";
+    # /nix/var/nix/profiles/system always points to the base system, so specialisation
+    # paths under it are stable and accessible regardless of which theme is currently active.
+    # /run/current-system/specialisation/ only exists when the base system is running.
+    else "sudo /nix/var/nix/profiles/system/specialisation/${w.specialisation}/bin/switch-to-configuration switch";
 
   # Walker dmenu picker — presents all wallpapers and switches to the chosen one.
   # Order of operations:
@@ -63,12 +65,6 @@ let
   wallpaperPicker = pkgs.writeShellScriptBin "wallpaper-picker" ''
     CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.label) allWallpapers)}' \
       | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
-
-    # home-manager-trace.service is oneshot/RemainAfterExit — switch-to-configuration
-    # won't restart it if already active, so force it to rewrite all config files.
-    force_hm_activation() {
-      sudo /run/current-system/sw/bin/systemctl restart home-manager-trace.service
-    }
 
     # Restart daemons that load their GTK theme or config once at startup.
     # Heavy apps (VS Code, Obsidian, Firefox, Spotify) are left for the user to reopen.
@@ -91,7 +87,7 @@ let
               else
                 notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
               fi
-              force_hm_activation
+
               pkill mpvpaper 2>/dev/null || true
               systemctl --user start hyprpaper.service
               # Wait for hyprpaper socket to be ready before issuing commands
@@ -107,7 +103,7 @@ let
               else
                 notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
               fi
-              force_hm_activation
+
               systemctl --user stop hyprpaper.service
               pkill mpvpaper 2>/dev/null || true
               ${lib.getExe pkgs.mpvpaper} -o 'loop' '*' ${toString w.path} &
