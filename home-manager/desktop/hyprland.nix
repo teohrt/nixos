@@ -87,6 +87,7 @@
         "ignorezero, waybar"
         "blur, walker"          # walker is a layer surface — blur must be set via layerrule, not windowrulev2
         "ignorezero, walker"   # don't blur fully-transparent pixels (outside the rounded box)
+        "animation slide top, walker"  # slide down from top when opening
       ];
 
       # floating window rules for TUI apps launched in titled windows

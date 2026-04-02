@@ -49,11 +49,6 @@ in
       opacity: 0;
     }
 
-    @keyframes slide-pop {
-      from { opacity: 0; margin-top: -30px; }
-      to   { opacity: 1; margin-top: 0px;   }
-    }
-
     .box-wrapper {
       background: alpha(@base, ${bgOpacity});
       padding: 20px;
@@ -61,7 +56,6 @@ in
       border-radius: 10px;
       min-width: 360px;
       max-width: 360px;
-      animation: slide-pop 0.25s ease-out forwards;
     }
 
     .search-container {
