@@ -50,9 +50,8 @@ in
     }
 
     @keyframes slide-pop {
-      0%   { opacity: 0; transform: translateY(-24px) scale(0.92); }
-      65%  { opacity: 1; transform: translateY(5px)   scale(1.03); }
-      100% {             transform: translateY(0)     scale(1);    }
+      from { opacity: 0; margin-top: -30px; }
+      to   { opacity: 1; margin-top: 0px;   }
     }
 
     .box-wrapper {
@@ -62,7 +61,7 @@ in
       border-radius: 10px;
       min-width: 360px;
       max-width: 360px;
-      animation: slide-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      animation: slide-pop 0.25s ease-out forwards;
     }
 
     .search-container {
