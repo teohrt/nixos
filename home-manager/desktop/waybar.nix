@@ -165,7 +165,7 @@ let
       *)                     ICON="!" DESC="Unknown" ;;
     esac
 
-    TEXT="<span color='#ffffff99'>$ICON ''${TEMP}°F</span>"
+    TEXT="<span color='#ffffff'>$ICON ''${TEMP}°F</span>"
     TOOLTIP="$DESC\nFeels like: ''${FEELS}°F\nHumidity: ''${HUMIDITY}%\nWind: ''${WIND} mph"
 
     echo "{\"text\": \"$TEXT\", \"tooltip\": \"$TOOLTIP\"}"
@@ -207,8 +207,8 @@ in
       };
 
       battery = {
-        format = "<span size=\"large\">{icon}</span> <span color=\"#ffffff99\">{capacity}%</span>";
-        format-charging = "<span size=\"large\">󰂄</span> <span color=\"#ffffff99\">{capacity}%</span>";
+        format = "<span size=\"large\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
+        format-charging = "<span size=\"large\">󰂄</span> <span color=\"#ffffff\">{capacity}%</span>";
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 20; low = 40; medium = 70; high = 100; };
         interval = 2;
