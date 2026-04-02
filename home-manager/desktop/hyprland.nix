@@ -44,16 +44,13 @@
       animations = {
         enabled = true;
         # smooth deceleration curve for all animations
-        bezier = [
-          "easeOutQuart, 0.25, 1, 0.5, 1"
-          "spring, 0.175, 0.885, 0.32, 1.275"
-        ];
+        bezier = "easeOutQuart, 0.25, 1, 0.5, 1";
         animation = [
           "windows, 1, 4, easeOutQuart, slide"
           "windowsOut, 1, 4, easeOutQuart, slide"
           "fade, 1, 4, easeOutQuart"
           "workspaces, 1, 4, easeOutQuart, slide"
-          "layers, 1, 4, spring, popin 80%"
+          "layers, 1, 4, easeOutQuart, popin 80%"
         ];
       };
 
