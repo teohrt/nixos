@@ -64,6 +64,12 @@ let
     CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.label) allWallpapers)}' \
       | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
 
+    # home-manager-trace.service is oneshot/RemainAfterExit — switch-to-configuration
+    # won't restart it if already active, so force it to rewrite all config files.
+    force_hm_activation() {
+      sudo /run/current-system/sw/bin/systemctl restart home-manager-trace.service
+    }
+
     # Restart daemons that load their GTK theme or config once at startup.
     # Heavy apps (VS Code, Obsidian, Firefox, Spotify) are left for the user to reopen.
     restart_themed_daemons() {
@@ -85,6 +91,7 @@ let
               else
                 notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
               fi
+              force_hm_activation
               pkill mpvpaper 2>/dev/null || true
               systemctl --user start hyprpaper.service
               # Wait for hyprpaper socket to be ready before issuing commands
@@ -100,6 +107,7 @@ let
               else
                 notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
               fi
+              force_hm_activation
               systemctl --user stop hyprpaper.service
               pkill mpvpaper 2>/dev/null || true
               ${lib.getExe pkgs.mpvpaper} -o 'loop' '*' ${toString w.path} &

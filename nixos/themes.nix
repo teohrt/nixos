@@ -36,6 +36,13 @@
         command = "/run/current-system/specialisation/eris/bin/switch-to-configuration switch";
         options = [ "NOPASSWD" ];
       }
+      {
+        # Force home-manager to re-run after switching between specialisations.
+        # home-manager-trace.service is oneshot/RemainAfterExit, so switch-to-configuration
+        # won't restart it if already active — restart explicitly to rewrite config files.
+        command = "/run/current-system/sw/bin/systemctl restart home-manager-trace.service";
+        options = [ "NOPASSWD" ];
+      }
     ];
   }];
 }
