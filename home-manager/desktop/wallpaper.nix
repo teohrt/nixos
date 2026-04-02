@@ -24,6 +24,13 @@ let
         { name = "Leaves";      path = ../../assets/gruvbox/leaves.mp4;       animated = true;  }
       ];
     }
+    {
+      name = "Eris";
+      specialisation = "eris";
+      wallpapers = [
+        { name = "Neon Car"; path = ../../assets/eris/neon-car.mp4; animated = true; }
+      ];
+    }
   ];
 
   # Flat list of all wallpapers with display labels for the walker picker.
