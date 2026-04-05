@@ -28,7 +28,6 @@ in
       exec-once = [
         "swayosd-server"                                   # OSD server for volume/brightness popups
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" # auth agent for privilege escalation prompts
-        "${pkgs.mako}/bin/mako"                            # notification daemon
         "elephant"                                         # indexes apps for walker to search
         "sleep 2 && walker --gapplication-service"         # walker background service (delayed to let elephant index first)
         "${closeWalkerOnWorkspaceSwitch}"                  # close walker on workspace switch (layer surfaces ignore normal focus rules)

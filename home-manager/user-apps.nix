@@ -31,7 +31,6 @@
     impala                      # wifi TUI
     bluetui                     # bluetooth TUI
     wiremix                     # audio TUI
-    mako                        # notification daemon
     hyprshot                    # screenshot tool (wraps grim/slurp)
     swayosd                     # OSD popup for volume/brightness
     brightnessctl               # brightness control (requires video group)

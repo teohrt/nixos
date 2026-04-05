@@ -19,6 +19,7 @@ in
 
 
   programs.btop.enable = true;
+  services.mako.enable = true;
 
   # Darken Nautilus background so text stays readable across light and dark themes.
   # shade() is a GTK CSS function: values < 1 darken, > 1 lighten.
