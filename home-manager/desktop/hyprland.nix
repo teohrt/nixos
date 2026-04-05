@@ -1,4 +1,17 @@
-{ pkgs, lib, osConfig, ... }:
+{ pkgs, osConfig, ... }:
+let
+  # Listens on Hyprland's IPC event socket and kills walker whenever the active
+  # workspace changes. Needed because walker is a layer surface (not a window)
+  # so it persists across workspace switches and ignores normal focus-loss rules.
+  closeWalkerOnWorkspaceSwitch = pkgs.writeShellScript "close-walker-on-workspace-switch" ''
+    socket="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
+    ${pkgs.socat}/bin/socat -u "UNIX-CONNECT:$socket" - | while IFS= read -r line; do
+      case "$line" in
+        workspace\>\>*) pkill walker || true ;;
+      esac
+    done
+  '';
+in
 
 {
   wayland.windowManager.hyprland = {
@@ -18,6 +31,7 @@
         "${pkgs.mako}/bin/mako"                            # notification daemon
         "elephant"                                         # indexes apps for walker to search
         "sleep 2 && walker --gapplication-service"         # walker background service (delayed to let elephant index first)
+        "${closeWalkerOnWorkspaceSwitch}"                  # close walker on workspace switch (layer surfaces ignore normal focus rules)
         "wl-clip-persist --clipboard regular"              # keep clipboard alive after source process exits
       ];
 
@@ -105,13 +119,7 @@
       ];
 
       # standard key bindings (fire once per press)
-      bind = let
-        wsKeys = (map toString (lib.range 1 9)) ++ [ "0" ];
-        # Walker is a layer surface and persists across workspace switches.
-        # These exec binds fire alongside the workspace dispatchers below,
-        # closing walker (if open) whenever the user switches workspaces.
-        closeWalker = map (k: "$mod, ${k}, exec, pkill -x walker") wsKeys;
-      in closeWalker ++ [
+      bind = [
         "$mod, Return,       exec, $terminal"
         "$mod, Escape,       exec, power-menu"
         "$mod SHIFT, Return, exec, google-chrome-stable"
