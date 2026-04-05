@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, ... }:
 
 {
   programs.hyprlock = {
@@ -9,7 +9,7 @@
         grace = 0;
       };
 
-      background = [{
+      background = lib.mkForce [{
         monitor = "";
         color = "rgb(0, 0, 0)";
       }];
