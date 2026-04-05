@@ -1,4 +1,4 @@
-{ pkgs, osConfig, ... }:
+{ pkgs, lib, osConfig, ... }:
 
 {
   wayland.windowManager.hyprland = {
@@ -105,7 +105,13 @@
       ];
 
       # standard key bindings (fire once per press)
-      bind = [
+      bind = let
+        wsKeys = (map toString (lib.range 1 9)) ++ [ "0" ];
+        # Walker is a layer surface and persists across workspace switches.
+        # These exec binds fire alongside the workspace dispatchers below,
+        # closing walker (if open) whenever the user switches workspaces.
+        closeWalker = map (k: "$mod, ${k}, exec, pkill -x walker") wsKeys;
+      in closeWalker ++ [
         "$mod, Return,       exec, $terminal"
         "$mod, Escape,       exec, power-menu"
         "$mod SHIFT, Return, exec, google-chrome-stable"
