@@ -21,7 +21,10 @@ in
   programs.btop.enable = true;
   services.mako = {
     enable = true;
-    settings.border-radius = 10;
+    settings = {
+      border-radius = 10;
+      width = 300;
+    };
   };
 
   # Darken Nautilus background so text stays readable across light and dark themes.
