@@ -9,6 +9,15 @@
         grace = 0;
       };
 
+      label = [{
+        monitor = "";
+        text = "locked";
+        font_size = 24;
+        position = "0, 100";
+        halign = "center";
+        valign = "center";
+      }];
+
       # Override Stylix's wallpaper background with solid black.
       background = lib.mkForce [{
         monitor = "";
