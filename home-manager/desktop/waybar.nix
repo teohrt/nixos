@@ -35,7 +35,8 @@ let
       }
       getline lavg < "/proc/loadavg"
       split(lavg, la, " ")
-      tooltip = sprintf("CPU\\n%.2f%%  Load: %s", pct["cpu"], la[1])
+      load_pct = la[1] / (nc - 1) * 100
+      tooltip = sprintf("CPU\\n%.2f%%  Load: %.1f%%", pct["cpu"], load_pct)
       for (i = 2; i <= nc; i++)
         tooltip = tooltip sprintf("\\n%s: %.2f%%", order[i], pct[order[i]])
       num = sprintf(" %.2f%%", pct["cpu"])
