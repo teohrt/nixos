@@ -1,7 +1,8 @@
-{ ... }: {
+{ lib, ... }: {
   programs.alacritty = {
     enable = true;
     settings = {
+      colors.primary.background = lib.mkForce "#0d0f14"; # fixed dark bg — overrides Stylix so light themes stay readable
       window.padding = {
         x = 12;
         y = 12;

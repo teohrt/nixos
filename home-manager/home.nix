@@ -20,6 +20,14 @@ in
 
   programs.btop.enable = true;
 
+  # Darken Nautilus background so text stays readable across light and dark themes.
+  # shade() is a GTK CSS function: values < 1 darken, > 1 lighten.
+  gtk.gtk4.extraCss = ''
+    .nautilus-window {
+      background-color: shade(@window_bg_color, 0.75);
+    }
+  '';
+
   dconf.settings = {
     "org/gnome/nautilus/preferences" = {
       default-folder-viewer = "list-view";
