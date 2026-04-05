@@ -48,13 +48,14 @@
     xwayland.enable = true;
   };
 
-  # Login manager — tuigreet provides a minimal terminal-style login prompt
-  services.greetd = {
+  # Login manager
+  services.displayManager.sddm = {
     enable = true;
-    settings.default_session.command = ''
-      ${pkgs.greetd.tuigreet}/bin/tuigreet --time --greeting "login" --cmd Hyprland
-    '';
+    wayland.enable = true;
+    theme = "sddm-astronaut-theme";
+    extraPackages = with pkgs; [ sddm-astronaut kdePackages.qtmultimedia ];
   };
+  environment.systemPackages = [ pkgs.sddm-astronaut ];
 
   # XDG portal for Hyprland
   xdg.portal = {
