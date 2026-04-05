@@ -26,9 +26,9 @@ in {
     };
 
     opacity = {
-      terminal     = 0.9;
-      applications = 0.9;
-      popups       = 0.9;
+      terminal     = 0.7;
+      applications = 0.8;
+      popups       = 0.8;
       desktop      = 1.0;
     };
   };
