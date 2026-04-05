@@ -63,7 +63,7 @@ in
           "windows, 1, 4, easeOutQuart, slide"
           "windowsOut, 1, 4, easeOutQuart, slide"
           "fade, 1, 4, easeOutQuart"
-          "workspaces, 1, 4, easeOutQuart, slide"
+          "workspaces, 1, 2, easeOutQuart, slide"
           "layers, 1, 4, easeOutQuart, popin 80%"
         ];
       };
