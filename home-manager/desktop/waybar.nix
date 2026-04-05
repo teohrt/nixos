@@ -35,8 +35,13 @@ let
       }
       getline lavg < "/proc/loadavg"
       split(lavg, la, " ")
+      # load_pct: 1-minute load average (average number of processes waiting for
+      # CPU time) normalized to core count (nc-1 excludes the aggregate "cpu"
+      # entry). 100% means all cores fully saturated on average.
       load_pct = la[1] / (nc - 1) * 100
-      tooltip = sprintf("CPU\\n%.2f%%  Load: %.1f%%", pct["cpu"], load_pct)
+      # pct["cpu"]: fraction of CPU time spent doing work in the last sample
+      # interval (idle time subtracted from total). Instantaneous, not averaged.
+      tooltip = sprintf("CPU\\nUsage: %.2f%%  Load: %.1f%%", pct["cpu"], load_pct)
       for (i = 2; i <= nc; i++)
         tooltip = tooltip sprintf("\\n%s: %.2f%%", order[i], pct[order[i]])
       num = sprintf(" %.2f%%", pct["cpu"])
