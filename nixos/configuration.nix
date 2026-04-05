@@ -48,30 +48,13 @@
     xwayland.enable = true;
   };
 
-  # Login manager — minimal black screen with password input, auto-selects hyprland session
-  services.displayManager.sddm = {
+  # Login manager — tuigreet provides a minimal terminal-style login prompt
+  services.greetd = {
     enable = true;
-    wayland.enable = true;
-    theme = "where_is_my_sddm_theme";
-    extraPackages = with pkgs; [ kdePackages.qt5compat ];
+    settings.default_session.command = ''
+      ${pkgs.greetd.tuigreet}/bin/tuigreet --time --greeting "login" --cmd Hyprland
+    '';
   };
-  environment.systemPackages = [
-    (pkgs.where-is-my-sddm-theme.override {
-      themeConfig.General = {
-        backgroundFill = "#000000";
-        basicTextColor = "#ECEFF4";
-        passwordCursorColor = "#88C0D0";
-        passwordTextColor = "#ECEFF4";
-        passwordInputBackground = "#3B4252";
-        passwordInputRadius = "10";
-        font = "JetBrains Mono";
-        passwordCharacter = "•";
-        passwordFontSize = "24";
-        showUsersByDefault = "false";
-        showSessionsByDefault = "false";
-      };
-    })
-  ];
 
   # XDG portal for Hyprland
   xdg.portal = {
