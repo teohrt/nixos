@@ -9,6 +9,19 @@
         grace = 0;
       };
 
+      background = [{
+        monitor = "";
+        color = "rgb(0, 0, 0)";
+      }];
+
+      input-field = [{
+        monitor = "";
+        size = "400, 50";
+        position = "0, -100";
+        halign = "center";
+        valign = "center";
+      }];
+
 
       label = [
         # Clock
