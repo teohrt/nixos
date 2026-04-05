@@ -23,7 +23,7 @@ in
     enable = true;
     settings = {
       border-radius = 10;
-      width = 300;
+      width = 100;
     };
   };
 
