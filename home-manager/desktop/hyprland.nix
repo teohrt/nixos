@@ -137,6 +137,7 @@ in
         "$mod, ESC,          exit"
         "$mod SHIFT, V,      togglefloating"
         "$mod, SPACE,        exec, $menu"
+        "$mod, B,            exec, pkill -SIGUSR1 waybar"  # toggle waybar
         "$mod, J,            togglesplit"
 
         # focus
