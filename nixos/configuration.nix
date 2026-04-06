@@ -61,8 +61,6 @@
     xwayland.enable = true;
   };
 
-  environment.systemPackages = [ pkgs-jolt ];
-
   # Allow jolt to read CPU power metrics from the Intel RAPL interface
   services.udev.extraRules = ''
     SUBSYSTEM=="powercap", ACTION=="add", RUN+="${pkgs.coreutils}/bin/chmod o+r /sys/class/powercap/intel-rapl/intel-rapl:0/energy_uj /sys/class/powercap/intel-rapl/intel-rapl:0/*/energy_uj"
@@ -75,7 +73,7 @@
     theme = "sddm-astronaut-theme";
     extraPackages = with pkgs; [ sddm-astronaut kdePackages.qtmultimedia ];
   };
-  environment.systemPackages = [ pkgs.sddm-astronaut ];
+  environment.systemPackages = [ pkgs.sddm-astronaut pkgs-jolt ];
 
   # XDG portal for Hyprland
   xdg.portal = {
