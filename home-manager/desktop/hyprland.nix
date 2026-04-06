@@ -116,7 +116,7 @@ in
         "size 600 400, title:^(audio)$"
         "center, title:^(audio)$"
         "float, title:^(battery)$"
-        "size 600 400, title:^(battery)$"
+        "size 600 800, title:^(battery)$"
         "center, title:^(battery)$"
       ];
 
