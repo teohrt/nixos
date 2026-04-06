@@ -234,7 +234,7 @@ in
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 20; low = 40; medium = 70; high = 100; };
         interval = 2;
-        on-click = "${mkToggle "battop" "alacritty --title battop -e battop"}";
+        on-click = "${mkToggle "battery" "alacritty --title battery -e bash -c 'upower -i $(upower -e | grep BAT); read'"}";
       };
 
       "custom/cpu" = {
