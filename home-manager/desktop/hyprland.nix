@@ -99,25 +99,27 @@ in
       layerrule = [
         "blur, waybar"
         "ignorezero, waybar"
-        "blur, walker"          # walker is a layer surface — blur must be set via layerrule, not windowrulev2
-        "ignorezero, walker"   # don't blur fully-transparent pixels (outside the rounded box)
+        "blur, walker"
+        "ignorezero, walker"
+        "animation slide top, walker"                  # slide down from top when opening
+        "animation slide top, swaync-control-center"   # notification panel slides down from top
       ];
 
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
         "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
-"float, title:^(wifi)$"
+        "float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"
-        "center, title:^(wifi)$"
+        "move onscreen cursor -50% 50, title:^(wifi)$"
         "float, title:^(bluetooth)$"
         "size 600 400, title:^(bluetooth)$"
-        "center, title:^(bluetooth)$"
+        "move onscreen cursor -50% 50, title:^(bluetooth)$"
         "float, title:^(audio)$"
         "size 600 400, title:^(audio)$"
-        "center, title:^(audio)$"
+        "move onscreen cursor -50% 50, title:^(audio)$"
         "float, title:^(battery)$"
         "size 600 800, title:^(battery)$"
-        "center, title:^(battery)$"
+        "move onscreen cursor -50% 50, title:^(battery)$"
       ];
 
       # standard key bindings (fire once per press)
