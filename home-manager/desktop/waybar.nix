@@ -193,11 +193,27 @@ in
 
       modules-left = [ "custom/launcher" "hyprland/workspaces" ];
       modules-center = [ "battery" "clock" "custom/weather" ];
-      modules-right = [ "custom/wifi" "custom/cpu" "custom/mem" "pulseaudio" "bluetooth" "custom/power" ];
+      modules-right = [ "custom/notification" "custom/wifi" "custom/cpu" "custom/mem" "pulseaudio" "bluetooth" "custom/power" ];
 
       "custom/launcher" = {
         format = "󱄅";
         on-click = "walker -N -H";
+        tooltip = false;
+      };
+
+      "custom/notification" = {
+        exec = "swaync-client -swb";
+        return-type = "json";
+        format = "{icon}";
+        format-icons = {
+          notification = "󰂚";
+          none = "󰂜";
+          dnd-notification = "󰂛";
+          dnd-none = "󰂛";
+        };
+        on-click = "swaync-client -t -sw";       # toggle notification panel
+        on-click-right = "swaync-client -d -sw"; # toggle do not disturb
+        escape = true;
         tooltip = false;
       };
 

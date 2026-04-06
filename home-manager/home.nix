@@ -19,19 +19,15 @@ in
 
 
   programs.btop.enable = true;
-  services.mako = {
+  services.swaync = {
     enable = true;
     settings = {
       border-radius = 10;
       width = 250;
+      timeout = 0;
+      timeout-low = 3;
+      timeout-critical = 0;
     };
-    extraConfig = ''
-      [urgency=low]
-      default-timeout=3000
-
-      [urgency=critical]
-      default-timeout=0
-    '';
   };
 
   # Darken Nautilus background so text stays readable across light and dark themes.
