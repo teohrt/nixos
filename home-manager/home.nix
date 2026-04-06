@@ -19,6 +19,24 @@ in
 
 
   programs.btop.enable = true;
+  services.swaync = {
+    enable = true;
+    settings = {
+      border-radius = 10;
+      width = 250;
+      timeout = 0;
+      timeout-low = 3;
+      timeout-critical = 0;
+    };
+  };
+
+  # Darken Nautilus background so text stays readable across light and dark themes.
+  # shade() is a GTK CSS function: values < 1 darken, > 1 lighten.
+  stylix.targets.gtk.extraCss = ''
+    .nautilus-window {
+      background-color: shade(@window_bg_color, 0.75);
+    }
+  '';
 
   dconf.settings = {
     "org/gnome/nautilus/preferences" = {

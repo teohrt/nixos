@@ -8,7 +8,20 @@
     ./themes.nix
   ];
   
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    # Build using all available cores
+    max-jobs = "auto";
+    # Pull pre-built binaries from nix-community cache (home-manager, stylix, etc.)
+    substituters = [
+      "https://cache.nixos.org"
+      "https://nix-community.cachix.org"
+    ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
+  };
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -48,30 +61,20 @@
     xwayland.enable = true;
   };
 
-  # Login manager — minimal black screen with password input, auto-selects hyprland session
+  # Allow jolt to read CPU power metrics from the Intel RAPL interface
+  services.udev.extraRules = ''
+    SUBSYSTEM=="powercap", ACTION=="add", RUN+="${pkgs.coreutils}/bin/chmod o+r /sys/class/powercap/intel-rapl/intel-rapl:0/energy_uj /sys/class/powercap/intel-rapl/intel-rapl:0/*/energy_uj"
+  '';
+
+  # Login manager
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
-    theme = "where_is_my_sddm_theme";
-    extraPackages = with pkgs; [ kdePackages.qt5compat ];
+    theme = "sddm-astronaut-theme";
+    extraPackages = with pkgs; [ sddm-astronaut kdePackages.qtmultimedia ];
   };
-  environment.systemPackages = [
-    (pkgs.where-is-my-sddm-theme.override {
-      themeConfig.General = {
-        backgroundFill = "#000000";
-        basicTextColor = "#ECEFF4";
-        passwordCursorColor = "#88C0D0";
-        passwordTextColor = "#ECEFF4";
-        passwordInputBackground = "#3B4252";
-        passwordInputRadius = "10";
-        font = "JetBrains Mono";
-        passwordCharacter = "•";
-        passwordFontSize = "24";
-        showUsersByDefault = "false";
-        showSessionsByDefault = "false";
-      };
-    })
-  ];
+  services.upower.enable = true;
+  environment.systemPackages = [ pkgs.sddm-astronaut ];
 
   # XDG portal for Hyprland
   xdg.portal = {

@@ -35,7 +35,13 @@ let
       }
       getline lavg < "/proc/loadavg"
       split(lavg, la, " ")
-      tooltip = sprintf("CPU\\n%.2f%%  Load: %s", pct["cpu"], la[1])
+      # load_pct: 1-minute load average (average number of processes waiting for
+      # CPU time) normalized to core count (nc-1 excludes the aggregate "cpu"
+      # entry). 100% means all cores fully saturated on average.
+      load_pct = la[1] / (nc - 1) * 100
+      # pct["cpu"]: fraction of CPU time spent doing work in the last sample
+      # interval (idle time subtracted from total). Instantaneous, not averaged.
+      tooltip = sprintf("CPU\\nUsage: %.2f%%  Load: %.1f%%", pct["cpu"], load_pct)
       for (i = 2; i <= nc; i++)
         tooltip = tooltip sprintf("\\n%s: %.2f%%", order[i], pct[order[i]])
       num = sprintf(" %.2f%%", pct["cpu"])
@@ -141,7 +147,7 @@ let
   weatherScript = pkgs.writeShellScript "waybar-weather" ''
     WEATHER=$(${pkgs.curl}/bin/curl -sf "https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph")
     if [ -z "$WEATHER" ]; then
-      echo '{"text": "󰖑 --", "tooltip": "Weather unavailable"}'
+      echo '{"text": "󰖑", "tooltip": "Weather unavailable"}'
       exit
     fi
 
@@ -165,8 +171,8 @@ let
       *)                     ICON="!" DESC="Unknown" ;;
     esac
 
-    TEXT="<span color='#ffffff99'>$ICON ''${TEMP}°F</span>"
-    TOOLTIP="$DESC\nFeels like: ''${FEELS}°F\nHumidity: ''${HUMIDITY}%\nWind: ''${WIND} mph"
+    TEXT="$ICON"
+    TOOLTIP="''${TEMP}°F — $DESC\nFeels like: ''${FEELS}°F\nHumidity: ''${HUMIDITY}%\nWind: ''${WIND} mph"
 
     echo "{\"text\": \"$TEXT\", \"tooltip\": \"$TOOLTIP\"}"
   '';
@@ -185,13 +191,29 @@ in
       margin-right = 4;
       spacing = 8;
 
-      modules-left = [ "custom/launcher" "hyprland/workspaces" ];
-      modules-center = [ "battery" "clock" "custom/weather" ];
+      modules-left = [ "custom/launcher" "hyprland/workspaces" "custom/weather" ];
+      modules-center = [ "battery" "clock" "custom/notification" ];
       modules-right = [ "custom/wifi" "custom/cpu" "custom/mem" "pulseaudio" "bluetooth" "custom/power" ];
 
       "custom/launcher" = {
         format = "󱄅";
         on-click = "walker -N -H";
+        tooltip = false;
+      };
+
+      "custom/notification" = {
+        exec = "swaync-client -swb";
+        return-type = "json";
+        format = "{icon}";
+        format-icons = {
+          notification = "󰂚";
+          none = "󰂜";
+          dnd-notification = "󰂛";
+          dnd-none = "󰂛";
+        };
+        on-click = "swaync-client -t -sw";       # toggle notification panel
+        on-click-right = "swaync-client -d -sw"; # toggle do not disturb
+        escape = true;
         tooltip = false;
       };
 
@@ -207,11 +229,12 @@ in
       };
 
       battery = {
-        format = "<span size=\"large\">{icon}</span> <span color=\"#ffffff99\">{capacity}%</span>";
-        format-charging = "<span size=\"large\">󰂄</span> <span color=\"#ffffff99\">{capacity}%</span>";
+        format = "<span size=\"large\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
+        format-charging = "<span size=\"large\">󰂄</span> <span color=\"#ffffff\">{capacity}%</span>";
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 20; low = 40; medium = 70; high = 100; };
         interval = 2;
+        on-click = "${mkToggle "battery" "alacritty --title battery -e bash -c 'upower -i $(upower -e | grep BAT); read'"}";
       };
 
       "custom/cpu" = {
@@ -245,9 +268,9 @@ in
       };
 
       pulseaudio = {
-        format = "<span size=\"large\">󰕾</span> {volume}%";
-        format-muted = "<span size=\"large\">󰝟</span> {volume}%";
-        tooltip = false;
+        format = "<span size=\"xx-large\">󰕾</span>";
+        format-muted = "<span size=\"xx-large\">󰝟</span>";
+        tooltip-format = "{volume}%";
         on-click = "${mkToggle "audio" "alacritty --title audio -e wiremix"}";
       };
 
@@ -263,6 +286,7 @@ in
         return-type = "json";
         interval = 300;
         tooltip = true;
+        format = "{}";
       };
     }];
 
@@ -291,6 +315,8 @@ in
 
       #custom-launcher,
       #custom-wifi,
+      #custom-notification,
+      #battery,
       #bluetooth,
       #pulseaudio,
       #custom-power {
@@ -306,8 +332,9 @@ in
 
       #custom-launcher:hover,
       #clock:hover,
-      #battery:hover,
       #custom-wifi:hover,
+      #custom-notification:hover,
+      #battery:hover,
       #bluetooth:hover,
       #pulseaudio:hover,
       #custom-cpu:hover,
@@ -345,21 +372,35 @@ in
         background: rgba(255, 255, 255, 0.08);
       }
 
-      #clock,
-      #battery {
+      #clock {
         padding: 2px 13px 2px 15px;
+      }
+
+      #battery {
+        padding: 2px 16px;
       }
 
       #custom-wifi {
         padding: 2px 8px 2px 6px;
       }
 
-      #battery,
-      #pulseaudio,
       #custom-cpu,
-      #custom-mem,
+      #custom-mem {
+        padding: 2px 7px;
+      }
+
       #custom-weather {
         padding: 2px 7px;
+        font-size: 18px;
+      }
+
+      #pulseaudio {
+        padding: 2px 16px;
+      }
+
+      #custom-notification {
+        padding: 2px 16px;
+        font-size: 18px;
       }
 
       #bluetooth {
@@ -368,6 +409,7 @@ in
 
       #custom-power {
         padding: 2px 16px 2px 16px;
+        font-size: 18px;
       }
 
       tooltip {

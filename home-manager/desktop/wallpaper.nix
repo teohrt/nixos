@@ -17,10 +17,18 @@ let
       ];
     }
     {
-      name = "Everforest";
-      specialisation = "everforest";
+      name = "Gruvbox";
+      specialisation = "gruvbox";
       wallpapers = [
-        { name = "Mist Forest"; path = ../../assets/everforest/mist_forest.png; animated = false; }
+        { name = "Mist Forest"; path = ../../assets/gruvbox/mist_forest.png; animated = false; }
+        { name = "Leaves";      path = ../../assets/gruvbox/leaves.mp4;       animated = true;  }
+      ];
+    }
+    {
+      name = "Eris";
+      specialisation = "eris";
+      wallpapers = [
+        { name = "Neon Car"; path = ../../assets/eris/neon-car.mp4; animated = true; }
       ];
     }
   ];
@@ -38,14 +46,16 @@ let
   staticWallpapers = lib.filter (w: !w.animated) allWallpapers;
 
   # Emit the sudo command to activate a specialisation (or revert to default).
-  # This runs switch-to-configuration which activates the pre-built system config,
-  # including re-running home-manager activation to update all app configs on disk.
+  # Specialisations are always diffed against the base (Nord) system, not against each
+  # other — so we must return to Nord first before applying any non-Nord specialisation.
+  # For Nord itself, a single switch suffices.
   switchCmd = w:
     if w.specialisation == null
-    # /nix/var/nix/profiles/system is the base system, stable even when a specialisation
-    # is active and /run/current-system points to the specialisation's store path.
     then "sudo /nix/var/nix/profiles/system/bin/switch-to-configuration switch"
-    else "sudo /run/current-system/specialisation/${w.specialisation}/bin/switch-to-configuration switch";
+    # /nix/var/nix/profiles/system always points to the base system, so specialisation
+    # paths under it are stable and accessible regardless of which theme is currently active.
+    # /run/current-system/specialisation/ only exists when the base system is running.
+    else "sudo /nix/var/nix/profiles/system/specialisation/${w.specialisation}/bin/switch-to-configuration switch";
 
   # Walker dmenu picker — presents all wallpapers and switches to the chosen one.
   # Order of operations:
@@ -77,6 +87,7 @@ let
               else
                 notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
               fi
+
               pkill mpvpaper 2>/dev/null || true
               systemctl --user start hyprpaper.service
               # Wait for hyprpaper socket to be ready before issuing commands
@@ -92,6 +103,7 @@ let
               else
                 notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
               fi
+
               systemctl --user stop hyprpaper.service
               pkill mpvpaper 2>/dev/null || true
               ${lib.getExe pkgs.mpvpaper} -o 'loop' '*' ${toString w.path} &
