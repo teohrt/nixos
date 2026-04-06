@@ -313,6 +313,7 @@ in
 
       #custom-launcher,
       #custom-wifi,
+      #custom-notification,
       #bluetooth,
       #pulseaudio,
       #custom-power {
@@ -330,6 +331,7 @@ in
       #clock:hover,
       #battery:hover,
       #custom-wifi:hover,
+      #custom-notification:hover,
       #bluetooth:hover,
       #pulseaudio:hover,
       #custom-cpu:hover,
@@ -382,6 +384,11 @@ in
       #custom-mem,
       #custom-weather {
         padding: 2px 7px;
+      }
+
+      #custom-notification {
+        padding: 2px 16px;
+        font-size: 18px;
       }
 
       #bluetooth {
