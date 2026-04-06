@@ -10,6 +10,8 @@
     which
     tree
     gawk
+    cmatrix
+    expressvpn
 
     # apps
     google-chrome
