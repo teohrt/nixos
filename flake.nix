@@ -20,18 +20,20 @@
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    jolt.url = "github:jordond/jolt";
   };
 
-  outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, stylix, spicetify-nix, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, stylix, spicetify-nix, jolt, ... }:
   let
     system = "x86_64-linux";
     pkgs-walker = nixpkgs-walker.legacyPackages.${system};
+    pkgs-jolt = jolt.packages.${system}.default;
   in
   {
     nixosConfigurations = {
       my-nixos = nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit pkgs-walker; };
+        specialArgs = { inherit pkgs-walker pkgs-jolt; };
         modules = [
           ./nixos/configuration.nix
           stylix.nixosModules.stylix
@@ -42,7 +44,7 @@
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "nixos-hm-backup";
 
-            home-manager.extraSpecialArgs = { inherit pkgs-walker spicetify-nix; };
+            home-manager.extraSpecialArgs = { inherit pkgs-walker pkgs-jolt spicetify-nix; };
             home-manager.users.trace = import ./home-manager/home.nix;
           }
         ];

@@ -234,6 +234,7 @@ in
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 20; low = 40; medium = 70; high = 100; };
         interval = 2;
+        on-click = "${mkToggle "jolt" "alacritty --title jolt -e jolt"}";
       };
 
       "custom/cpu" = {
@@ -314,6 +315,7 @@ in
       #custom-launcher,
       #custom-wifi,
       #custom-notification,
+      #battery,
       #bluetooth,
       #pulseaudio,
       #custom-power {
@@ -329,9 +331,9 @@ in
 
       #custom-launcher:hover,
       #clock:hover,
-      #battery:hover,
       #custom-wifi:hover,
       #custom-notification:hover,
+      #battery:hover,
       #bluetooth:hover,
       #pulseaudio:hover,
       #custom-cpu:hover,
@@ -369,16 +371,18 @@ in
         background: rgba(255, 255, 255, 0.08);
       }
 
-      #clock,
-      #battery {
+      #clock {
         padding: 2px 13px 2px 15px;
+      }
+
+      #battery {
+        padding: 2px 16px;
       }
 
       #custom-wifi {
         padding: 2px 8px 2px 6px;
       }
 
-      #battery,
       #custom-cpu,
       #custom-mem,
       #custom-weather {
