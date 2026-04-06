@@ -115,6 +115,9 @@ in
         "float, title:^(audio)$"
         "size 600 400, title:^(audio)$"
         "center, title:^(audio)$"
+        "float, title:^(battery)$"
+        "size 600 400, title:^(battery)$"
+        "center, title:^(battery)$"
       ];
 
       # standard key bindings (fire once per press)
