@@ -379,11 +379,14 @@ in
       }
 
       #battery,
-      #pulseaudio,
       #custom-cpu,
       #custom-mem,
       #custom-weather {
         padding: 2px 7px;
+      }
+
+      #pulseaudio {
+        padding: 2px 16px;
       }
 
       #custom-notification {
