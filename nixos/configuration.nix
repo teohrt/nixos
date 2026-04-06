@@ -1,4 +1,4 @@
-{ config, pkgs, pkgs-jolt, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
@@ -73,7 +73,7 @@
     theme = "sddm-astronaut-theme";
     extraPackages = with pkgs; [ sddm-astronaut kdePackages.qtmultimedia ];
   };
-  environment.systemPackages = [ pkgs.sddm-astronaut pkgs-jolt ];
+  environment.systemPackages = [ pkgs.sddm-astronaut pkgs.battop ];
 
   # XDG portal for Hyprland
   xdg.portal = {

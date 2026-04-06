@@ -234,7 +234,7 @@ in
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 20; low = 40; medium = 70; high = 100; };
         interval = 2;
-        on-click = "${mkToggle "jolt" "alacritty --title jolt -e jolt"}";
+        on-click = "${mkToggle "battop" "alacritty --title battop -e battop"}";
       };
 
       "custom/cpu" = {
