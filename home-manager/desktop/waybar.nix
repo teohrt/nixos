@@ -147,7 +147,7 @@ let
   weatherScript = pkgs.writeShellScript "waybar-weather" ''
     WEATHER=$(${pkgs.curl}/bin/curl -sf "https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph")
     if [ -z "$WEATHER" ]; then
-      echo '{"text": "󰖑 --", "tooltip": "Weather unavailable"}'
+      echo '{"text": "<span size=\"xx-large\">󰖑</span> --", "tooltip": "Weather unavailable"}'
       exit
     fi
 
@@ -171,7 +171,7 @@ let
       *)                     ICON="!" DESC="Unknown" ;;
     esac
 
-    TEXT="<span color='#ffffff'>$ICON ''${TEMP}°F</span>"
+    TEXT="<span size='xx-large'>$ICON</span> ''${TEMP}°F"
     TOOLTIP="$DESC\nFeels like: ''${FEELS}°F\nHumidity: ''${HUMIDITY}%\nWind: ''${WIND} mph"
 
     echo "{\"text\": \"$TEXT\", \"tooltip\": \"$TOOLTIP\"}"
@@ -286,6 +286,7 @@ in
         return-type = "json";
         interval = 300;
         tooltip = true;
+        format = "{}";
       };
     }];
 
