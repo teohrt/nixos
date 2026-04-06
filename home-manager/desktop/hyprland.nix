@@ -11,6 +11,37 @@ let
       esac
     done
   '';
+
+  # Reads all bindd-described bindings from Hyprland and shows them in a
+  # searchable walker dmenu. Only bindings with descriptions appear.
+  keybindingsMenu = pkgs.writeShellScript "keybindings-menu" ''
+    hyprctl -j binds | \
+      ${pkgs.jq}/bin/jq -r '
+        .[] |
+        select(.description != null and .description != "") |
+        {
+          mod: (
+            if .modmask == 0 then ""
+            elif .modmask == 1  then "SHIFT"
+            elif .modmask == 4  then "CTRL"
+            elif .modmask == 8  then "ALT"
+            elif .modmask == 64 then "SUPER"
+            elif .modmask == 65 then "SUPER SHIFT"
+            elif .modmask == 68 then "SUPER CTRL"
+            elif .modmask == 69 then "SUPER SHIFT CTRL"
+            elif .modmask == 72 then "SUPER ALT"
+            elif .modmask == 76 then "SUPER CTRL ALT"
+            else (.modmask | tostring) end
+          ),
+          key: (.key | ascii_upcase),
+          desc: .description
+        } |
+        if .mod == "" then "\(.key)  →  \(.desc)"
+        else "\(.mod) + \(.key)  →  \(.desc)"
+        end
+      ' | \
+      walker --dmenu -p "Keybindings" --width 700 --height 500
+  '';
 in
 
 {
@@ -126,58 +157,60 @@ in
         "animation slide top, title:^(battery)$"
       ];
 
-      # standard key bindings (fire once per press)
-      bind = [
-        "$mod, Return,       exec, $terminal"
-        "$mod, Escape,       exec, power-menu"
-        "$mod SHIFT, Return, exec, google-chrome-stable"
-        "$mod, F,            fullscreen"
-        "$mod SHIFT, F,      exec, nautilus --new-window"  # file browser
-        "$mod, W,            killactive"
-        "$mod, ESC,          exit"
-        "$mod SHIFT, V,      togglefloating"
-        "$mod, SPACE,        exec, $menu"
-        "$mod, B,            exec, pkill -SIGUSR1 waybar"  # toggle waybar
-        "$mod, J,            togglesplit"
+      # standard key bindings with descriptions (bindd = bind with description)
+      # descriptions appear in the SUPER+K keybindings menu
+      bindd = [
+        "$mod, Return,       Terminal,              exec, $terminal"
+        "$mod, Escape,       Power menu,            exec, power-menu"
+        "$mod SHIFT, Return, Browser,               exec, google-chrome-stable"
+        "$mod, F,            Fullscreen,            fullscreen"
+        "$mod SHIFT, F,      File manager,          exec, nautilus --new-window"
+        "$mod, W,            Close window,          killactive"
+        "$mod, ESC,          Exit Hyprland,         exit"
+        "$mod SHIFT, V,      Toggle floating,       togglefloating"
+        "$mod, SPACE,        Launch apps,           exec, $menu"
+        "$mod, B,            Toggle waybar,         exec, pkill -SIGUSR1 waybar"
+        "$mod, J,            Toggle split,          togglesplit"
+        "$mod, K,            Show keybindings,      exec, ${keybindingsMenu}"
 
         # focus
-        "$mod, left,  movefocus, l"
-        "$mod, right, movefocus, r"
-        "$mod, up,    movefocus, u"
-        "$mod, down,  movefocus, d"
+        "$mod, left,  Move focus left,  movefocus, l"
+        "$mod, right, Move focus right, movefocus, r"
+        "$mod, up,    Move focus up,    movefocus, u"
+        "$mod, down,  Move focus down,  movefocus, d"
 
         # switch workspace
-        "$mod, 1, workspace, 1"
-        "$mod, 2, workspace, 2"
-        "$mod, 3, workspace, 3"
-        "$mod, 4, workspace, 4"
-        "$mod, 5, workspace, 5"
-        "$mod, 6, workspace, 6"
-        "$mod, 7, workspace, 7"
-        "$mod, 8, workspace, 8"
-        "$mod, 9, workspace, 9"
-        "$mod, 0, workspace, 10"
+        "$mod, 1, Workspace 1,  workspace, 1"
+        "$mod, 2, Workspace 2,  workspace, 2"
+        "$mod, 3, Workspace 3,  workspace, 3"
+        "$mod, 4, Workspace 4,  workspace, 4"
+        "$mod, 5, Workspace 5,  workspace, 5"
+        "$mod, 6, Workspace 6,  workspace, 6"
+        "$mod, 7, Workspace 7,  workspace, 7"
+        "$mod, 8, Workspace 8,  workspace, 8"
+        "$mod, 9, Workspace 9,  workspace, 9"
+        "$mod, 0, Workspace 10, workspace, 10"
 
         # move active window to workspace
-        "$mod SHIFT, 1, movetoworkspace, 1"
-        "$mod SHIFT, 2, movetoworkspace, 2"
-        "$mod SHIFT, 3, movetoworkspace, 3"
-        "$mod SHIFT, 4, movetoworkspace, 4"
-        "$mod SHIFT, 5, movetoworkspace, 5"
-        "$mod SHIFT, 6, movetoworkspace, 6"
-        "$mod SHIFT, 7, movetoworkspace, 7"
-        "$mod SHIFT, 8, movetoworkspace, 8"
-        "$mod SHIFT, 9, movetoworkspace, 9"
-        "$mod SHIFT, 0, movetoworkspace, 10"
+        "$mod SHIFT, 1, Move to workspace 1,  movetoworkspace, 1"
+        "$mod SHIFT, 2, Move to workspace 2,  movetoworkspace, 2"
+        "$mod SHIFT, 3, Move to workspace 3,  movetoworkspace, 3"
+        "$mod SHIFT, 4, Move to workspace 4,  movetoworkspace, 4"
+        "$mod SHIFT, 5, Move to workspace 5,  movetoworkspace, 5"
+        "$mod SHIFT, 6, Move to workspace 6,  movetoworkspace, 6"
+        "$mod SHIFT, 7, Move to workspace 7,  movetoworkspace, 7"
+        "$mod SHIFT, 8, Move to workspace 8,  movetoworkspace, 8"
+        "$mod SHIFT, 9, Move to workspace 9,  movetoworkspace, 9"
+        "$mod SHIFT, 0, Move to workspace 10, movetoworkspace, 10"
 
-        # mute toggles (swayosd shows the OSD popup)
-        ", XF86AudioMute,    exec, swayosd-client --output-volume mute-toggle"
-        ", XF86AudioMicMute, exec, swayosd-client --input-volume mute-toggle"
+        # mute toggles
+        ", XF86AudioMute,    Mute audio, exec, swayosd-client --output-volume mute-toggle"
+        ", XF86AudioMicMute, Mute mic,   exec, swayosd-client --input-volume mute-toggle"
 
-        # screenshot — all modes save to ~/Pictures and copy to clipboard
-        ", Print,       exec, hyprshot -m region -o ~/Pictures"  # select region
-        "SHIFT, Print,  exec, hyprshot -m window -o ~/Pictures"  # click a window
-        "$mod, Print,   exec, hyprshot -m output -o ~/Pictures"  # full monitor
+        # screenshots — all modes save to ~/Pictures and copy to clipboard
+        ", Print,      Screenshot region,  exec, hyprshot -m region -o ~/Pictures"
+        "SHIFT, Print, Screenshot window,  exec, hyprshot -m window -o ~/Pictures"
+        "$mod, Print,  Screenshot monitor, exec, hyprshot -m output -o ~/Pictures"
       ];
 
       # repeatable bindings — fire continuously while key is held
