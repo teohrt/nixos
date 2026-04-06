@@ -73,7 +73,8 @@
     theme = "sddm-astronaut-theme";
     extraPackages = with pkgs; [ sddm-astronaut kdePackages.qtmultimedia ];
   };
-  environment.systemPackages = [ pkgs.sddm-astronaut pkgs.upower ];
+  services.upower.enable = true;
+  environment.systemPackages = [ pkgs.sddm-astronaut ];
 
   # XDG portal for Hyprland
   xdg.portal = {
