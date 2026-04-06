@@ -267,8 +267,8 @@ in
       };
 
       pulseaudio = {
-        format = "<span size=\"large\">󰕾</span> {volume}%";
-        format-muted = "<span size=\"large\">󰝟</span> {volume}%";
+        format = "<span size=\"x-large\">󰕾</span> {volume}%";
+        format-muted = "<span size=\"x-large\">󰝟</span> {volume}%";
         tooltip = false;
         on-click = "${mkToggle "audio" "alacritty --title audio -e wiremix"}";
       };
@@ -397,6 +397,7 @@ in
 
       #custom-power {
         padding: 2px 16px 2px 16px;
+        font-size: 18px;
       }
 
       tooltip {
