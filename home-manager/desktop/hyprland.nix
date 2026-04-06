@@ -111,15 +111,19 @@ in
         "float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"
         "center, title:^(wifi)$"
+        "animation slide top, title:^(wifi)$"
         "float, title:^(bluetooth)$"
         "size 600 400, title:^(bluetooth)$"
         "center, title:^(bluetooth)$"
+        "animation slide top, title:^(bluetooth)$"
         "float, title:^(audio)$"
         "size 600 400, title:^(audio)$"
         "center, title:^(audio)$"
+        "animation slide top, title:^(audio)$"
         "float, title:^(battery)$"
         "size 600 800, title:^(battery)$"
         "center, title:^(battery)$"
+        "animation slide top, title:^(battery)$"
       ];
 
       # standard key bindings (fire once per press)
