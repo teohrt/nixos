@@ -65,13 +65,10 @@ let
 in
 
 {
-  home.packages = [ pkgs.nwg-displays ];
+  home.packages = [ pkgs.hyprmon ];
 
   wayland.windowManager.hyprland = {
     enable = true;
-
-    # source the monitors config written by nwg-displays
-    extraConfig = "source = ~/.config/hypr/monitors.conf";
 
     settings = {
       # use preferred resolution, auto-position, 1.2x scaling
@@ -189,10 +186,10 @@ in
         "center,     class:^(1password)$"
         "pin,        class:^(1password)$"
 
-        "float,      class:^(nwg-displays)$"
-        "size 900 600, class:^(nwg-displays)$"
-        "center,     class:^(nwg-displays)$"
-        "animation slide top, class:^(nwg-displays)$"
+        "float,      class:^(hyprmon)$"
+        "size 900 600, class:^(hyprmon)$"
+        "center,     class:^(hyprmon)$"
+        "animation slide top, class:^(hyprmon)$"
 
         "float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"
@@ -228,7 +225,7 @@ in
         "$mod, P,            Pseudo window,         pseudo"
         "$mod, O,            Pop window out,        exec, ${popWindow}"
         "$mod, K,            Show keybindings,      exec, ${keybindingsMenu}"
-        "$mod, M,            Monitor settings,      exec, nwg-displays"
+        "$mod, M,            Monitor settings,      exec, hyprmon"
 
         # resize active window
         "$mod, minus,        Expand window left,  resizeactive, -100 0"
