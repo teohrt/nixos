@@ -51,8 +51,23 @@ let
     done
   '';
 
+  # Toggles the screensaver on/off via a state file and notifies the user.
+  toggleScreensaver = pkgs.writeShellScriptBin "toggle-screensaver" ''
+    STATE="$HOME/.local/state/screensaver-off"
+    if [ -f "$STATE" ]; then
+      rm "$STATE"
+      notify-send "Screensaver" "Screensaver enabled"
+    else
+      mkdir -p "$(dirname "$STATE")"
+      touch "$STATE"
+      notify-send "Screensaver" "Screensaver disabled"
+    fi
+  '';
+
   # Launches the screensaver terminal on every connected monitor.
+  # Exits silently if the screensaver has been toggled off.
   launchScreensaver = pkgs.writeShellScriptBin "launch-screensaver" ''
+    [ -f "$HOME/.local/state/screensaver-off" ] && exit 0
     pgrep -f "class=screensaver" && exit 0
 
     walker -q 2>/dev/null || true
@@ -71,7 +86,7 @@ let
   '';
 in
 {
-  home.packages = [ screensaverCmd launchScreensaver ];
+  home.packages = [ screensaverCmd launchScreensaver toggleScreensaver ];
 
   services.hypridle = {
     enable = true;

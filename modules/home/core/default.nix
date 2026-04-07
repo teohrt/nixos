@@ -1,14 +1,16 @@
 { pkgs, pkgs-walker, ... }:
 let
   powerMenu = pkgs.writeShellScriptBin "power-menu" ''
-    CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nLog Out" \
+    CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nScreensaver\nToggle Screensaver\nLog Out" \
       | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
     case "$CHOICE" in
-      Shutdown)  systemctl poweroff ;;
-      Restart)   systemctl reboot ;;
-      Lock)      hyprlock ;;
-      Suspend)   systemctl suspend ;;
-      "Log Out") hyprctl dispatch exit ;;
+      Shutdown)           systemctl poweroff ;;
+      Restart)            systemctl reboot ;;
+      Lock)               hyprlock ;;
+      Suspend)            systemctl suspend ;;
+      Screensaver)        launch-screensaver ;;
+      "Toggle Screensaver") toggle-screensaver ;;
+      "Log Out")          hyprctl dispatch exit ;;
     esac
   '';
 in
