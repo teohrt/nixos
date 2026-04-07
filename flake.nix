@@ -27,7 +27,7 @@
   let
     system = "x86_64-linux";
     pkgs-walker = nixpkgs-walker.legacyPackages.${system};
-    pkgs-spotify = nixpkgs-spotify.legacyPackages.${system};
+    pkgs-spotify = import nixpkgs-spotify { inherit system; config.allowUnfree = true; };
   in
   {
     nixosConfigurations = {
