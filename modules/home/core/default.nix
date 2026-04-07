@@ -34,7 +34,7 @@ in
       }
 
       .control-center {
-        background-color: @window_bg_color;
+        background-color: alpha(@window_bg_color, 0.8);
       }
     '';
   };

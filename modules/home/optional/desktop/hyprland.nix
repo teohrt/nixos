@@ -153,6 +153,8 @@ in
         "blur, walker"
         "ignorezero, walker"
         "animation slide top, walker"                  # slide down from top when opening
+        "blur, swaync-control-center"
+        "ignorezero, swaync-control-center"
         "animation slide top, swaync-control-center"   # notification panel slides down from top
       ];
 
@@ -164,6 +166,7 @@ in
         "noborder,   class:^(screensaver)$"
 
         "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
+        "opacity 0.9 0.9, class:^(code)$"
         "float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"
         "center, title:^(wifi)$"
