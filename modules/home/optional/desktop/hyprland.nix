@@ -158,6 +158,7 @@ in
         "blur, swaync-control-center"
         "ignorezero, swaync-control-center"
         "animation slide top, swaync-control-center"   # notification panel slides down from top
+        "noanim, hyprshot"                             # prevent selection overlay animating into screenshots
       ];
 
       # floating window rules for TUI apps launched in titled windows
