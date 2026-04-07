@@ -59,6 +59,8 @@ let
 
     # Activate the target specialisation only if it isn't already active.
     # Compares resolved store paths — switching wallpapers within the same theme skips the switch.
+    # Sets THEME_SWITCHED=1 if a switch happened (daemons need restarting), 0 if already active.
+    THEME_SWITCHED=0
     maybe_switch() {
       local spec="$1"
       local target
@@ -67,7 +69,11 @@ let
       else
         target=$(readlink -f /nix/var/nix/profiles/system/specialisation/"$spec")
       fi
-      [ "$(readlink -f /run/current-system)" = "$target" ] && return 0
+      if [ "$(readlink -f /run/current-system)" = "$target" ]; then
+        THEME_SWITCHED=0
+        return 0
+      fi
+      THEME_SWITCHED=1
       if [ -z "$spec" ]; then
         sudo /nix/var/nix/profiles/system/bin/switch-to-configuration switch
       else
@@ -103,7 +109,7 @@ let
               until hyprctl hyprpaper listloaded &>/dev/null; do sleep 0.1; done
               hyprctl hyprpaper preload "${toString w.path}"
               hyprctl hyprpaper wallpaper ",${toString w.path}"
-              restart_themed_daemons
+              [ "$THEME_SWITCHED" = "1" ] && restart_themed_daemons
               ;;''
         else ''
           "${w.label}")
@@ -116,7 +122,7 @@ let
               systemctl --user stop hyprpaper.service
               pkill mpvpaper 2>/dev/null || true
               ${lib.getExe pkgs.mpvpaper} -o 'loop' '*' ${toString w.path} &
-              restart_themed_daemons
+              [ "$THEME_SWITCHED" = "1" ] && restart_themed_daemons
               ;;''
       ) allWallpapers)}
     esac
