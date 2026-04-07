@@ -24,8 +24,6 @@ let
         "dispatch togglefloating address:$addr;"
     elif [[ -n $addr ]]; then
       hyprctl dispatch togglefloating address:$addr
-      # resizeactive runs before the float state is committed without this — poll until Hyprland confirms
-      until [[ $(hyprctl activewindow -j | ${pkgs.jq}/bin/jq '.floating') == "true" ]]; do sleep 0.01; done
       hyprctl dispatch resizeactive exact 650 450
       hyprctl dispatch centerwindow address:$addr
       hyprctl -q --batch \
@@ -170,15 +168,20 @@ in
 
         "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
         "opacity ${toString osConfig.stylix.opacity.terminal} ${toString osConfig.stylix.opacity.terminal}, class:^(code)$"
-        "float,       class:^(org.kde.partitionmanager)$"
-        "size 1300 900, class:^(org.kde.partitionmanager)$"
-        "center,      class:^(org.kde.partitionmanager)$"
-        "pin,         class:^(org.kde.partitionmanager)$"
+        "float,      class:^(org.kde.partitionmanager)$"
+        "size 650 450, class:^(org.kde.partitionmanager)$"
+        "center,     class:^(org.kde.partitionmanager)$"
+        "pin,        class:^(org.kde.partitionmanager)$"
 
-        "float,       class:^(localsend_app)$"
-        "size 1300 900, class:^(localsend_app)$"
-        "center,      class:^(localsend_app)$"
-        "pin,         class:^(localsend_app)$"
+        "float,      class:^(localsend_app)$"
+        "size 650 450, class:^(localsend_app)$"
+        "center,     class:^(localsend_app)$"
+        "pin,        class:^(localsend_app)$"
+
+        "float,      class:^(1password)$"
+        "size 650 450, class:^(1password)$"
+        "center,     class:^(1password)$"
+        "pin,        class:^(1password)$"
 
         "float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"
