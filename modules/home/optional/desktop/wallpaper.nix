@@ -12,23 +12,23 @@ let
       name = "Nord";
       specialisation = null;
       wallpapers = [
-        { name = "Mountain";   path = ../../assets/nord/mountain.png;   animated = false; }
-        { name = "Black Hole"; path = ../../assets/nord/black_hole.mp4; animated = true;  }
+        { name = "Mountain";   path = ../../../../assets/nord/mountain.png;   animated = false; }
+        { name = "Black Hole"; path = ../../../../assets/nord/black_hole.mp4; animated = true;  }
       ];
     }
     {
       name = "Gruvbox";
       specialisation = "gruvbox";
       wallpapers = [
-        { name = "Mist Forest"; path = ../../assets/gruvbox/mist_forest.png; animated = false; }
-        { name = "Leaves";      path = ../../assets/gruvbox/leaves.mp4;       animated = true;  }
+        { name = "Mist Forest"; path = ../../../../assets/gruvbox/mist_forest.png; animated = false; }
+        { name = "Leaves";      path = ../../../../assets/gruvbox/leaves.mp4;       animated = true;  }
       ];
     }
     {
       name = "Eris";
       specialisation = "eris";
       wallpapers = [
-        { name = "Neon Car"; path = ../../assets/eris/neon-car.mp4; animated = true; }
+        { name = "Neon Car"; path = ../../../../assets/eris/neon-car.mp4; animated = true; }
       ];
     }
   ];
@@ -45,17 +45,8 @@ let
 
   staticWallpapers = lib.filter (w: !w.animated) allWallpapers;
 
-  # Emit the sudo command to activate a specialisation (or revert to default).
-  # Specialisations are always diffed against the base (Nord) system, not against each
-  # other — so we must return to Nord first before applying any non-Nord specialisation.
-  # For Nord itself, a single switch suffices.
-  switchCmd = w:
-    if w.specialisation == null
-    then "sudo /nix/var/nix/profiles/system/bin/switch-to-configuration switch"
-    # /nix/var/nix/profiles/system always points to the base system, so specialisation
-    # paths under it are stable and accessible regardless of which theme is currently active.
-    # /run/current-system/specialisation/ only exists when the base system is running.
-    else "sudo /nix/var/nix/profiles/system/specialisation/${w.specialisation}/bin/switch-to-configuration switch";
+  # The specialisation name passed to maybe_switch — empty string means Nord (base system).
+  specArg = w: if w.specialisation == null then "" else w.specialisation;
 
   # Walker dmenu picker — presents all wallpapers and switches to the chosen one.
   # Order of operations:
@@ -65,6 +56,30 @@ let
   wallpaperPicker = pkgs.writeShellScriptBin "wallpaper-picker" ''
     CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.label) allWallpapers)}' \
       | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
+
+    # Activate the target specialisation only if it isn't already active.
+    # Compares resolved store paths — switching wallpapers within the same theme skips the switch.
+    # Sets THEME_SWITCHED=1 if a switch happened (daemons need restarting), 0 if already active.
+    THEME_SWITCHED=0
+    maybe_switch() {
+      local spec="$1"
+      local target
+      if [ -z "$spec" ]; then
+        target=$(readlink -f /nix/var/nix/profiles/system)
+      else
+        target=$(readlink -f /nix/var/nix/profiles/system/specialisation/"$spec")
+      fi
+      if [ "$(readlink -f /run/current-system)" = "$target" ]; then
+        THEME_SWITCHED=0
+        return 0
+      fi
+      THEME_SWITCHED=1
+      if [ -z "$spec" ]; then
+        sudo /nix/var/nix/profiles/system/bin/switch-to-configuration switch
+      else
+        sudo /nix/var/nix/profiles/system/specialisation/"$spec"/bin/switch-to-configuration switch
+      fi
+    }
 
     # Restart daemons that load their GTK theme or config once at startup.
     # Heavy apps (VS Code, Obsidian, Firefox, Spotify) are left for the user to reopen.
@@ -82,10 +97,10 @@ let
       ${lib.concatStringsSep "\n      " (map (w:
         if !w.animated then ''
           "${w.label}")
-              if ${switchCmd w}; then
+              if maybe_switch "${specArg w}"; then
                 notify-send "Theme" "Switched to ${w.label}"
               else
-                notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
+                notify-send -u critical "Theme switch failed" "Check sudo rules in modules/nixos/optional/themes.nix"
               fi
 
               pkill mpvpaper 2>/dev/null || true
@@ -94,20 +109,20 @@ let
               until hyprctl hyprpaper listloaded &>/dev/null; do sleep 0.1; done
               hyprctl hyprpaper preload "${toString w.path}"
               hyprctl hyprpaper wallpaper ",${toString w.path}"
-              restart_themed_daemons
+              [ "$THEME_SWITCHED" = "1" ] && restart_themed_daemons
               ;;''
         else ''
           "${w.label}")
-              if ${switchCmd w}; then
+              if maybe_switch "${specArg w}"; then
                 notify-send "Theme" "Switched to ${w.label}"
               else
-                notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
+                notify-send -u critical "Theme switch failed" "Check sudo rules in modules/nixos/optional/themes.nix"
               fi
 
               systemctl --user stop hyprpaper.service
               pkill mpvpaper 2>/dev/null || true
               ${lib.getExe pkgs.mpvpaper} -o 'loop' '*' ${toString w.path} &
-              restart_themed_daemons
+              [ "$THEME_SWITCHED" = "1" ] && restart_themed_daemons
               ;;''
       ) allWallpapers)}
     esac

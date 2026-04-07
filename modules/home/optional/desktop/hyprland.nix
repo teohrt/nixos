@@ -166,7 +166,6 @@ in
         "$mod, F,            Fullscreen,            fullscreen"
         "$mod SHIFT, F,      File manager,          exec, nautilus --new-window"
         "$mod, W,            Close window,          killactive"
-        "$mod, ESC,          Exit Hyprland,         exit"
         "$mod SHIFT, V,      Toggle floating,       togglefloating"
         "$mod, SPACE,        Launch apps,           exec, $menu"
         "$mod, B,            Toggle waybar,         exec, pkill -SIGUSR1 waybar"

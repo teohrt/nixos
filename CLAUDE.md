@@ -16,6 +16,11 @@ This is a NixOS configuration repository managed with flakes.
 
 ## Structure
 
-- `flake.nix` — entry point, defines hosts and home-manager configs
-- `nixos/` — NixOS system-level configuration modules
-- `home-manager/` — user-level home-manager modules
+- `flake.nix` — entry point, defines hosts
+- `hosts/` — per-machine config; each host imports the modules it needs
+- `modules/nixos/core/` — shared NixOS config loaded by all machines
+- `modules/nixos/optional/` — opt-in NixOS modules (desktop, networking, docker, stylix, themes)
+- `modules/home/core/` — shared home-manager base config
+- `modules/home/optional/` — opt-in home-manager modules (desktop apps, per-app configs)
+- `assets/` — wallpaper images and videos, organised by theme
+- `docs/` — documentation (theming system, adding machines)

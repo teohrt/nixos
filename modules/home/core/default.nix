@@ -1,5 +1,4 @@
-{ config, pkgs, pkgs-walker, ... }:
-
+{ pkgs, pkgs-walker, ... }:
 let
   powerMenu = pkgs.writeShellScriptBin "power-menu" ''
     CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nLog Out" \
@@ -16,7 +15,6 @@ in
 {
   home.username = "trace";
   home.homeDirectory = "/home/trace";
-
 
   programs.btop.enable = true;
   services.swaync = {
@@ -44,31 +42,7 @@ in
     };
   };
 
-  imports = [
-    ./user-apps.nix
-    ./desktop/hyprland.nix
-    ./desktop/waybar.nix
-    ./desktop/walker.nix
-    ./desktop/wallpaper.nix
-    ./desktop/hyprlock.nix
-    ./desktop/hypridle.nix
-    ./apps/git.nix
-    ./apps/alacritty.nix
-    ./apps/firefox.nix
-    ./apps/vscode.nix
-    ./apps/obsidian.nix
-    ./apps/spicetify.nix
-  ];
-
   home.packages = [ powerMenu ];
 
-  # This value determines the home Manager release that your
-  # configuration is compatible with. This helps avoid breakage
-  # when a new home Manager release introduces backwards
-  # incompatible changes.
-  #
-  # You can update home Manager without changing this value. See
-  # the home Manager release notes for a list of state version
-  # changes in each release.
   home.stateVersion = "25.11";
 }

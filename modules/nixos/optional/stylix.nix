@@ -6,11 +6,8 @@ in {
     enable = true;
     polarity = "dark";
 
-    image = ../assets/nord/mountain.png;
+    image = ../../../assets/nord/mountain.png;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
-
-    # image = ../assets/everforest_mist_forest.png;
-    # base16Scheme = "${pkgs.base16-schemes}/share/themes/everforest.yaml";
 
     fonts = {
       monospace = {
