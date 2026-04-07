@@ -1,15 +1,13 @@
-{ spicetify-nix, pkgs, ... }:
+{ spicetify-nix, pkgs-spotify, ... }:
 
 {
   imports = [ spicetify-nix.homeManagerModules.default ];
 
   programs.spicetify = {
     enable = true;
-    # brotli is an undeclared runtime dep of newer Spotify versions;
-    # adding it here ensures spicetify-nix's wrapper includes it in LD_LIBRARY_PATH
-    spotifyPackage = pkgs.spotify.overrideAttrs (old: {
-      buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.brotli ];
-    });
+    # pinned to a nixpkgs commit known to work with spicetify-nix;
+    # bump nixpkgs-spotify in flake.nix only after confirming compatibility
+    spotifyPackage = pkgs-spotify.spotify;
   };
   # stylix.targets.spicetify handles the theme automatically
 }
