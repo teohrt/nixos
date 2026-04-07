@@ -167,6 +167,16 @@ in
 
         "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
         "opacity ${toString osConfig.stylix.opacity.terminal} ${toString osConfig.stylix.opacity.terminal}, class:^(code)$"
+        "float,  class:^(partitionmanager)$"
+        "size 1300 900, class:^(partitionmanager)$"
+        "center, class:^(partitionmanager)$"
+        "pin,    class:^(partitionmanager)$"
+
+        "float,  class:^(localsend)$"
+        "size 1300 900, class:^(localsend)$"
+        "center, class:^(localsend)$"
+        "pin,    class:^(localsend)$"
+
         "float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"
         "center, title:^(wifi)$"

@@ -1,17 +1,6 @@
 # Packages that should be installed to the user profile.
-{ pkgs, pkgs-walker, ... }:
-let
-  # GParted is an X11 app that elevates to root via polkit. On Wayland, root doesn't
-  # have display access by default — xhost grants it before launch and revokes on exit.
-  # trap ensures revoke runs even if GParted crashes.
-  gparted = pkgs.writeShellScriptBin "gparted" ''
-    ${pkgs.xorg.xhost}/bin/xhost +SI:localuser:root
-    trap '${pkgs.xorg.xhost}/bin/xhost -SI:localuser:root' EXIT
-    ${pkgs.gparted}/bin/gparted "$@"
-  '';
-in
-{
-  home.packages = [ gparted ] ++ (with pkgs; [
+{ pkgs, pkgs-walker, ... }: {
+  home.packages = with pkgs; [
     # cli utilities
     terminaltexteffects  # tte — terminal text effects (used by screensaver)
     claude-code
@@ -25,6 +14,7 @@ in
     cmatrix
 
     # apps
+    partitionmanager
     google-chrome
     _1password-gui
     obsidian
@@ -57,7 +47,7 @@ in
 
     # fonts
     nerd-fonts.jetbrains-mono
-  ]);
+  ];
 
   programs.direnv = {
     enable = true;
