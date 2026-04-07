@@ -23,10 +23,10 @@ let
         "dispatch pin address:$addr;" \
         "dispatch togglefloating address:$addr;"
     elif [[ -n $addr ]]; then
-      hyprctl dispatch togglefloating address:$addr
-      hyprctl dispatch resizeactive exact 1300 900 address:$addr
-      hyprctl dispatch centerwindow address:$addr
       hyprctl -q --batch \
+        "dispatch togglefloating address:$addr;" \
+        "dispatch resizeactive exact 1300 900 address:$addr;" \
+        "dispatch centerwindow address:$addr;" \
         "dispatch pin address:$addr;" \
         "dispatch alterzorder top address:$addr;"
     fi
@@ -160,9 +160,6 @@ in
 
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
-        # apply consistent size and position to all pinned (popped-out) windows
-        "size 1300 900, pinned:1"
-        "center, pinned:1"
 
         "fullscreen, class:^(screensaver)$"
         "noanim,     class:^(screensaver)$"
@@ -171,13 +168,15 @@ in
 
         "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
         "opacity ${toString osConfig.stylix.opacity.terminal} ${toString osConfig.stylix.opacity.terminal}, class:^(code)$"
-        "float,  class:^(org.kde.partitionmanager)$"
-        "center, class:^(org.kde.partitionmanager)$"
-        "pin,    class:^(org.kde.partitionmanager)$"
+        "float,       class:^(org.kde.partitionmanager)$"
+        "size 1300 900, class:^(org.kde.partitionmanager)$"
+        "center,      class:^(org.kde.partitionmanager)$"
+        "pin,         class:^(org.kde.partitionmanager)$"
 
-        "float,  class:^(localsend_app)$"
-        "center, class:^(localsend_app)$"
-        "pin,    class:^(localsend_app)$"
+        "float,       class:^(localsend_app)$"
+        "size 1300 900, class:^(localsend_app)$"
+        "center,      class:^(localsend_app)$"
+        "pin,         class:^(localsend_app)$"
 
         "float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"
