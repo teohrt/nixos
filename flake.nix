@@ -27,7 +27,7 @@
   let
     system = "x86_64-linux";
     pkgs-walker = nixpkgs-walker.legacyPackages.${system};
-    pkgs-spotify = import nixpkgs-spotify { inherit system; config.allowUnfree = true; };
+    pkgs-spotify = nixpkgs-spotify.legacyPackages.${system};
   in
   {
     nixosConfigurations = {
@@ -39,10 +39,13 @@
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
           {
+            # pin spotify to a known-good nixpkgs commit via overlay so the
+            # main pkgs (which has allowUnfree = true) is used throughout
+            nixpkgs.overlays = [ (_: _: { spotify = pkgs-spotify.spotify; }) ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "nixos-hm-backup";
-            home-manager.extraSpecialArgs = { inherit pkgs-walker pkgs-spotify spicetify-nix; };
+            home-manager.extraSpecialArgs = { inherit pkgs-walker spicetify-nix; };
           }
         ];
       };
