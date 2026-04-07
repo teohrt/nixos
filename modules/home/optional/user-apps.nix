@@ -11,7 +11,7 @@ let
   '';
 in
 {
-  home.packages = with pkgs; [
+  home.packages = [ gparted ] ++ (with pkgs; [
     # cli utilities
     terminaltexteffects  # tte — terminal text effects (used by screensaver)
     claude-code
@@ -25,7 +25,6 @@ in
     cmatrix
 
     # apps
-    gparted
     google-chrome
     _1password-gui
     obsidian
@@ -58,7 +57,7 @@ in
 
     # fonts
     nerd-fonts.jetbrains-mono
-  ];
+  ]);
 
   programs.direnv = {
     enable = true;
