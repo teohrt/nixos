@@ -23,10 +23,10 @@ let
         "dispatch pin address:$addr;" \
         "dispatch togglefloating address:$addr;"
     elif [[ -n $addr ]]; then
+      hyprctl dispatch togglefloating address:$addr
+      hyprctl dispatch resizeactive exact 1300 900
+      hyprctl dispatch centerwindow address:$addr
       hyprctl -q --batch \
-        "dispatch togglefloating address:$addr;" \
-        "dispatch resizewindowpixel exact 1300 900,address:$addr;" \
-        "dispatch centerwindow address:$addr;" \
         "dispatch pin address:$addr;" \
         "dispatch alterzorder top address:$addr;"
     fi
