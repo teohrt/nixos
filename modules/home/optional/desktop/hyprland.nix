@@ -230,6 +230,12 @@ in
         "$mod, up,    Move focus up,    movefocus, u"
         "$mod, down,  Move focus down,  movefocus, d"
 
+        # swap tiles
+        "$mod SHIFT, left,  Swap window left,  swapwindow, l"
+        "$mod SHIFT, right, Swap window right, swapwindow, r"
+        "$mod SHIFT, up,    Swap window up,    swapwindow, u"
+        "$mod SHIFT, down,  Swap window down,  swapwindow, d"
+
         # switch workspace
         "$mod, 1, Workspace 1,  workspace, 1"
         "$mod, 2, Workspace 2,  workspace, 2"
