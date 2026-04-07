@@ -2,6 +2,7 @@
 { pkgs, pkgs-walker, ... }: {
   home.packages = with pkgs; [
     # cli utilities
+    terminaltexteffects  # tte — terminal text effects (used by screensaver)
     claude-code
     lazydocker
     ripgrep
@@ -13,6 +14,7 @@
     cmatrix
 
     # apps
+    kdePackages.partitionmanager
     google-chrome
     _1password-gui
     obsidian
@@ -46,4 +48,9 @@
     # fonts
     nerd-fonts.jetbrains-mono
   ];
+
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;  # faster nix shell integration via cached devShells
+  };
 }

@@ -28,7 +28,7 @@ let
       name = "Eris";
       specialisation = "eris";
       wallpapers = [
-        { name = "Neon Car"; path = ../../../../assets/eris/neon-car.mp4; animated = true; }
+        { name = "Neon Car"; path = ../../../../assets/eris/neon-car.mp4; animated = true; speed = 0.5; }
       ];
     }
   ];
@@ -121,7 +121,8 @@ let
 
               systemctl --user stop hyprpaper.service
               pkill mpvpaper 2>/dev/null || true
-              ${lib.getExe pkgs.mpvpaper} -o 'loop' '*' ${toString w.path} &
+              # speed is optional — only wallpapers with a speed attribute (e.g. Eris) override playback rate
+              ${lib.getExe pkgs.mpvpaper} -o 'loop${if w ? speed then " speed=${toString w.speed}" else ""}' '*' ${toString w.path} &
               [ "$THEME_SWITCHED" = "1" ] && restart_themed_daemons
               ;;''
       ) allWallpapers)}

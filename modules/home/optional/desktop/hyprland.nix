@@ -12,6 +12,26 @@ let
     done
   '';
 
+  # Floats, resizes, centers, and pins the active window. Run again to unpin and retile.
+  popWindow = pkgs.writeShellScript "pop-window" ''
+    active=$(hyprctl activewindow -j)
+    pinned=$(echo "$active" | ${pkgs.jq}/bin/jq ".pinned")
+    addr=$(echo "$active" | ${pkgs.jq}/bin/jq -r ".address")
+
+    if [[ $pinned == "true" ]]; then
+      hyprctl -q --batch \
+        "dispatch pin address:$addr;" \
+        "dispatch togglefloating address:$addr;"
+    elif [[ -n $addr ]]; then
+      hyprctl dispatch togglefloating address:$addr
+      hyprctl dispatch resizeactive exact 650 450
+      hyprctl dispatch centerwindow address:$addr
+      hyprctl -q --batch \
+        "dispatch pin address:$addr;" \
+        "dispatch alterzorder top address:$addr;"
+    fi
+  '';
+
   # Reads all bindd-described bindings from Hyprland and shows them in a
   # searchable walker dmenu. Only bindings with descriptions appear.
   keybindingsMenu = pkgs.writeShellScript "keybindings-menu" ''
@@ -133,12 +153,36 @@ in
         "blur, walker"
         "ignorezero, walker"
         "animation slide top, walker"                  # slide down from top when opening
+        "blur, swaync-control-center"
+        "ignorezero, swaync-control-center"
         "animation slide top, swaync-control-center"   # notification panel slides down from top
       ];
 
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
+
+        "fullscreen, class:^(screensaver)$"
+        "noanim,     class:^(screensaver)$"
+        "nodim,      class:^(screensaver)$"
+        "noborder,   class:^(screensaver)$"
+
         "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
+        "opacity ${toString osConfig.stylix.opacity.terminal} ${toString osConfig.stylix.opacity.terminal}, class:^(code)$"
+        "float,      class:^(org.kde.partitionmanager)$"
+        "size 650 450, class:^(org.kde.partitionmanager)$"
+        "center,     class:^(org.kde.partitionmanager)$"
+        "pin,        class:^(org.kde.partitionmanager)$"
+
+        "float,      class:^(localsend_app)$"
+        "size 650 450, class:^(localsend_app)$"
+        "center,     class:^(localsend_app)$"
+        "pin,        class:^(localsend_app)$"
+
+        "float,      class:^(1password)$"
+        "size 650 450, class:^(1password)$"
+        "center,     class:^(1password)$"
+        "pin,        class:^(1password)$"
+
         "float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"
         "center, title:^(wifi)$"
@@ -166,17 +210,31 @@ in
         "$mod, F,            Fullscreen,            fullscreen"
         "$mod SHIFT, F,      File manager,          exec, nautilus --new-window"
         "$mod, W,            Close window,          killactive"
-        "$mod SHIFT, V,      Toggle floating,       togglefloating"
+
         "$mod, SPACE,        Launch apps,           exec, $menu"
         "$mod, B,            Toggle waybar,         exec, pkill -SIGUSR1 waybar"
         "$mod, J,            Toggle split,          togglesplit"
+        "$mod, P,            Pseudo window,         pseudo"
+        "$mod, O,            Pop window out,        exec, ${popWindow}"
         "$mod, K,            Show keybindings,      exec, ${keybindingsMenu}"
+
+        # resize active window
+        "$mod, minus,        Expand window left,  resizeactive, -100 0"
+        "$mod, equal,        Shrink window left,  resizeactive, 100 0"
+        "$mod SHIFT, minus,  Shrink window up,    resizeactive, 0 -100"
+        "$mod SHIFT, equal,  Expand window down,  resizeactive, 0 100"
 
         # focus
         "$mod, left,  Move focus left,  movefocus, l"
         "$mod, right, Move focus right, movefocus, r"
         "$mod, up,    Move focus up,    movefocus, u"
         "$mod, down,  Move focus down,  movefocus, d"
+
+        # swap tiles
+        "$mod SHIFT, left,  Swap window left,  swapwindow, l"
+        "$mod SHIFT, right, Swap window right, swapwindow, r"
+        "$mod SHIFT, up,    Swap window up,    swapwindow, u"
+        "$mod SHIFT, down,  Swap window down,  swapwindow, d"
 
         # switch workspace
         "$mod, 1, Workspace 1,  workspace, 1"
