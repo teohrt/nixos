@@ -12,6 +12,26 @@ let
     done
   '';
 
+  # Floats, resizes, centers, and pins the active window. Run again to unpin and retile.
+  popWindow = pkgs.writeShellScript "pop-window" ''
+    active=$(hyprctl activewindow -j)
+    pinned=$(echo "$active" | ${pkgs.jq}/bin/jq ".pinned")
+    addr=$(echo "$active" | ${pkgs.jq}/bin/jq -r ".address")
+
+    if [[ $pinned == "true" ]]; then
+      hyprctl -q --batch \
+        "dispatch pin address:$addr;" \
+        "dispatch togglefloating address:$addr;"
+    elif [[ -n $addr ]]; then
+      hyprctl dispatch togglefloating address:$addr
+      hyprctl dispatch resizeactive exact 1300 900 address:$addr
+      hyprctl dispatch centerwindow address:$addr
+      hyprctl -q --batch \
+        "dispatch pin address:$addr;" \
+        "dispatch alterzorder top address:$addr;"
+    fi
+  '';
+
   # Reads all bindd-described bindings from Hyprland and shows them in a
   # searchable walker dmenu. Only bindings with descriptions appear.
   keybindingsMenu = pkgs.writeShellScript "keybindings-menu" ''
@@ -166,11 +186,19 @@ in
         "$mod, F,            Fullscreen,            fullscreen"
         "$mod SHIFT, F,      File manager,          exec, nautilus --new-window"
         "$mod, W,            Close window,          killactive"
-        "$mod SHIFT, V,      Toggle floating,       togglefloating"
+
         "$mod, SPACE,        Launch apps,           exec, $menu"
         "$mod, B,            Toggle waybar,         exec, pkill -SIGUSR1 waybar"
         "$mod, J,            Toggle split,          togglesplit"
+        "$mod, P,            Pseudo window,         pseudo"
+        "$mod, O,            Pop window out,        exec, ${popWindow}"
         "$mod, K,            Show keybindings,      exec, ${keybindingsMenu}"
+
+        # resize active window
+        "$mod, minus,        Expand window left,  resizeactive, -100 0"
+        "$mod, equal,        Shrink window left,  resizeactive, 100 0"
+        "$mod SHIFT, minus,  Shrink window up,    resizeactive, 0 -100"
+        "$mod SHIFT, equal,  Expand window down,  resizeactive, 0 100"
 
         # focus
         "$mod, left,  Move focus left,  movefocus, l"
