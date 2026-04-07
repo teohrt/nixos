@@ -67,6 +67,10 @@ in
 {
   home.packages = [ pkgs.hyprmon ];
 
+  systemd.user.tmpfiles.rules = [
+    "d %h/Pictures/Screenshots 0755 - - -"
+  ];
+
   wayland.windowManager.hyprland = {
     enable = true;
 
@@ -275,9 +279,7 @@ in
         ", XF86AudioMicMute, Mute mic,   exec, swayosd-client --input-volume mute-toggle"
 
         # screenshots — all modes save to ~/Pictures and copy to clipboard
-        ", Print,      Screenshot region,  exec, hyprshot -m region -o ~/Pictures"
-        "SHIFT, Print, Screenshot window,  exec, hyprshot -m window -o ~/Pictures"
-        "$mod, Print,  Screenshot monitor, exec, hyprshot -m output -o ~/Pictures"
+        "$mod, S,            Screenshot region,  exec, bash -c 'grimblast --notify copysave area ~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png'"
       ];
 
       # repeatable bindings — fire continuously while key is held
