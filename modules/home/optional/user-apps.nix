@@ -14,7 +14,7 @@
     cmatrix
 
     # apps
-    partitionmanager
+    kdePackages.partitionmanager
     google-chrome
     _1password-gui
     obsidian
