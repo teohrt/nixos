@@ -44,6 +44,21 @@
           }
         ];
       };
+      framework-16 = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit pkgs-walker; };
+        modules = [
+          ./hosts/framework-16
+          stylix.nixosModules.stylix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.backupFileExtension = "nixos-hm-backup";
+            home-manager.extraSpecialArgs = { inherit pkgs-walker spicetify-nix; };
+          }
+        ];
+      };
     };
   };
 }
