@@ -61,11 +61,11 @@ let
     STATE="$HOME/.local/state/screensaver-off"
     if [ -f "$STATE" ]; then
       rm "$STATE"
-      ${pkgs.libnotify}/bin/notify-send "Screensaver" "Screensaver enabled"
+      ${pkgs.libnotify}/bin/notify-send --urgency=low "Screensaver" "Screensaver enabled"
     else
       mkdir -p "$(dirname "$STATE")"
       touch "$STATE"
-      ${pkgs.libnotify}/bin/notify-send "Screensaver" "Screensaver disabled"
+      ${pkgs.libnotify}/bin/notify-send --urgency=low "Screensaver" "Screensaver disabled"
     fi
   '';
 
