@@ -48,4 +48,9 @@
     # fonts
     nerd-fonts.jetbrains-mono
   ];
+
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;  # faster nix shell integration via cached devShells
+  };
 }
