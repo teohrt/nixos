@@ -12,23 +12,23 @@ let
       name = "Nord";
       specialisation = null;
       wallpapers = [
-        { name = "Mountain";   path = ../../assets/nord/mountain.png;   animated = false; }
-        { name = "Black Hole"; path = ../../assets/nord/black_hole.mp4; animated = true;  }
+        { name = "Mountain";   path = ../../../../assets/nord/mountain.png;   animated = false; }
+        { name = "Black Hole"; path = ../../../../assets/nord/black_hole.mp4; animated = true;  }
       ];
     }
     {
       name = "Gruvbox";
       specialisation = "gruvbox";
       wallpapers = [
-        { name = "Mist Forest"; path = ../../assets/gruvbox/mist_forest.png; animated = false; }
-        { name = "Leaves";      path = ../../assets/gruvbox/leaves.mp4;       animated = true;  }
+        { name = "Mist Forest"; path = ../../../../assets/gruvbox/mist_forest.png; animated = false; }
+        { name = "Leaves";      path = ../../../../assets/gruvbox/leaves.mp4;       animated = true;  }
       ];
     }
     {
       name = "Eris";
       specialisation = "eris";
       wallpapers = [
-        { name = "Neon Car"; path = ../../assets/eris/neon-car.mp4; animated = true; }
+        { name = "Neon Car"; path = ../../../../assets/eris/neon-car.mp4; animated = true; }
       ];
     }
   ];
@@ -80,7 +80,7 @@ let
               if ${switchCmd w}; then
                 notify-send "Theme" "Switched to ${w.label}"
               else
-                notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
+                notify-send -u critical "Theme switch failed" "Check sudo rules in modules/nixos/optional/themes.nix"
               fi
 
               pkill mpvpaper 2>/dev/null || true
@@ -96,7 +96,7 @@ let
               if ${switchCmd w}; then
                 notify-send "Theme" "Switched to ${w.label}"
               else
-                notify-send -u critical "Theme switch failed" "Check sudo rules in nixos/themes.nix"
+                notify-send -u critical "Theme switch failed" "Check sudo rules in modules/nixos/optional/themes.nix"
               fi
 
               systemctl --user stop hyprpaper.service

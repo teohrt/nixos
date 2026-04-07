@@ -29,21 +29,18 @@
   in
   {
     nixosConfigurations = {
-      my-nixos = nixpkgs.lib.nixosSystem {
+      my-thinkpad = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit pkgs-walker; };
         modules = [
-          ./nixos/configuration.nix
+          ./hosts/my-thinkpad
           stylix.nixosModules.stylix
-
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "nixos-hm-backup";
-
             home-manager.extraSpecialArgs = { inherit pkgs-walker spicetify-nix; };
-            home-manager.users.trace = import ./home-manager/home.nix;
           }
         ];
       };
