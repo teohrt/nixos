@@ -166,7 +166,7 @@ in
         "noborder,   class:^(screensaver)$"
 
         "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
-        "opacity 0.9 0.9, class:^(code)$"
+        "opacity ${toString osConfig.stylix.opacity.terminal} ${toString osConfig.stylix.opacity.terminal}, class:^(code)$"
         "float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"
         "center, title:^(wifi)$"
