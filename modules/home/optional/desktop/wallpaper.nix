@@ -45,12 +45,8 @@ let
 
   staticWallpapers = lib.filter (w: !w.animated) allWallpapers;
 
-  # Emit the sudo command to activate a specialisation (or revert to default).
-  # Switches directly to the target specialisation regardless of the currently active one.
-  switchCmd = w:
-    if w.specialisation == null
-    then "sudo /nix/var/nix/profiles/system/bin/switch-to-configuration switch"
-    else "sudo /nix/var/nix/profiles/system/specialisation/${w.specialisation}/bin/switch-to-configuration switch";
+  # The specialisation name passed to maybe_switch — empty string means Nord (base system).
+  specArg = w: if w.specialisation == null then "" else w.specialisation;
 
   # Walker dmenu picker — presents all wallpapers and switches to the chosen one.
   # Order of operations:
@@ -60,6 +56,24 @@ let
   wallpaperPicker = pkgs.writeShellScriptBin "wallpaper-picker" ''
     CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.label) allWallpapers)}' \
       | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
+
+    # Activate the target specialisation only if it isn't already active.
+    # Compares resolved store paths — switching wallpapers within the same theme skips the switch.
+    maybe_switch() {
+      local spec="$1"
+      local target
+      if [ -z "$spec" ]; then
+        target=$(readlink -f /nix/var/nix/profiles/system)
+      else
+        target=$(readlink -f /nix/var/nix/profiles/system/specialisation/"$spec")
+      fi
+      [ "$(readlink -f /run/current-system)" = "$target" ] && return 0
+      if [ -z "$spec" ]; then
+        sudo /nix/var/nix/profiles/system/bin/switch-to-configuration switch
+      else
+        sudo /nix/var/nix/profiles/system/specialisation/"$spec"/bin/switch-to-configuration switch
+      fi
+    }
 
     # Restart daemons that load their GTK theme or config once at startup.
     # Heavy apps (VS Code, Obsidian, Firefox, Spotify) are left for the user to reopen.
@@ -77,7 +91,7 @@ let
       ${lib.concatStringsSep "\n      " (map (w:
         if !w.animated then ''
           "${w.label}")
-              if ${switchCmd w}; then
+              if maybe_switch "${specArg w}"; then
                 notify-send "Theme" "Switched to ${w.label}"
               else
                 notify-send -u critical "Theme switch failed" "Check sudo rules in modules/nixos/optional/themes.nix"
@@ -93,7 +107,7 @@ let
               ;;''
         else ''
           "${w.label}")
-              if ${switchCmd w}; then
+              if maybe_switch "${specArg w}"; then
                 notify-send "Theme" "Switched to ${w.label}"
               else
                 notify-send -u critical "Theme switch failed" "Check sudo rules in modules/nixos/optional/themes.nix"
