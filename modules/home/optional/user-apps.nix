@@ -13,6 +13,7 @@
     cmatrix
 
     # apps
+    gparted
     google-chrome
     _1password-gui
     obsidian
