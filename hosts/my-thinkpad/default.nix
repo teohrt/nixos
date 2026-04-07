@@ -35,6 +35,7 @@
       ../../modules/home/optional/apps/firefox.nix
       ../../modules/home/optional/apps/vscode.nix
       ../../modules/home/optional/apps/obsidian.nix
+      ../../modules/home/optional/apps/spicetify.nix
     ];
   };
 

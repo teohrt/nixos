@@ -16,9 +16,13 @@
       url = "github:danth/stylix/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    spicetify-nix = {
+      url = "github:Gerg-L/spicetify-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, stylix, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, stylix, spicetify-nix, ... }:
   let
     system = "x86_64-linux";
     pkgs-walker = nixpkgs-walker.legacyPackages.${system};
@@ -36,7 +40,7 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "nixos-hm-backup";
-            home-manager.extraSpecialArgs = { inherit pkgs-walker; };
+            home-manager.extraSpecialArgs = { inherit pkgs-walker spicetify-nix; };
           }
         ];
       };

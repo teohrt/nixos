@@ -25,7 +25,6 @@
     vlc        # video player
     slack
     zoom-us
-    spotify
 
     mpvpaper                # animated wallpaper via mpv (supports MP4/GIF)
 
