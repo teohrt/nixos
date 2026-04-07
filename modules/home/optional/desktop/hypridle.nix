@@ -18,6 +18,11 @@ let
   # Runs inside the screensaver terminal — loops tte with random effects.
   # Exits on any keypress or when the window loses focus.
   screensaverCmd = pkgs.writeShellScriptBin "screensaver-cmd" ''
+    EFFECTS=(beams binarypath blackhole bouncyballs bubbles burn colorshift crumble
+             decrypt errorcorrect expand fireworks highlight laseretch matrix middleout
+             orbittingvolley overflow pour rain rings scattered slice slide spotlights
+             spray swarm sweep synthgrid unstable vhstape waves wipe)
+
     screensaver_in_focus() {
       hyprctl activewindow -j | ${pkgs.jq}/bin/jq -e '.class == "screensaver"' >/dev/null 2>&1
     }
@@ -37,11 +42,12 @@ let
     tty=$(tty 2>/dev/null)
 
     while true; do
-      ${pkgs.terminaltexteffects}/bin/tte -i ${../../../../assets/screensaver.txt} \
-        --frame-rate 120 --canvas-width 0 --canvas-height 0 --reuse-canvas \
+      effect="''${EFFECTS[$((RANDOM % ''${#EFFECTS[@]}))]}"
+      ${pkgs.terminaltexteffects}/bin/tte \
+        --input-file ${../../../../assets/screensaver.txt} \
+        --frame-rate 120 --canvas-width 0 --canvas-height 0 \
         --anchor-canvas c --anchor-text c \
-        --random-effect --exclude-effects dev_worm \
-        --no-eol --no-restore-cursor &
+        "$effect" &
 
       while pgrep -t "''${tty#/dev/}" -x tte >/dev/null; do
         if read -n1 -t 1 || ! screensaver_in_focus; then
