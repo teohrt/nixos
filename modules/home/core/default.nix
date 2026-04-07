@@ -28,6 +28,11 @@ in
       timeout-low = 3;
       timeout-critical = 0;
     };
+    style = ''
+      .notification {
+        padding: 1em;
+      }
+    '';
   };
 
   # Darken Nautilus background so text stays readable across light and dark themes.
