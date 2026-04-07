@@ -24,6 +24,7 @@ let
         "dispatch togglefloating address:$addr;"
     elif [[ -n $addr ]]; then
       hyprctl dispatch togglefloating address:$addr
+      hyprctl dispatch resizeactive exact 1300 900 address:$addr
       hyprctl dispatch centerwindow address:$addr
       hyprctl -q --batch \
         "dispatch pin address:$addr;" \
@@ -159,8 +160,9 @@ in
 
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
-        # apply consistent size to all pinned (popped-out) windows
+        # apply consistent size and position to all pinned (popped-out) windows
         "size 1300 900, pinned:1"
+        "center, pinned:1"
 
         "fullscreen, class:^(screensaver)$"
         "noanim,     class:^(screensaver)$"
