@@ -25,7 +25,7 @@ let
     elif [[ -n $addr ]]; then
       hyprctl -q --batch \
         "dispatch togglefloating address:$addr;" \
-        "dispatch resizeactive exact 1300 900 address:$addr;" \
+        "dispatch resizewindowpixel exact 1300 900,address:$addr;" \
         "dispatch centerwindow address:$addr;" \
         "dispatch pin address:$addr;" \
         "dispatch alterzorder top address:$addr;"
