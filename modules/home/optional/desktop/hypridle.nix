@@ -30,7 +30,7 @@ let
     exit_screensaver() {
       hyprctl keyword cursor:invisible false &>/dev/null || true
       pkill -x tte 2>/dev/null
-      pkill -f screensaver 2>/dev/null
+      pkill -f "class=screensaver" 2>/dev/null
       exit 0
     }
 
@@ -39,8 +39,6 @@ let
     printf '\033]11;rgb:00/00/00\007'
     hyprctl keyword cursor:invisible true &>/dev/null
 
-    tty=$(tty 2>/dev/null)
-
     while true; do
       effect="''${EFFECTS[$((RANDOM % ''${#EFFECTS[@]}))]}"
       ${pkgs.terminaltexteffects}/bin/tte \
@@ -48,8 +46,9 @@ let
         --frame-rate 120 --canvas-width 0 --canvas-height 0 \
         --anchor-canvas c --anchor-text c \
         "$effect" &
+      tte_pid=$!
 
-      while pgrep -t "''${tty#/dev/}" -x tte >/dev/null; do
+      while kill -0 "$tte_pid" 2>/dev/null; do
         if read -n1 -t 1 || ! screensaver_in_focus; then
           exit_screensaver
         fi
@@ -74,7 +73,7 @@ let
   # Exits silently if the screensaver has been toggled off.
   launchScreensaver = pkgs.writeShellScriptBin "launch-screensaver" ''
     [ -f "$HOME/.local/state/screensaver-off" ] && exit 0
-    pgrep -f "class=screensaver" && exit 0
+    hyprctl clients -j | ${pkgs.jq}/bin/jq -e 'any(.[]; .class == "screensaver")' >/dev/null 2>&1 && exit 0
 
     walker -q 2>/dev/null || true
 
