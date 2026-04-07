@@ -32,6 +32,10 @@ in
       .notification-content {
         padding: 1em;
       }
+
+      .control-center {
+        background-color: @window_bg_color;
+      }
     '';
   };
 
