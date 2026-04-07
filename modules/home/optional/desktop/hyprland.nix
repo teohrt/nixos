@@ -26,7 +26,7 @@ let
       hyprctl dispatch togglefloating address:$addr
       # resizeactive runs before the float state is committed without this — poll until Hyprland confirms
       until [[ $(hyprctl activewindow -j | ${pkgs.jq}/bin/jq '.floating') == "true" ]]; do sleep 0.01; done
-      hyprctl dispatch resizeactive exact 1300 900
+      hyprctl dispatch resizeactive exact 650 450
       hyprctl dispatch centerwindow address:$addr
       hyprctl -q --batch \
         "dispatch pin address:$addr;" \
