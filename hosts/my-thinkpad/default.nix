@@ -30,7 +30,6 @@
       ../../modules/home/optional/desktop/wallpaper.nix
       ../../modules/home/optional/desktop/hyprlock.nix
       ../../modules/home/optional/desktop/hypridle.nix
-      ../../modules/home/optional/apps/git.nix
       ../../modules/home/optional/apps/alacritty.nix
       ../../modules/home/optional/apps/firefox.nix
       ../../modules/home/optional/apps/vscode.nix

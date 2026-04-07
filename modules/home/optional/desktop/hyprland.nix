@@ -65,6 +65,8 @@ let
 in
 
 {
+  home.packages = [ pkgs.hyprmon ];
+
   wayland.windowManager.hyprland = {
     enable = true;
 
@@ -185,6 +187,11 @@ in
         "center,     class:^(1password)$"
         "pin,        class:^(1password)$"
 
+        "float,      title:^(hyprmon)$"
+        "size 900 600, title:^(hyprmon)$"
+        "center,     title:^(hyprmon)$"
+        "animation slide top, title:^(hyprmon)$"
+
         "float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"
         "center, title:^(wifi)$"
@@ -219,6 +226,7 @@ in
         "$mod, P,            Pseudo window,         pseudo"
         "$mod, O,            Pop window out,        exec, ${popWindow}"
         "$mod, K,            Show keybindings,      exec, ${keybindingsMenu}"
+        "$mod, M,            Monitor settings,      exec, alacritty --title hyprmon -e hyprmon"
 
         # resize active window
         "$mod, minus,        Expand window left,  resizeactive, -100 0"
