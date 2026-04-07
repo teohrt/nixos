@@ -158,6 +158,11 @@ in
 
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
+        "fullscreen, class:^(screensaver)$"
+        "noanim,     class:^(screensaver)$"
+        "nodim,      class:^(screensaver)$"
+        "noborder,   class:^(screensaver)$"
+
         "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
         "float, title:^(wifi)$"
         "size 900 600, title:^(wifi)$"

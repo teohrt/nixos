@@ -2,6 +2,7 @@
 { pkgs, pkgs-walker, ... }: {
   home.packages = with pkgs; [
     # cli utilities
+    terminaltexteffects  # tte — terminal text effects (used by screensaver)
     claude-code
     lazydocker
     ripgrep
