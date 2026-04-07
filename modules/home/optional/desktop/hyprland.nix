@@ -167,6 +167,7 @@ in
         "noborder,   class:^(screensaver)$"
 
         "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
+        "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(spotify)$"
         "opacity ${toString osConfig.stylix.opacity.terminal} ${toString osConfig.stylix.opacity.terminal}, class:^(code)$"
         "float,      class:^(org.kde.partitionmanager)$"
         "size 650 450, class:^(org.kde.partitionmanager)$"
