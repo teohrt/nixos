@@ -34,7 +34,7 @@
     impala                      # wifi TUI
     bluetui                     # bluetooth TUI
     wiremix                     # audio TUI
-    hyprshot                    # screenshot tool (wraps grim/slurp)
+    grimblast                   # screenshot tool for Hyprland
     swayosd                     # OSD popup for volume/brightness
     brightnessctl               # brightness control (requires video group)
     wl-clipboard                # clipboard utilities (wl-copy / wl-paste)

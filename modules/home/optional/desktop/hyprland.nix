@@ -158,7 +158,6 @@ in
         "blur, swaync-control-center"
         "ignorezero, swaync-control-center"
         "animation slide top, swaync-control-center"   # notification panel slides down from top
-        "noanim, hyprshot"                             # prevent selection overlay animating into screenshots
       ];
 
       # floating window rules for TUI apps launched in titled windows
@@ -276,9 +275,9 @@ in
         ", XF86AudioMicMute, Mute mic,   exec, swayosd-client --input-volume mute-toggle"
 
         # screenshots — all modes save to ~/Pictures and copy to clipboard
-        ", Print,      Screenshot region,  exec, hyprshot -m region -o ~/Pictures"
-        "SHIFT, Print, Screenshot window,  exec, hyprshot -m window -o ~/Pictures"
-        "$mod, Print,  Screenshot monitor, exec, hyprshot -m output -o ~/Pictures"
+        ", Print,      Screenshot region,  exec, grimblast --notify copysave area ~/Pictures"
+        "SHIFT, Print, Screenshot window,  exec, grimblast --notify copysave active ~/Pictures"
+        "$mod, Print,  Screenshot monitor, exec, grimblast --notify copysave output ~/Pictures"
       ];
 
       # repeatable bindings — fire continuously while key is held
