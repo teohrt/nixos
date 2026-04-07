@@ -4,6 +4,8 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-walker.url = "github:nixos/nixpkgs/46db2e09e1d3f113a13c0d7b81e2f221c63b8ce9";
+    # Pinned to last known-good Spotify version compatible with spicetify-nix wrapper
+    nixpkgs-spotify.url = "github:nixos/nixpkgs/812b3986fd1568f7a858f97fcf425ad996ba7d25";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       # The `follows` keyword in inputs is used for inheritance.
@@ -22,10 +24,11 @@
     };
   };
 
-  outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, stylix, spicetify-nix, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-walker, nixpkgs-spotify, home-manager, stylix, spicetify-nix, ... }:
   let
     system = "x86_64-linux";
     pkgs-walker = nixpkgs-walker.legacyPackages.${system};
+    pkgs-spotify = import nixpkgs-spotify { inherit system; config.allowUnfree = true; };
   in
   {
     nixosConfigurations = {
@@ -37,6 +40,7 @@
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
           {
+            nixpkgs.overlays = [ (_: _: { spotify = pkgs-spotify.spotify; }) ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "nixos-hm-backup";
