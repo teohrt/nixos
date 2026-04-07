@@ -29,7 +29,7 @@ in
       timeout-critical = 0;
     };
     style = ''
-      .notification {
+      .notification-content {
         padding: 1em;
       }
     '';
