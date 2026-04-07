@@ -9,9 +9,6 @@ in {
     image = ../assets/nord/mountain.png;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
 
-    # image = ../assets/everforest_mist_forest.png;
-    # base16Scheme = "${pkgs.base16-schemes}/share/themes/everforest.yaml";
-
     fonts = {
       monospace = {
         package = pkgs.nerd-fonts.jetbrains-mono;

@@ -18,7 +18,8 @@
   };
 
   # Allow the user to activate specialisations without a password prompt.
-  # The stable /run/current-system symlink means these paths are safe to allowlist.
+  # /nix/var/nix/profiles/system always points to the base system, so these paths
+  # are stable and safe to allowlist regardless of which specialisation is active.
   security.sudo.extraRules = [{
     users = [ "trace" ];
     commands = [

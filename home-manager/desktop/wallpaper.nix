@@ -46,15 +46,10 @@ let
   staticWallpapers = lib.filter (w: !w.animated) allWallpapers;
 
   # Emit the sudo command to activate a specialisation (or revert to default).
-  # Specialisations are always diffed against the base (Nord) system, not against each
-  # other — so we must return to Nord first before applying any non-Nord specialisation.
-  # For Nord itself, a single switch suffices.
+  # Switches directly to the target specialisation regardless of the currently active one.
   switchCmd = w:
     if w.specialisation == null
     then "sudo /nix/var/nix/profiles/system/bin/switch-to-configuration switch"
-    # /nix/var/nix/profiles/system always points to the base system, so specialisation
-    # paths under it are stable and accessible regardless of which theme is currently active.
-    # /run/current-system/specialisation/ only exists when the base system is running.
     else "sudo /nix/var/nix/profiles/system/specialisation/${w.specialisation}/bin/switch-to-configuration switch";
 
   # Walker dmenu picker — presents all wallpapers and switches to the chosen one.
