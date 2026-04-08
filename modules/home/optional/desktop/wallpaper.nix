@@ -5,12 +5,11 @@ let
   # Add new themes or wallpapers here — no naming conventions needed on the files.
   # animated = true  → displayed via mpvpaper (supports MP4/GIF)
   # animated = false → displayed via hyprpaper (static images only)
-  # specialisation = null   → Nord is the default NixOS config, no switch needed
-  # specialisation = "name" → matches a specialisation defined in nixos/themes.nix
+  # hmTheme = the theme name used in homeConfigurations (e.g., "nord", "gruvbox", "eris")
   themes = [
     {
       name = "Nord";
-      specialisation = null;
+      hmTheme = "nord";
       wallpapers = [
         { name = "Mountain";   path = ../../../../assets/nord/mountain.png;   animated = false; }
         { name = "Black Hole"; path = ../../../../assets/nord/black_hole.mp4; animated = true;  }
@@ -18,7 +17,7 @@ let
     }
     {
       name = "Gruvbox";
-      specialisation = "gruvbox";
+      hmTheme = "gruvbox";
       wallpapers = [
         { name = "Mist Forest"; path = ../../../../assets/gruvbox/mist_forest.png; animated = false; }
         { name = "Leaves";      path = ../../../../assets/gruvbox/leaves.mp4;       animated = true;  }
@@ -26,7 +25,7 @@ let
     }
     {
       name = "Eris";
-      specialisation = "eris";
+      hmTheme = "eris";
       wallpapers = [
         { name = "Neon Car"; path = ../../../../assets/eris/neon-car.mp4; animated = true; speed = 0.5; }
       ];
@@ -35,57 +34,65 @@ let
 
   # Flat list of all wallpapers with display labels for the walker picker.
   # Format: "Theme / Name · animated" or "Theme / Name · static"
-  # Each entry carries the theme's specialisation name (null for the default theme).
   allWallpapers = lib.concatMap (theme:
     map (w: w // {
       label = "${theme.name} / ${w.name} · ${if w.animated then "animated" else "static"}";
-      specialisation = theme.specialisation;
+      hmTheme = theme.hmTheme;
     }) theme.wallpapers
   ) themes;
 
   staticWallpapers = lib.filter (w: !w.animated) allWallpapers;
 
-  # The specialisation name passed to maybe_switch — empty string means Nord (base system).
-  specArg = w: if w.specialisation == null then "" else w.specialisation;
-
   # Walker dmenu picker — presents all wallpapers and switches to the chosen one.
-  # Order of operations:
-  #   1. Activate the NixOS specialisation first — this may restart systemd services.
-  #   2. Set the wallpaper after — so any service restarts don't conflict with our state.
-  #   3. Restart waybar via systemd — it reads its config on startup so it picks up the new colors.
+  # Uses home-manager switch for fast theme changes (no sudo required).
   wallpaperPicker = pkgs.writeShellScriptBin "wallpaper-picker" ''
     CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.label) allWallpapers)}' \
       | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
 
-    # Activate the target specialisation only if it isn't already active.
-    # Compares resolved store paths — switching wallpapers within the same theme skips the switch.
-    # Sets THEME_SWITCHED=1 if a switch happened (daemons need restarting), 0 if already active.
+    # Determine the home-manager config name based on hostname
+    # Maps hostname to the flake config prefix (e.g., framework-16 -> framework-16, framework-16 -> thinkpad)
+    get_hm_prefix() {
+      local hostname=$(hostname)
+      case "$hostname" in
+        framework-16) echo "framework-16" ;;
+        my-thinkpad)  echo "thinkpad" ;;
+        *)            echo "$hostname" ;;
+      esac
+    }
+
+    # Track current theme to avoid unnecessary rebuilds
+    CURRENT_THEME_FILE="$HOME/.cache/current-theme"
+    CURRENT_THEME=$(cat "$CURRENT_THEME_FILE" 2>/dev/null || echo "")
+
+    # Switch home-manager config to the target theme
+    # Returns 0 and sets THEME_SWITCHED=1 if switch happened, THEME_SWITCHED=0 if already on theme
     THEME_SWITCHED=0
     maybe_switch() {
-      local spec="$1"
-      local target
-      if [ -z "$spec" ]; then
-        target=$(readlink -f /nix/var/nix/profiles/system)
-      else
-        target=$(readlink -f /nix/var/nix/profiles/system/specialisation/"$spec")
-      fi
-      if [ "$(readlink -f /run/current-system)" = "$target" ]; then
+      local theme="$1"
+      if [ "$CURRENT_THEME" = "$theme" ]; then
         THEME_SWITCHED=0
         return 0
       fi
-      THEME_SWITCHED=1
-      if [ -z "$spec" ]; then
-        sudo /nix/var/nix/profiles/system/bin/switch-to-configuration switch
+
+      local prefix=$(get_hm_prefix)
+      local config="trace@''${prefix}-''${theme}"
+
+      notify-send "Theme" "Switching to $theme..." -t 2000
+
+      # Run home-manager switch from the flake directory
+      if ${pkgs.home-manager}/bin/home-manager switch --flake "$HOME/Dev/other/nixos#$config" 2>&1; then
+        echo "$theme" > "$CURRENT_THEME_FILE"
+        THEME_SWITCHED=1
+        return 0
       else
-        sudo /nix/var/nix/profiles/system/specialisation/"$spec"/bin/switch-to-configuration switch
+        notify-send -u critical "Theme switch failed" "home-manager switch failed for $config"
+        return 1
       fi
     }
 
-    # Restart daemons that load their GTK theme or config once at startup.
+    # Restart daemons that load their config once at startup.
     # Heavy apps (VS Code, Obsidian, Firefox, Spotify) are left for the user to reopen.
     restart_themed_daemons() {
-      # Signal alacritty first (instant) before blocking systemctl calls
-      pkill -USR1 alacritty 2>/dev/null || true
       # Restart services in background so they don't block each other
       systemctl --user restart waybar.service &
       systemctl --user restart mako.service &
@@ -100,34 +107,28 @@ let
       ${lib.concatStringsSep "\n      " (map (w:
         if !w.animated then ''
           "${w.label}")
-              if maybe_switch "${specArg w}"; then
+              if maybe_switch "${w.hmTheme}"; then
+                pkill mpvpaper 2>/dev/null || true
+                systemctl --user start hyprpaper.service
+                # Wait for hyprpaper socket to be ready before issuing commands
+                until hyprctl hyprpaper listloaded &>/dev/null; do sleep 0.1; done
+                hyprctl hyprpaper preload "${toString w.path}"
+                hyprctl hyprpaper wallpaper ",${toString w.path}"
+                [ "$THEME_SWITCHED" = "1" ] && restart_themed_daemons
                 notify-send "Theme" "Switched to ${w.label}"
-              else
-                notify-send -u critical "Theme switch failed" "Check sudo rules in modules/nixos/optional/themes.nix"
               fi
-
-              pkill mpvpaper 2>/dev/null || true
-              systemctl --user start hyprpaper.service
-              # Wait for hyprpaper socket to be ready before issuing commands
-              until hyprctl hyprpaper listloaded &>/dev/null; do sleep 0.1; done
-              hyprctl hyprpaper preload "${toString w.path}"
-              hyprctl hyprpaper wallpaper ",${toString w.path}"
-              [ "$THEME_SWITCHED" = "1" ] && restart_themed_daemons
               ;;''
         else ''
           "${w.label}")
-              if maybe_switch "${specArg w}"; then
+              if maybe_switch "${w.hmTheme}"; then
+                systemctl --user stop hyprpaper.service
+                pkill mpvpaper 2>/dev/null || true
+                # speed is optional — only wallpapers with a speed attribute (e.g. Eris) override playback rate
+                # panscan=1.0 fills the screen properly with fractional scaling
+                ${lib.getExe pkgs.mpvpaper} -o 'loop panscan=1.0${if w ? speed then " speed=${toString w.speed}" else ""}' '*' ${toString w.path} &
+                [ "$THEME_SWITCHED" = "1" ] && restart_themed_daemons
                 notify-send "Theme" "Switched to ${w.label}"
-              else
-                notify-send -u critical "Theme switch failed" "Check sudo rules in modules/nixos/optional/themes.nix"
               fi
-
-              systemctl --user stop hyprpaper.service
-              pkill mpvpaper 2>/dev/null || true
-              # speed is optional — only wallpapers with a speed attribute (e.g. Eris) override playback rate
-              # panscan=1.0 fills the screen properly with fractional scaling
-              ${lib.getExe pkgs.mpvpaper} -o 'loop panscan=1.0${if w ? speed then " speed=${toString w.speed}" else ""}' '*' ${toString w.path} &
-              [ "$THEME_SWITCHED" = "1" ] && restart_themed_daemons
               ;;''
       ) allWallpapers)}
     esac
@@ -137,7 +138,7 @@ in
   home.packages = [ wallpaperPicker ];
 
   # Stylix's hyprpaper target is disabled so we can manage it ourselves.
-  # Stylix still uses its static image (in stylix.nix) for color scheme generation.
+  # Stylix still uses its static image for color scheme generation.
   stylix.targets.hyprpaper.enable = lib.mkForce false;
 
   services.hyprpaper = {

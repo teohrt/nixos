@@ -18,4 +18,8 @@
     matchConfig.Name = "en*";
     networkConfig.DHCP = "yes";
   };
+
+  # Only wait for one interface to be online (wifi or wired), not all
+  # Prevents 2-minute timeout when no ethernet cable is plugged in
+  systemd.network.wait-online.anyInterface = true;
 }

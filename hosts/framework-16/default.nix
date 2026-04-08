@@ -79,8 +79,6 @@
     ../../modules/nixos/optional/desktop.nix
     ../../modules/nixos/optional/networking.nix
     ../../modules/nixos/optional/docker.nix
-    ../../modules/nixos/optional/stylix.nix
-    ../../modules/nixos/optional/themes.nix
     ../../modules/nixos/optional/system-apps.nix
   ];
 
