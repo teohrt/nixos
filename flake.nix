@@ -53,23 +53,22 @@
       thinkpad = { };  # No overrides for thinkpad
     };
 
+    # Shared NixOS-level Stylix config (default nord theme, for embedded home-manager)
+    stylixNixosModule = {
+      stylix = themesDef.stylixBase // {
+        enable = true;
+        polarity = "dark";
+        image = themesDef.themes.nord.image;
+        base16Scheme = themesDef.themes.nord.scheme;
+      };
+    };
+
     # Shared home-manager NixOS module config
     hmNixosModule = {
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.backupFileExtension = "nixos-hm-backup";
       home-manager.extraSpecialArgs = { inherit pkgs-walker spicetify-nix; };
-      home-manager.sharedModules = [
-        stylix.homeModules.stylix
-        {
-          # Prevent nixpkgs warning - inherit from NixOS global pkgs
-          nixpkgs.config = { };
-          stylix = themesDef.stylixBase // {
-            image = themesDef.themes.nord.image;
-            base16Scheme = themesDef.themes.nord.scheme;
-          };
-        }
-      ];
     };
 
     # Build a standalone home-manager config for a machine + theme
@@ -103,6 +102,8 @@
         specialArgs = { inherit pkgs-walker; };
         modules = [
           ./hosts/my-thinkpad
+          stylix.nixosModules.stylix
+          stylixNixosModule
           home-manager.nixosModules.home-manager
           hmNixosModule
         ];
@@ -113,6 +114,8 @@
         modules = [
           ./hosts/framework-16
           nixos-hardware.nixosModules.framework-16-7040-amd
+          stylix.nixosModules.stylix
+          stylixNixosModule
           home-manager.nixosModules.home-manager
           hmNixosModule
         ];
