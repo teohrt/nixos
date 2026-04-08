@@ -60,6 +60,15 @@
     ];
   };
 
+  # Enable automatic switching to newly connected audio devices
+  services.pipewire.wireplumber.extraConfig."52-switch-on-connect" = {
+    "wireplumber.settings" = {
+      "default-nodes.properties" = {
+        "switch-on-connect" = true;
+      };
+    };
+  };
+
   # Fallback: systemd service to set speaker profile after wireplumber starts
   systemd.user.services.framework-audio-fix = {
     description = "Set Framework 16 audio to Speaker profile";
