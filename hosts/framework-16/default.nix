@@ -11,12 +11,15 @@
     })
   ];
   # Audio fixes for Framework 16
+  # The AMD Ryzen audio hardware (ALC285 codec + SOF firmware) is newer and has quirks:
+  # - WirePlumber auto-selects the wrong profile (Headphones instead of Speaker)
+  # - Requires explicit profile forcing and a fallback systemd service
+  # ThinkPads with mature Intel audio don't need any of this.
   environment.systemPackages = [ pkgs.alsa-utils pkgs.pulseaudio ];
   hardware.firmware = [ pkgs.sof-firmware ];
   services.pipewire.audio.enable = true;
 
-  # Set Speaker profile as default (instead of Headphones)
-  # Wireplumber config to prefer speaker profile
+  # Force Speaker profile (WirePlumber defaults to Headphones otherwise)
   services.pipewire.wireplumber.extraConfig."50-framework-speaker" = {
     "monitor.alsa.rules" = [
       {
