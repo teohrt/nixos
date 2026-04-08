@@ -6,6 +6,7 @@
   services.pipewire.audio.enable = true;
 
   # Set Speaker profile as default (instead of Headphones)
+  # Wireplumber config to prefer speaker profile
   services.pipewire.wireplumber.extraConfig."50-framework-speaker" = {
     "monitor.alsa.rules" = [
       {
@@ -14,22 +15,32 @@
         ];
         actions = {
           update-props = {
+            "api.acp.auto-profile" = false;
             "device.profile" = "HiFi (Mic1, Mic2, Speaker)";
           };
         };
       }
-      {
-        matches = [
-          { "node.name" = "~alsa_output.pci-0000_c2_00.6.*Speaker*"; }
-        ];
-        actions = {
-          update-props = {
-            "priority.driver" = 2000;
-            "priority.session" = 2000;
-          };
-        };
-      }
     ];
+  };
+
+  # Fallback: systemd service to set speaker profile after wireplumber starts
+  systemd.user.services.framework-audio-fix = {
+    description = "Set Framework 16 audio to Speaker profile";
+    wantedBy = [ "wireplumber.service" ];
+    after = [ "wireplumber.service" ];
+    path = [ pkgs.wireplumber pkgs.gnugrep pkgs.gawk ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStartPre = "${pkgs.coreutils}/bin/sleep 2";
+      ExecStart = pkgs.writeShellScript "set-speaker-profile" ''
+        # Find the Ryzen HD Audio Controller device ID and set Speaker profile (index 2)
+        DEVICE_ID=$(wpctl status | grep -A1 "Ryzen HD Audio Controller" | grep -oP '^\s*\K\d+' | head -1)
+        if [ -n "$DEVICE_ID" ]; then
+          wpctl set-profile "$DEVICE_ID" 2
+        fi
+      '';
+    };
   };
   imports = [
     ./hardware.nix
