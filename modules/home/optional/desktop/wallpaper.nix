@@ -122,7 +122,8 @@ let
               systemctl --user stop hyprpaper.service
               pkill mpvpaper 2>/dev/null || true
               # speed is optional — only wallpapers with a speed attribute (e.g. Eris) override playback rate
-              ${lib.getExe pkgs.mpvpaper} -o 'loop${if w ? speed then " speed=${toString w.speed}" else ""}' '*' ${toString w.path} &
+              # panscan=1.0 fills the screen properly with fractional scaling
+              ${lib.getExe pkgs.mpvpaper} -o 'loop panscan=1.0${if w ? speed then " speed=${toString w.speed}" else ""}' '*' ${toString w.path} &
               [ "$THEME_SWITCHED" = "1" ] && restart_themed_daemons
               ;;''
       ) allWallpapers)}
