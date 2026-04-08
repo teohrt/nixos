@@ -109,6 +109,9 @@
       ../../modules/home/optional/apps/obsidian.nix
       ../../modules/home/optional/apps/spicetify.nix
     ];
+
+    # Framework 16 specific: 1.25x scale (overrides shared 1.2x)
+    wayland.windowManager.hyprland.settings.monitor = ",preferred,auto,1.25";
   };
 
   system.stateVersion = "25.11";
