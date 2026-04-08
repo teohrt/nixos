@@ -28,16 +28,18 @@
     description = "Set Framework 16 audio to Speaker profile";
     wantedBy = [ "wireplumber.service" ];
     after = [ "wireplumber.service" ];
-    path = [ pkgs.wireplumber pkgs.gnugrep pkgs.gawk ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
       ExecStartPre = "${pkgs.coreutils}/bin/sleep 2";
       ExecStart = pkgs.writeShellScript "set-speaker-profile" ''
         # Find the Ryzen HD Audio Controller device ID and set Speaker profile (index 2)
-        DEVICE_ID=$(wpctl status | grep -A1 "Ryzen HD Audio Controller" | grep -oP '^\s*\K\d+' | head -1)
+        DEVICE_ID=$(${pkgs.wireplumber}/bin/wpctl status 2>/dev/null | \
+          ${pkgs.gnugrep}/bin/grep "Ryzen HD Audio Controller" | \
+          ${pkgs.gnugrep}/bin/grep "\[alsa\]" | \
+          ${pkgs.gnused}/bin/sed 's/.*[^0-9]\([0-9]\+\)\..*/\1/')
         if [ -n "$DEVICE_ID" ]; then
-          wpctl set-profile "$DEVICE_ID" 2
+          ${pkgs.wireplumber}/bin/wpctl set-profile "$DEVICE_ID" 2
         fi
       '';
     };
