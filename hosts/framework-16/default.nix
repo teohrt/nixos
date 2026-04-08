@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   # Audio fixes for Framework 16
   environment.systemPackages = [ pkgs.alsa-utils pkgs.pulseaudio ];
@@ -111,7 +111,7 @@
     ];
 
     # Framework 16 specific: 1.25x scale (overrides shared 1.2x)
-    wayland.windowManager.hyprland.settings.monitor = ",preferred,auto,1.25";
+    wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1.25";
   };
 
   system.stateVersion = "25.11";
