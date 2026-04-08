@@ -22,7 +22,7 @@
   outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, stylix, spicetify-nix, nixos-hardware, ... }:
   let
     system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
+    pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
     pkgs-walker = nixpkgs-walker.legacyPackages.${system};
 
     # Import theme definitions
