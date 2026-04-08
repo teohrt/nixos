@@ -20,9 +20,10 @@
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
-  outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, stylix, spicetify-nix, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, stylix, spicetify-nix, nixos-hardware, ... }:
   let
     system = "x86_64-linux";
     pkgs-walker = nixpkgs-walker.legacyPackages.${system};
@@ -49,6 +50,7 @@
         specialArgs = { inherit pkgs-walker; };
         modules = [
           ./hosts/framework-16
+          nixos-hardware.nixosModules.framework-16-7040-amd
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
           {
