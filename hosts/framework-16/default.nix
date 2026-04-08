@@ -41,6 +41,8 @@
         if [ -n "$DEVICE_ID" ]; then
           ${pkgs.wireplumber}/bin/wpctl set-profile "$DEVICE_ID" 2
         fi
+        # Also set the default sink via pactl
+        ${pkgs.pulseaudio}/bin/pactl set-default-sink alsa_output.pci-0000_c2_00.6.HiFi__Speaker__sink
       '';
     };
   };
