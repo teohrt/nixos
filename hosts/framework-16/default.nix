@@ -23,6 +23,33 @@
     ];
   };
 
+  # Auto-switch to Bluetooth headphones when connected
+  services.pipewire.wireplumber.extraConfig."51-bluetooth-priority" = {
+    "monitor.bluez.rules" = [
+      {
+        matches = [
+          { "device.name" = "~bluez_card.*"; }
+        ];
+        actions = {
+          update-props = {
+            "bluez5.auto-connect" = [ "a2dp_sink" "hfp_hf" ];
+          };
+        };
+      }
+      {
+        matches = [
+          { "node.name" = "~bluez_output.*"; }
+        ];
+        actions = {
+          update-props = {
+            "priority.driver" = 3000;
+            "priority.session" = 3000;
+          };
+        };
+      }
+    ];
+  };
+
   # Fallback: systemd service to set speaker profile after wireplumber starts
   systemd.user.services.framework-audio-fix = {
     description = "Set Framework 16 audio to Speaker profile";
