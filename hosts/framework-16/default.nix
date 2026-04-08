@@ -13,9 +13,9 @@
 
   networking.hostName = "framework-16";
 
-  # Disable WiFi 6 (802.11ax) parsing in the iwlwifi driver — iwd fails to
-  # parse HE capabilities on this adapter (Intel 8265/8275), causing connect-failed
-  boot.extraModprobeConfig = "options iwlwifi disable_11ax=1";
+  # Firmware for audio, wifi, etc.
+  hardware.enableRedistributableFirmware = true;
+
 
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
