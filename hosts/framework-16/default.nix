@@ -60,12 +60,30 @@
     ];
   };
 
-  # Enable automatic switching to newly connected audio devices
-  services.pipewire.wireplumber.extraConfig."52-switch-on-connect" = {
-    "wireplumber.settings" = {
-      "default-nodes.properties" = {
-        "switch-on-connect" = true;
-      };
+  # Auto-switch to Bluetooth audio when device connects
+  systemd.user.services.bluetooth-autoswitch = {
+    description = "Switch audio to Bluetooth when connected";
+    wantedBy = [ "pipewire.service" ];
+    after = [ "pipewire.service" "wireplumber.service" ];
+    serviceConfig = {
+      Type = "simple";
+      Restart = "always";
+      RestartSec = 5;
+      ExecStart = pkgs.writeShellScript "bluetooth-autoswitch" ''
+        ${pkgs.pulseaudio}/bin/pactl subscribe | while read -r line; do
+          if echo "$line" | ${pkgs.gnugrep}/bin/grep -q "Event 'new' on sink"; then
+            sleep 1
+            # Get the Bluetooth sink name if one exists
+            BT_SINK=$(${pkgs.pulseaudio}/bin/pactl list short sinks | \
+              ${pkgs.gnugrep}/bin/grep -i "bluez" | \
+              ${pkgs.coreutils}/bin/head -1 | \
+              ${pkgs.coreutils}/bin/cut -f2)
+            if [ -n "$BT_SINK" ]; then
+              ${pkgs.pulseaudio}/bin/pactl set-default-sink "$BT_SINK"
+            fi
+          fi
+        done
+      '';
     };
   };
 
