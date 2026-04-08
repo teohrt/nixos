@@ -60,8 +60,10 @@
       home-manager.backupFileExtension = "nixos-hm-backup";
       home-manager.extraSpecialArgs = { inherit pkgs-walker spicetify-nix; };
       home-manager.sharedModules = [
-        stylix.homeManagerModules.stylix
+        stylix.homeModules.stylix
         {
+          # Prevent nixpkgs warning - inherit from NixOS global pkgs
+          nixpkgs.config = { };
           stylix = themesDef.stylixBase // {
             image = themesDef.themes.nord.image;
             base16Scheme = themesDef.themes.nord.scheme;
@@ -75,7 +77,7 @@
       inherit pkgs;
       extraSpecialArgs = { inherit pkgs-walker spicetify-nix; };
       modules = [
-        stylix.homeManagerModules.stylix
+        stylix.homeModules.stylix
         {
           home.username = "trace";
           home.homeDirectory = "/home/trace";
