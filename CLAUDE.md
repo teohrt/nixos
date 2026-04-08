@@ -4,15 +4,14 @@ This is a NixOS configuration repository managed with flakes.
 
 ## Workflow
 
-- Changes are made here locally, but **this is not the target system**.
-- The operator (human) deploys changes to a **remote NixOS host** and reports back with outcomes.
-- All testing and validation happens on the remote host — not on this local machine.
+- This machine **is** the target system (Framework 16).
+- Claude can run commands directly to debug, test, and validate changes.
+- Deploy with: `sudo nixos-rebuild switch --flake .#framework-16`
 
 ## Debugging
 
-- When something breaks, the operator runs the relevant commands on the remote host and pastes errors here.
-- Debugging consists entirely of iterating on the config files in this repo — reading, editing, and suggesting changes.
-- Claude does **not** run commands or inspect the local filesystem to debug, since this local machine is not the deployment target.
+- Claude can run diagnostic commands directly (`wpctl status`, `journalctl`, etc.)
+- Edit config files, rebuild, and verify changes in the same session.
 
 ## Structure
 
