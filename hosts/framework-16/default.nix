@@ -1,9 +1,34 @@
 { pkgs, ... }:
 {
   # Audio fixes for Framework 16
-  environment.systemPackages = [ pkgs.alsa-utils ];
+  environment.systemPackages = [ pkgs.alsa-utils pkgs.pulseaudio ];
   hardware.firmware = [ pkgs.sof-firmware ];
   services.pipewire.audio.enable = true;
+  services.pipewire.wireplumber.configPackages = [
+    (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/50-framework-audio.conf" ''
+      monitor.alsa.rules = [
+        {
+          # Set Speaker profile as default for ALC285
+          matches = [{ device.name = "alsa_card.pci-0000_c2_00.6" }]
+          actions = {
+            update-props = {
+              device.profile = "HiFi (Mic1, Mic2, Speaker)"
+            }
+          }
+        }
+        {
+          # Make speaker sink the default (higher priority)
+          matches = [{ node.name = "~alsa_output.pci-0000_c2_00.6.*Speaker*" }]
+          actions = {
+            update-props = {
+              priority.driver = 2000
+              priority.session = 2000
+            }
+          }
+        }
+      ]
+    '')
+  ];
   imports = [
     ./hardware.nix
     ../../modules/nixos/core
