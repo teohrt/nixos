@@ -84,10 +84,11 @@ let
     # Restart daemons that load their GTK theme or config once at startup.
     # Heavy apps (VS Code, Obsidian, Firefox, Spotify) are left for the user to reopen.
     restart_themed_daemons() {
-      systemctl --user restart waybar.service
-      systemctl --user restart mako.service
-      # Signal alacritty to reload its config (picks up new Stylix colors)
+      # Signal alacritty first (instant) before blocking systemctl calls
       pkill -USR1 alacritty 2>/dev/null || true
+      # Restart services in background so they don't block each other
+      systemctl --user restart waybar.service &
+      systemctl --user restart mako.service &
       # Restart walker background service so it picks up the new GTK theme.
       pkill -f "walker --gapplication-service" 2>/dev/null || true
       sleep 0.5 && walker --gapplication-service &
