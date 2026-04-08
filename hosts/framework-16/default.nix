@@ -1,5 +1,15 @@
 { pkgs, lib, ... }:
 {
+  # Zoom runs on XWayland — wrap it to self-scale so clicks align with force_zero_scaling
+  nixpkgs.overlays = [
+    (_: prev: {
+      zoom-us = prev.zoom-us.overrideAttrs (old: {
+        postInstall = (old.postInstall or "") + ''
+          wrapProgram $out/bin/zoom --set QT_SCALE_FACTOR 1.25
+        '';
+      });
+    })
+  ];
   # Audio fixes for Framework 16
   environment.systemPackages = [ pkgs.alsa-utils pkgs.pulseaudio ];
   hardware.firmware = [ pkgs.sof-firmware ];
@@ -110,6 +120,8 @@
 
     # Framework 16 specific: 1.25x scale (overrides shared 1.2x)
     wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1.25";
+
+
   };
 
   system.stateVersion = "25.11";
