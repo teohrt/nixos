@@ -5,7 +5,7 @@
     enable = true;
     package = pkgs.vscode;
     profiles.default.userSettings = {
-      "window.backgroundOpacity" = config.stylix.opacity.applications;
+      "window.backgroundOpacity" = 0.9;
     };
   };
 }
