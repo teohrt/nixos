@@ -1,5 +1,17 @@
-{ ... }:
+{ pkgs, ... }:
 {
+  # Audio fixes for Framework 16
+  environment.systemPackages = [ pkgs.alsa-utils ];
+  hardware.firmware = [ pkgs.sof-firmware ];
+  services.pipewire = {
+    audio.enable = true;
+    wireplumber = {
+      enable = true;
+      extraLuaConfig.main."51-alsa-config" = ''
+        alsa_monitor.enabled = true
+      '';
+    };
+  };
   imports = [
     ./hardware.nix
     ../../modules/nixos/core
