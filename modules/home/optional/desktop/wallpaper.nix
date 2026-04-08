@@ -86,6 +86,8 @@ let
     restart_themed_daemons() {
       systemctl --user restart waybar.service
       systemctl --user restart mako.service
+      # Signal alacritty to reload its config (picks up new Stylix colors)
+      pkill -USR1 alacritty 2>/dev/null || true
       # Restart walker background service so it picks up the new GTK theme.
       pkill -f "walker --gapplication-service" 2>/dev/null || true
       sleep 0.5 && walker --gapplication-service &
