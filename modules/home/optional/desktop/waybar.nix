@@ -426,10 +426,6 @@ in
       #battery.medium   { color: #ffdd44; }
       #battery.high     { color: #ffffff; }
 
-      #pulseaudio.muted {
-        color: rgba(255, 255, 255, 0.3);
-      }
-
     '';
   };
 }
