@@ -191,9 +191,9 @@ in
       margin-right = 4;
       spacing = 8;
 
-      modules-left = [ "custom/launcher" "hyprland/workspaces" "custom/weather" ];
+      modules-left = [ "hyprland/workspaces" "custom/weather" ];
       modules-center = [ "battery" "clock" "custom/notification" ];
-      modules-right = [ "custom/wifi" "custom/cpu" "custom/mem" "pulseaudio" "bluetooth" "custom/power" ];
+      modules-right = [ "custom/wifi" "custom/cpu" "custom/mem" "bluetooth" "pulseaudio" ];
 
       "custom/launcher" = {
         format = "󱄅";
@@ -271,8 +271,8 @@ in
         format = "<span size=\"xx-large\">󰕾</span>";
         format-muted = "<span size=\"xx-large\">󰖁</span>";
         tooltip-format = "{volume}%";
-        on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
-        on-click-right = "${mkToggle "audio" "alacritty --title audio -e wiremix"}";
+        on-click = "${mkToggle "audio" "alacritty --title audio -e wiremix"}";
+        on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
       };
 
       "custom/power" = {
@@ -395,11 +395,11 @@ in
         font-size: 18px;
       }
 
-      #pulseaudio,
-      #pulseaudio label {
-        padding: 2px 16px;
-        min-width: 24px;
-        max-width: 24px;
+      #pulseaudio {
+        padding: 2px 14px;
+      }
+      #pulseaudio.muted {
+        padding: 2px 14px;
       }
 
       #custom-notification {
@@ -408,7 +408,7 @@ in
       }
 
       #bluetooth {
-        padding: 2px 16px;
+        padding: 2px 22px;
       }
 
       #custom-power {
