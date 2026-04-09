@@ -1,37 +1,33 @@
-# Theme definitions and home-manager configuration builder
-# Used by flake.nix to generate homeConfigurations for each theme
+# Stylix theme configuration (Nord)
+# Colors come from the base16 scheme, not the image.
+# The image is a required placeholder for stylix.
 { pkgs }:
 
-{
-  # Available themes - add new themes here
-  themes = {
-    nord = {
-      image = ../../assets/nord/mountain.png;
-      scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
-    };
-    gruvbox = {
-      image = ../../assets/gruvbox/mist_forest.png;
-      scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
-    };
-    eris = {
-      image = ../../assets/nord/mountain.png; # placeholder
-      scheme = "${pkgs.base16-schemes}/share/themes/eris.yaml";
-    };
+let
+  # Placeholder image for stylix (required attribute, but colors come from scheme)
+  placeholderImage = pkgs.fetchurl {
+    url = "https://w.wallhaven.cc/full/8x/wallhaven-8x225j.jpg";
+    sha256 = "06q04fivqws6smn3plmyslf8s9xdykhrx3sa09vjnywrh5wjk3fq";
   };
-
-  # Shared Stylix settings applied to all themes
-  stylixBase = {
+in
+{
+  stylix = {
     enable = true;
     polarity = "dark";
+    image = placeholderImage;
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
+
     fonts.monospace = {
       package = pkgs.nerd-fonts.jetbrains-mono;
       name = "JetBrainsMono Nerd Font Mono";
     };
+
     cursor = {
       package = pkgs.bibata-cursors;
       name = "Bibata-Modern-Ice";
       size = 24;
     };
+
     opacity = {
       terminal = 0.7;
       applications = 0.8;

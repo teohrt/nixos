@@ -27,8 +27,8 @@
     pkgs-unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
     pkgs-walker = nixpkgs-walker.legacyPackages.${system};
 
-    # Import theme definitions
-    themesDef = import ./modules/home/themes.nix { inherit pkgs; };
+    # Import stylix theme config (nord)
+    themeConfig = import ./modules/home/themes.nix { inherit pkgs; };
 
     # Base home modules shared by all machines
     baseHomeModules = [
@@ -52,17 +52,7 @@
       framework-16 = ({ lib, ... }: {
         wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1.25";
       });
-      thinkpad = { };  # No overrides for thinkpad
-    };
-
-    # Shared NixOS-level Stylix config (default nord theme, for embedded home-manager)
-    stylixNixosModule = {
-      stylix = themesDef.stylixBase // {
-        enable = true;
-        polarity = "dark";
-        image = themesDef.themes.nord.image;
-        base16Scheme = themesDef.themes.nord.scheme;
-      };
+      thinkpad = { };
     };
 
     # Shared home-manager NixOS module config
@@ -72,30 +62,6 @@
       home-manager.backupFileExtension = "nixos-hm-backup";
       home-manager.extraSpecialArgs = { inherit pkgs-unstable pkgs-walker spicetify-nix; };
     };
-
-    # Build a standalone home-manager config for a machine + theme
-    mkHomeConfig = machine: theme: home-manager.lib.homeManagerConfiguration {
-      inherit pkgs;
-      extraSpecialArgs = { inherit pkgs-unstable pkgs-walker spicetify-nix; };
-      modules = [
-        stylix.homeModules.stylix
-        {
-          home.username = "trace";
-          home.homeDirectory = "/home/trace";
-          home.stateVersion = "25.11";
-          programs.home-manager.enable = true;
-          stylix = themesDef.stylixBase // {
-            image = themesDef.themes.${theme}.image;
-            base16Scheme = themesDef.themes.${theme}.scheme;
-          };
-        }
-        machineOverrides.${machine}
-      ] ++ baseHomeModules;
-    };
-
-    # Generate homeConfigurations for all machine/theme combinations
-    machines = [ "framework-16" "thinkpad" ];
-    themeNames = builtins.attrNames themesDef.themes;
   in
   {
     nixosConfigurations = {
@@ -105,7 +71,7 @@
         modules = [
           ./hosts/my-thinkpad
           stylix.nixosModules.stylix
-          stylixNixosModule
+          { inherit (themeConfig) stylix; }
           home-manager.nixosModules.home-manager
           hmNixosModule
         ];
@@ -117,20 +83,11 @@
           ./hosts/framework-16
           nixos-hardware.nixosModules.framework-16-7040-amd
           stylix.nixosModules.stylix
-          stylixNixosModule
+          { inherit (themeConfig) stylix; }
           home-manager.nixosModules.home-manager
           hmNixosModule
         ];
       };
     };
-
-    homeConfigurations = builtins.listToAttrs (
-      builtins.concatMap (machine:
-        map (theme: {
-          name = "trace@${machine}-${theme}";
-          value = mkHomeConfig machine theme;
-        }) themeNames
-      ) machines
-    );
   };
 }
