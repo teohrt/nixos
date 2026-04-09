@@ -271,7 +271,8 @@ in
         format = "<span size=\"xx-large\">󰕾</span>";
         format-muted = "<span size=\"xx-large\">󰝟</span>";
         tooltip-format = "{volume}%";
-        on-click = "${mkToggle "audio" "alacritty --title audio -e wiremix"}";
+        on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        on-click-right = "${mkToggle "audio" "alacritty --title audio -e wiremix"}";
       };
 
       "custom/power" = {
