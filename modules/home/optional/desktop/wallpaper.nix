@@ -108,7 +108,7 @@ let
               --transition-duration 1 \
               --transition-fps 60 \
               --transition-pos center
-            notify-send "Wallpaper" "Switched to ${w.name}"
+            ${pkgs.libnotify}/bin/notify-send -t 2000 "Wallpaper" "Switched to ${w.name}"
             ;;''
       ) wallpapers)}
     esac
