@@ -37,6 +37,8 @@ let
     }
   ];
 
+  defaultWallpaper = builtins.head wallpapers;
+
   # Walker dmenu picker for wallpapers
   wallpaperPicker = pkgs.writeShellScriptBin "wallpaper-picker" ''
     CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.name) wallpapers)}' \
@@ -45,8 +47,11 @@ let
     case "$CHOICE" in
       ${lib.concatStringsSep "\n      " (map (w: ''
         "${w.name}")
-            hyprctl hyprpaper preload "${w.path}"
-            hyprctl hyprpaper wallpaper ",${w.path}"
+            ${pkgs.swww}/bin/swww img "${w.path}" \
+              --transition-type grow \
+              --transition-duration 1 \
+              --transition-fps 60 \
+              --transition-pos center
             notify-send "Wallpaper" "Switched to ${w.name}"
             ;;''
       ) wallpapers)}
@@ -54,22 +59,20 @@ let
   '';
 in
 {
-  home.packages = [ wallpaperPicker ];
+  home.packages = [
+    wallpaperPicker
+    pkgs.swww
+  ];
 
-  # Stylix's hyprpaper target is disabled so we can manage wallpapers ourselves.
+  # Disable stylix hyprpaper since we use swww
   stylix.targets.hyprpaper.enable = lib.mkForce false;
 
-  services.hyprpaper = {
-    enable = true;
-    settings = {
-      # Preload all wallpapers so switching is instant.
-      preload = map (w: toString w.path) wallpapers;
-      # Default to the first wallpaper on startup.
-      wallpaper = [ ",${toString (builtins.head wallpapers).path}" ];
-    };
-  };
-
+  # swww daemon and initial wallpaper
   wayland.windowManager.hyprland.settings = {
+    exec-once = [
+      "${pkgs.swww}/bin/swww-daemon"
+      "sleep 0.5 && ${pkgs.swww}/bin/swww img ${defaultWallpaper.path}"
+    ];
     bind = [
       "$mod SHIFT, W, exec, wallpaper-picker"
     ];
