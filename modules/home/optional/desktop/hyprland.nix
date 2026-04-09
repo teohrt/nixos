@@ -175,7 +175,7 @@ in
         "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
         "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(spotify)$"
         "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(Slack)$"
-        "opacity ${toString config.stylix.opacity.terminal} ${toString config.stylix.opacity.terminal}, class:^(code)$"
+        "opacity 0.9 0.9, class:^(code)$"
         "float,      class:^(org.kde.partitionmanager)$"
         "size 650 450, class:^(org.kde.partitionmanager)$"
         "center,     class:^(org.kde.partitionmanager)$"

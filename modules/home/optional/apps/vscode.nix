@@ -5,7 +5,7 @@
     enable = true;
     package = pkgs.vscode;
     profiles.default.userSettings = {
-      "window.backgroundOpacity" = 0.9;
+      "window.backgroundOpacity" = 1;
     };
   };
 }
