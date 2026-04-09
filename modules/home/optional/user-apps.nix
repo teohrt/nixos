@@ -1,5 +1,5 @@
 # Packages that should be installed to the user profile.
-{ pkgs, pkgs-walker, ... }: {
+{ pkgs, pkgs-unstable, pkgs-walker, ... }: {
   home.packages = with pkgs; [
     # cli utilities
     terminaltexteffects  # tte — terminal text effects (used by screensaver)
@@ -25,7 +25,7 @@
     vlc        # video player
     slack
     zoom-us
-    bruno      # API client (like Postman)
+    pkgs-unstable.bruno  # API client (like Postman) — from unstable for v3.x
 
     mpvpaper                # animated wallpaper via mpv (supports MP4/GIF)
 

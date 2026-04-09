@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-walker.url = "github:nixos/nixpkgs/46db2e09e1d3f113a13c0d7b81e2f221c63b8ce9";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
@@ -19,10 +20,11 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
-  outputs = inputs@{ nixpkgs, nixpkgs-walker, home-manager, stylix, spicetify-nix, nixos-hardware, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-unstable, nixpkgs-walker, home-manager, stylix, spicetify-nix, nixos-hardware, ... }:
   let
     system = "x86_64-linux";
     pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
+    pkgs-unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
     pkgs-walker = nixpkgs-walker.legacyPackages.${system};
 
     # Import theme definitions
@@ -68,13 +70,13 @@
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.backupFileExtension = "nixos-hm-backup";
-      home-manager.extraSpecialArgs = { inherit pkgs-walker spicetify-nix; };
+      home-manager.extraSpecialArgs = { inherit pkgs-unstable pkgs-walker spicetify-nix; };
     };
 
     # Build a standalone home-manager config for a machine + theme
     mkHomeConfig = machine: theme: home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
-      extraSpecialArgs = { inherit pkgs-walker spicetify-nix; };
+      extraSpecialArgs = { inherit pkgs-unstable pkgs-walker spicetify-nix; };
       modules = [
         stylix.homeModules.stylix
         {
