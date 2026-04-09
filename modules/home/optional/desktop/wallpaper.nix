@@ -8,10 +8,10 @@ let
   #   3. Add entry below with name, url, and sha256
   wallpapers = [
     {
-      name = "Dark - Lake";
+      name = "Dark - Black Hole";
       path = pkgs.fetchurl {
-        url = "https://w.wallhaven.cc/full/8x/wallhaven-8x225j.jpg";
-        sha256 = "06q04fivqws6smn3plmyslf8s9xdykhrx3sa09vjnywrh5wjk3fq";
+        url = "https://w.wallhaven.cc/full/po/wallhaven-pojl63.png";
+        sha256 = "162yh1ppaizbmhc1vnnypjfjiyiyyfyj49hdbxhfzvps1pc94j8g";
       };
     }
     {
@@ -22,17 +22,73 @@ let
       };
     }
     {
-      name = "Dark - Black Hole";
-      path = pkgs.fetchurl {
-        url = "https://w.wallhaven.cc/full/po/wallhaven-pojl63.png";
-        sha256 = "162yh1ppaizbmhc1vnnypjfjiyiyyfyj49hdbxhfzvps1pc94j8g";
-      };
-    }
-    {
       name = "Light - Nix";
       path = pkgs.fetchurl {
         url = "https://w.wallhaven.cc/full/q2/wallhaven-q2w1kd.png";
         sha256 = "116337wv81xfg0g0bsylzzq2b7nbj6hjyh795jfc9mvzarnalwd3";
+      };
+    }
+    {
+      name = "Blue Paraglider";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/x1/wallhaven-x175wl.png";
+        sha256 = "11i8fp8xfydvbhs75g0bp0lc60j7hskrhq2jmhl23lf3xwxjh0n4";
+      };
+    }
+    {
+      name = "Galaxy Canopy Pilot";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/nr/wallhaven-nr2okq.jpg";
+        sha256 = "1xgy6iyz61ha5l8zw562dpag0k93z0bkzjp0fgx0zbsr4lv9q7zb";
+      };
+    }
+    {
+      name = "Blue Squares";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/4v/wallhaven-4vzeml.jpg";
+        sha256 = "0akjdh1a7sj4yyx4xfhfayfvrryi68bnv1cqcvhwaddaidb2wfyw";
+      };
+    }
+    {
+      name = "Dark Leaves";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/6k/wallhaven-6kgl3l.jpg";
+        sha256 = "0wlwxmmrryj1yjmj43ql4xxfiiclg64881g2k6ryz2dzvzfwmqvz";
+      };
+    }
+    {
+      name = "Purple Hex";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/01/wallhaven-01vwg0.jpg";
+        sha256 = "0a3jk9fy2z8ac6vk2va5y3w188pcy595nbbfq244wcpznn995w55";
+      };
+    }
+    {
+      name = "4th Dimension";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/6o/wallhaven-6o7y8x.jpg";
+        sha256 = "1x63qnrkcmy0lvmqbygcl85iz6ahmii46023lx76np1rrpbpvaij";
+      };
+    }
+    {
+      name = "Blue Abstract";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/y8/wallhaven-y8vvmd.jpg";
+        sha256 = "0s5kllw8f7bnb1nlzl3dxcw3y9l7wfhxv7xpnmqvcg2k98l6q648";
+      };
+    }
+    {
+      name = "Urf";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/47/wallhaven-47jpxv.jpg";
+        sha256 = "1p3z8gjinyfzlrwfrbwfx48z7270jrxhprjbmkl97slr45fkvn6f";
+      };
+    }
+    {
+      name = "Final Frontier";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/nm/wallhaven-nmpo19.jpg";
+        sha256 = "005cv0afh7xj6i5kg0z9dc83fjf1w3400hx755z75chnwy69zp6i";
       };
     }
   ];
