@@ -26,6 +26,7 @@
     slack
     zoom-us
     pkgs-unstable.bruno  # API client (like Postman) — from unstable for v3.x
+    easyeffects          # audio effects for PipeWire
 
     mpvpaper                # animated wallpaper via mpv (supports MP4/GIF)
 
