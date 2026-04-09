@@ -25,6 +25,7 @@
     vlc        # video player
     slack
     zoom-us
+    bruno      # API client (like Postman)
 
     mpvpaper                # animated wallpaper via mpv (supports MP4/GIF)
 
