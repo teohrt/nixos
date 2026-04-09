@@ -269,7 +269,7 @@ in
 
       pulseaudio = {
         format = "<span size=\"xx-large\">󰕾</span>";
-        format-muted = "<span size=\"xx-large\">󰝟</span>";
+        format-muted = "<span size=\"xx-large\">󰖁</span>";
         tooltip-format = "{volume}%";
         on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
         on-click-right = "${mkToggle "audio" "alacritty --title audio -e wiremix"}";
@@ -395,8 +395,11 @@ in
         font-size: 18px;
       }
 
-      #pulseaudio {
+      #pulseaudio,
+      #pulseaudio label {
         padding: 2px 16px;
+        min-width: 24px;
+        max-width: 24px;
       }
 
       #custom-notification {
