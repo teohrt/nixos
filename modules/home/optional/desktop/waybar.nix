@@ -408,7 +408,7 @@ in
       }
 
       #bluetooth {
-        padding: 2px 22px;
+        padding: 2px 16px;
       }
 
       #custom-power {
