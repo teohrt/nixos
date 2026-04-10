@@ -32,6 +32,20 @@ let
     fi
   '';
 
+  # Opens alacritty in the focused terminal's working directory (or home if not a terminal)
+  terminalHere = pkgs.writeShellScript "terminal-here" ''
+    pid=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid')
+    dir="$HOME"
+    if [[ -n "$pid" && "$pid" != "null" ]]; then
+      # Find the shell child process of the terminal
+      child=$(${pkgs.procps}/bin/pgrep -P "$pid" | head -1)
+      if [[ -n "$child" ]] && [[ -d "/proc/$child/cwd" ]]; then
+        dir=$(readlink "/proc/$child/cwd")
+      fi
+    fi
+    exec alacritty --working-directory "$dir"
+  '';
+
   # Reads all bindd-described bindings from Hyprland and shows them in a
   # searchable walker dmenu. Only bindings with descriptions appear.
   keybindingsMenu = pkgs.writeShellScript "keybindings-menu" ''
@@ -217,7 +231,7 @@ in
       # standard key bindings with descriptions (bindd = bind with description)
       # descriptions appear in the SUPER+K keybindings menu
       bindd = [
-        "$mod, Return,       Terminal,              exec, $terminal"
+        "$mod, Return,       Terminal,              exec, ${terminalHere}"
         "$mod, Escape,       Power menu,            exec, power-menu"
         "$mod SHIFT, Return, Browser,               exec, google-chrome-stable"
         "$mod, F,            Fullscreen,            fullscreen"
