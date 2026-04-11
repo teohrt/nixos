@@ -1,61 +1,67 @@
 # Theming
 
-Theming uses [Stylix](https://github.com/danth/stylix) for declarative cross-app color generation, combined with NixOS specialisations for runtime switching between color schemes.
+Theming uses [Stylix](https://github.com/danth/stylix) for declarative cross-app color generation. The theme is defined in `modules/home/themes.nix`.
 
 ## How it works
 
-### Color schemes
+### Color scheme
 
-Three themes are defined:
+The system uses Nord as the base16 color scheme. Stylix automatically generates consistent colors across GTK apps, terminals, waybar, and other applications.
 
-| Theme | Specialisation | Color scheme |
-|-------|---------------|-------------|
-| Nord | *(base system)* | `nord.yaml` |
-| Gruvbox | `gruvbox` | `gruvbox-dark-hard.yaml` |
-| Eris | `eris` | `eris.yaml` |
-
-The base system always uses Nord. The other themes are NixOS *specialisations* — fully pre-built system variants that override `stylix.image` and `stylix.base16Scheme`. All three are built during `nixos-rebuild switch`.
-
-### Switching themes
-
-Press `Super+Shift+W` to open the wallpaper picker. Selecting a wallpaper:
-
-1. Activates the NixOS specialisation for that theme via `sudo switch-to-configuration switch`
-2. Sets the wallpaper (static via `hyprpaper`, animated via `mpvpaper`)
-3. Restarts `waybar`, `mako`, `walker`, and kills `nautilus` so they pick up the new Stylix-generated configs
-
-The sudo rules for specialisation switching are in `modules/nixos/optional/themes.nix`.
+Configuration in `modules/home/themes.nix`:
+- `base16Scheme` — color palette (Nord)
+- `polarity` — dark or light mode
+- `opacity` — transparency levels for terminals, apps, popups
+- `fonts` — system-wide font (JetBrains Mono Nerd Font)
+- `cursor` — cursor theme (Bibata)
 
 ### Wallpapers
 
-Wallpapers are defined in `modules/home/optional/desktop/wallpaper.nix`. Each theme has a list of wallpapers:
+Wallpapers are managed separately from theming using [swww](https://github.com/LGFae/swww), which provides smooth animated transitions.
+
+Press `Super+Shift+W` to open the wallpaper picker. Selecting a wallpaper triggers an animated transition effect.
+
+Wallpapers are defined in `modules/home/optional/desktop/wallpaper.nix` and fetched from URLs at build time:
 
 ```nix
-{ name = "Mountain"; path = ../../../../assets/nord/mountain.png; animated = false; }
-{ name = "Black Hole"; path = ../../../../assets/nord/black_hole.mp4; animated = true; }
+{
+  name = "Dark - Black Hole";
+  path = pkgs.fetchurl {
+    url = "https://w.wallhaven.cc/full/po/wallhaven-pojl63.png";
+    sha256 = "162yh1ppaizbmhc1vnnypjfjiyiyyfyj49hdbxhfzvps1pc94j8g";
+  };
+}
 ```
-
-- `animated = false` → displayed via `hyprpaper`
-- `animated = true` → displayed via `mpvpaper` (supports MP4/GIF)
-
-Assets live in `assets/<theme>/`.
 
 ## Adding a new wallpaper
 
-1. Drop the file into `assets/<theme>/`
-2. Add an entry to the theme's `wallpapers` list in `modules/home/optional/desktop/wallpaper.nix`
-3. Rebuild
-
-## Adding a new theme
-
-1. Add a base16 scheme file to `assets/<theme>/` (or reference one from `pkgs.base16-schemes`)
-2. Add a specialisation in `modules/nixos/optional/themes.nix`:
+1. Find the image URL
+2. Get the hash: `nix-prefetch-url <url>`
+3. Add an entry to the `wallpapers` list in `modules/home/optional/desktop/wallpaper.nix`:
    ```nix
-   mytheme.configuration = {
-     stylix.image = lib.mkForce ../../../assets/mytheme/wallpaper.png;
-     stylix.base16Scheme = lib.mkForce "${pkgs.base16-schemes}/share/themes/mytheme.yaml";
-   };
+   {
+     name = "My Wallpaper";
+     path = pkgs.fetchurl {
+       url = "https://example.com/wallpaper.png";
+       sha256 = "<hash from nix-prefetch-url>";
+     };
+   }
    ```
-3. Add a sudo rule for the new specialisation in the same file
-4. Add the theme and its wallpapers to `modules/home/optional/desktop/wallpaper.nix`
-5. Rebuild
+4. Rebuild
+
+## Changing the color scheme
+
+Edit `modules/home/themes.nix`:
+
+```nix
+base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
+```
+
+Available schemes are in `pkgs.base16-schemes`. Common options:
+- `nord.yaml`
+- `gruvbox-dark-hard.yaml`
+- `catppuccin-mocha.yaml`
+- `dracula.yaml`
+- `tokyo-night-dark.yaml`
+
+After changing, rebuild to apply the new colors system-wide.
