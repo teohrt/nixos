@@ -73,7 +73,25 @@ let
       [[ "$action" == "edit" ]] && ${pkgs.satty}/bin/satty --filename "$file"
     }
 
-    choice=$(printf "Take Screenshot" | walker --dmenu -p "Toggle")
+    toggle_recording() {
+      if pgrep -x wf-recorder > /dev/null; then
+        pkill -x wf-recorder
+        ${pkgs.libnotify}/bin/notify-send -u low "Recording stopped"
+      else
+        mkdir -p ~/Videos/Recordings
+        file=~/Videos/Recordings/$(date +%Y-%m-%d_%H-%M-%S).mp4
+        ${pkgs.libnotify}/bin/notify-send -u low "Recording in 3..."
+        sleep 1
+        ${pkgs.libnotify}/bin/notify-send -u low "Recording in 2..."
+        sleep 1
+        ${pkgs.libnotify}/bin/notify-send -u low "Recording in 1..."
+        sleep 1
+        ${pkgs.wf-recorder}/bin/wf-recorder --bframes max_b_frames -a -f "$file" &
+        ${pkgs.libnotify}/bin/notify-send -u low "Recording started"
+      fi
+    }
+
+    choice=$(printf "Take Screenshot\nRecord Screen" | walker --dmenu -p "Toggle")
     case "$choice" in
       "Take Screenshot")
         sub=$(printf "Region\nWindow\nScreen" | walker --dmenu -p "Screenshot")
@@ -82,6 +100,9 @@ let
           Window) take_screenshot window ;;
           Screen) take_screenshot screen ;;
         esac
+        ;;
+      "Record Screen")
+        toggle_recording
         ;;
     esac
   '';
@@ -119,7 +140,7 @@ let
 in
 
 {
-  home.packages = [ pkgs.hyprmon ];
+  home.packages = [ pkgs.hyprmon pkgs.wf-recorder ];
 
   systemd.user.tmpfiles.rules = [
     "d %h/Pictures/Screenshots 0755 - - -"
