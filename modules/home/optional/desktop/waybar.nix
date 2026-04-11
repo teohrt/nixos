@@ -265,10 +265,14 @@ in
       };
 
       battery = {
-        format = "<span size=\"large\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
+        format-high = "<span size=\"large\">{icon}</span>";
+        format-medium = "<span size=\"large\">{icon}</span>";
+        format-low = "<span size=\"large\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
+        format-critical = "<span size=\"large\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
         format-charging = "<span size=\"large\">󰂄</span> <span color=\"#ffffff\">{capacity}%</span>";
+        tooltip-format = "{capacity}%";
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
-        states = { critical = 20; low = 40; medium = 70; high = 100; };
+        states = { critical = 15; low = 25; medium = 50; high = 100; };
         interval = 2;
         on-click = "${mkToggle "battery" "alacritty --title battery -e bash -c 'upower -i $(upower -e | grep BAT); read'"}";
       };
