@@ -275,7 +275,10 @@ in
         format-medium = "<span size=\"large\">{icon}</span>";
         format-low = "<span size=\"large\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
         format-critical = "<span size=\"large\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
-        format-charging = "<span size=\"large\">󰂄</span> <span color=\"#ffffff\">{capacity}%</span>";
+        format-charging-high = "<span size=\"large\">󰂄</span>";
+        format-charging-medium = "<span size=\"large\">󰂄</span>";
+        format-charging-low = "<span size=\"large\">󰂄</span> <span color=\"#ffffff\">{capacity}%</span>";
+        format-charging-critical = "<span size=\"large\">󰂄</span> <span color=\"#ffffff\">{capacity}%</span>";
         tooltip-format = "{capacity}%";
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 15; low = 25; medium = 50; high = 100; };
