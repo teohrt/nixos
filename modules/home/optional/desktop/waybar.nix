@@ -218,8 +218,8 @@ in
       margin-right = 4;
       spacing = 8;
 
-      modules-left = [ "hyprland/workspaces" "custom/weather" ];
-      modules-center = [ "custom/recording" "battery" "clock" "custom/notification" ];
+      modules-left = [ "hyprland/workspaces" "custom/weather" "custom/recording" ];
+      modules-center = [ "battery" "clock" "custom/notification" ];
       modules-right = [ "custom/wifi" "custom/cpu" "custom/mem" "bluetooth" "pulseaudio" ];
 
       "custom/launcher" = {

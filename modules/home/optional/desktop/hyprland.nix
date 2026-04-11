@@ -93,19 +93,14 @@ let
     }
 
     # Toggle webcam preview window for screen recordings with face cam
+    # Uses low-latency mpv settings to minimize delay
     toggle_webcam() {
       if pgrep -f "mpv.*video0" > /dev/null; then
         pkill -f "mpv.*video0"
       else
-        ${pkgs.mpv}/bin/mpv \
-          --no-osc \                    # hide on-screen controls
-          --geometry=320x240-10-10 \    # size and position (bottom-right, 10px margin)
-          --ontop --no-border \         # always on top, no window decorations
-          --title=webcam \              # window title for hyprland rules
-          --profile=low-latency \       # minimize delay
-          --untimed \                   # display frames immediately
-          --no-cache \                  # no buffering
-          av://v4l2:/dev/video0 &       # direct v4l2 access for lower latency
+        ${pkgs.mpv}/bin/mpv --no-osc --geometry=320x240-10-10 --ontop --no-border \
+          --title=webcam --profile=low-latency --untimed --no-cache \
+          av://v4l2:/dev/video0 &
       fi
     }
 
