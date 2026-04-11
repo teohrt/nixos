@@ -91,6 +91,13 @@ in
       .control-center {
         background-color: alpha(@window_bg_color, 0.7);
       }
+
+      /* Hide broken placeholder image when no notifications */
+      .control-center-list-placeholder image {
+        opacity: 0;
+        min-height: 0;
+        min-width: 0;
+      }
     '';
   };
 
