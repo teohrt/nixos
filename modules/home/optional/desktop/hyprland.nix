@@ -32,6 +32,17 @@ let
     fi
   '';
 
+  # Takes a screenshot, copies to clipboard, and shows notification. Click notification to edit in Satty.
+  screenshot = pkgs.writeShellScript "screenshot" ''
+    file=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
+    mkdir -p ~/Pictures/Screenshots
+    ${pkgs.grimblast}/bin/grimblast copysave area "$file" || exit 1
+    action=$(${pkgs.libnotify}/bin/notify-send -a "Screenshot" -i "$file" \
+      "Screenshot saved" "$file" \
+      --action="edit=Edit with Satty")
+    [[ "$action" == "edit" ]] && ${pkgs.satty}/bin/satty --filename "$file"
+  '';
+
   # Opens alacritty in the focused terminal's working directory (or home if not a terminal)
   terminalHere = pkgs.writeShellScript "terminal-here" ''
     pid=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid')
@@ -292,8 +303,8 @@ in
         ", XF86AudioMute,    Mute audio, exec, swayosd-client --output-volume mute-toggle"
         ", XF86AudioMicMute, Mute mic,   exec, swayosd-client --input-volume mute-toggle"
 
-        # screenshots — all modes save to ~/Pictures and copy to clipboard
-        "$mod, S,            Screenshot region,  exec, bash -c 'grimblast --notify copysave area ~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png'"
+        # screenshots — saves to ~/Pictures, copies to clipboard, click notification to edit
+        "$mod, S,            Screenshot region,  exec, ${screenshot}"
       ];
 
       # repeatable bindings — fire continuously while key is held
