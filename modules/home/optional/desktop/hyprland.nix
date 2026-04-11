@@ -1,4 +1,4 @@
-{ pkgs, osConfig, ... }:
+{ pkgs, config, ... }:
 let
   # Listens on Hyprland's IPC event socket and kills walker whenever the active
   # workspace changes. Needed because walker is a layer surface (not a window)
@@ -30,6 +30,31 @@ let
         "dispatch pin address:$addr;" \
         "dispatch alterzorder top address:$addr;"
     fi
+  '';
+
+  # Takes a screenshot, copies to clipboard, and shows notification. Click notification to edit in Satty.
+  screenshot = pkgs.writeShellScript "screenshot" ''
+    file=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
+    mkdir -p ~/Pictures/Screenshots
+    ${pkgs.grimblast}/bin/grimblast copysave area "$file" || exit 1
+    action=$(${pkgs.libnotify}/bin/notify-send -a "Screenshot" -i "$file" \
+      "Screenshot saved" "$file" \
+      --action="edit=Edit")
+    [[ "$action" == "edit" ]] && ${pkgs.satty}/bin/satty --filename "$file"
+  '';
+
+  # Opens alacritty in the focused terminal's working directory (or home if not a terminal)
+  terminalHere = pkgs.writeShellScript "terminal-here" ''
+    pid=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid')
+    dir="$HOME"
+    if [[ -n "$pid" && "$pid" != "null" ]]; then
+      # Find the shell child process of the terminal
+      child=$(${pkgs.procps}/bin/pgrep -P "$pid" | head -1)
+      if [[ -n "$child" ]] && [[ -d "/proc/$child/cwd" ]]; then
+        dir=$(readlink "/proc/$child/cwd")
+      fi
+    fi
+    exec alacritty --working-directory "$dir"
   '';
 
   # Reads all bindd-described bindings from Hyprland and shows them in a
@@ -111,6 +136,10 @@ in
         layout = "dwindle"; # binary space partitioning layout
       };
 
+      misc = {
+        focus_on_activate = true; # switch to workspace when app requests focus
+      };
+
       animations = {
         enabled = true;
         # smooth deceleration curve for all animations
@@ -172,10 +201,10 @@ in
         "nodim,      class:^(screensaver)$"
         "noborder,   class:^(screensaver)$"
 
-        "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
-        "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(spotify)$"
-        "opacity ${toString osConfig.stylix.opacity.applications} ${toString osConfig.stylix.opacity.applications}, class:^(Slack)$"
-        "opacity ${toString osConfig.stylix.opacity.terminal} ${toString osConfig.stylix.opacity.terminal}, class:^(code)$"
+        "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
+        "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(spotify)$"
+        "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(Slack)$"
+        "opacity 0.9 0.9, class:^(code)$"
         "float,      class:^(org.kde.partitionmanager)$"
         "size 650 450, class:^(org.kde.partitionmanager)$"
         "center,     class:^(org.kde.partitionmanager)$"
@@ -201,11 +230,11 @@ in
         "center, title:^(wifi)$"
         "animation slide top, title:^(wifi)$"
         "float, title:^(bluetooth)$"
-        "size 600 400, title:^(bluetooth)$"
+        "size 900 600, title:^(bluetooth)$"
         "center, title:^(bluetooth)$"
         "animation slide top, title:^(bluetooth)$"
         "float, title:^(audio)$"
-        "size 600 400, title:^(audio)$"
+        "size 900 600, title:^(audio)$"
         "center, title:^(audio)$"
         "animation slide top, title:^(audio)$"
         "float, title:^(battery)$"
@@ -217,7 +246,7 @@ in
       # standard key bindings with descriptions (bindd = bind with description)
       # descriptions appear in the SUPER+K keybindings menu
       bindd = [
-        "$mod, Return,       Terminal,              exec, $terminal"
+        "$mod, Return,       Terminal,              exec, ${terminalHere}"
         "$mod, Escape,       Power menu,            exec, power-menu"
         "$mod SHIFT, Return, Browser,               exec, google-chrome-stable"
         "$mod, F,            Fullscreen,            fullscreen"
@@ -278,8 +307,8 @@ in
         ", XF86AudioMute,    Mute audio, exec, swayosd-client --output-volume mute-toggle"
         ", XF86AudioMicMute, Mute mic,   exec, swayosd-client --input-volume mute-toggle"
 
-        # screenshots — all modes save to ~/Pictures and copy to clipboard
-        "$mod, S,            Screenshot region,  exec, bash -c 'grimblast --notify copysave area ~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png'"
+        # screenshots — saves to ~/Pictures, copies to clipboard, click notification to edit
+        "$mod, S,            Screenshot region,  exec, ${screenshot}"
       ];
 
       # repeatable bindings — fire continuously while key is held

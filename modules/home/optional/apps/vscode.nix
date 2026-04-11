@@ -1,11 +1,11 @@
-{ pkgs, osConfig, ... }:
+{ pkgs, config, ... }:
 
 {
   programs.vscode = {
     enable = true;
     package = pkgs.vscode;
     profiles.default.userSettings = {
-      "window.backgroundOpacity" = osConfig.stylix.opacity.applications;
+      "window.backgroundOpacity" = 1;
     };
   };
 }

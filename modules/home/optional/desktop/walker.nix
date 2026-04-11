@@ -1,9 +1,9 @@
-{ config, lib, osConfig, ... }:
+{ config, lib, ... }:
 let
   # Full stylix application opacity as a float string for CSS alpha() calls.
-  opacity    = toString osConfig.stylix.opacity.applications;
+  opacity    = toString config.stylix.opacity.applications;
   # Reduced opacity for the pane background so Hyprland's blur shows through.
-  bgOpacity  = toString (osConfig.stylix.opacity.applications * 0.35);
+  bgOpacity  = toString (config.stylix.opacity.applications * 0.35);
 in
 {
   xdg.configFile."walker/config.toml".text = ''

@@ -18,4 +18,8 @@
     matchConfig.Name = "en*";
     networkConfig.DHCP = "yes";
   };
+
+  # Disable wait-online — iwd manages wifi outside of networkd so no
+  # interface ever reports online to networkd during boot
+  systemd.network.wait-online.enable = false;
 }

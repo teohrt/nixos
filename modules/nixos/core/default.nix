@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 {
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
@@ -28,4 +28,17 @@
   };
 
   nixpkgs.config.allowUnfree = true;
+
+  environment.sessionVariables.EDITOR = "vim";
+
+  environment.systemPackages = [ pkgs.satty ];
+
+  xdg.mime.defaultApplications = {
+    "image/png" = "satty.desktop";
+    "image/jpeg" = "satty.desktop";
+    "image/gif" = "satty.desktop";
+    "image/webp" = "satty.desktop";
+    "image/bmp" = "satty.desktop";
+    "image/tiff" = "satty.desktop";
+  };
 }

@@ -1,152 +1,134 @@
 { pkgs, lib, pkgs-walker, ... }:
 
 let
-  # Wallpapers grouped by theme. Each theme maps to a subdirectory under assets/.
-  # Add new themes or wallpapers here — no naming conventions needed on the files.
-  # animated = true  → displayed via mpvpaper (supports MP4/GIF)
-  # animated = false → displayed via hyprpaper (static images only)
-  # specialisation = null   → Nord is the default NixOS config, no switch needed
-  # specialisation = "name" → matches a specialisation defined in nixos/themes.nix
-  themes = [
+  # Wallpapers fetched from URLs at build time.
+  # To add a new wallpaper:
+  #   1. Get the URL
+  #   2. Run: nix-prefetch-url <url>
+  #   3. Add entry below with name, url, and sha256
+  wallpapers = [
     {
-      name = "Nord";
-      specialisation = null;
-      wallpapers = [
-        { name = "Mountain";   path = ../../../../assets/nord/mountain.png;   animated = false; }
-        { name = "Black Hole"; path = ../../../../assets/nord/black_hole.mp4; animated = true;  }
-      ];
+      name = "Dark - Black Hole";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/po/wallhaven-pojl63.png";
+        sha256 = "162yh1ppaizbmhc1vnnypjfjiyiyyfyj49hdbxhfzvps1pc94j8g";
+      };
     }
     {
-      name = "Gruvbox";
-      specialisation = "gruvbox";
-      wallpapers = [
-        { name = "Mist Forest"; path = ../../../../assets/gruvbox/mist_forest.png; animated = false; }
-        { name = "Leaves";      path = ../../../../assets/gruvbox/leaves.mp4;       animated = true;  }
-      ];
+      name = "Light - Lake";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/21/wallhaven-21dlrg.jpg";
+        sha256 = "11bgjl7pf3c0fdv85fvng6qn9r03x246f77zp4w1myrpng4glr6s";
+      };
     }
     {
-      name = "Eris";
-      specialisation = "eris";
-      wallpapers = [
-        { name = "Neon Car"; path = ../../../../assets/eris/neon-car.mp4; animated = true; speed = 0.5; }
-      ];
+      name = "Light - Nix";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/q2/wallhaven-q2w1kd.png";
+        sha256 = "116337wv81xfg0g0bsylzzq2b7nbj6hjyh795jfc9mvzarnalwd3";
+      };
+    }
+    {
+      name = "Blue Paraglider";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/x1/wallhaven-x175wl.png";
+        sha256 = "11i8fp8xfydvbhs75g0bp0lc60j7hskrhq2jmhl23lf3xwxjh0n4";
+      };
+    }
+    {
+      name = "Galaxy Canopy Pilot";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/nr/wallhaven-nr2okq.jpg";
+        sha256 = "1xgy6iyz61ha5l8zw562dpag0k93z0bkzjp0fgx0zbsr4lv9q7zb";
+      };
+    }
+    {
+      name = "Blue Squares";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/4v/wallhaven-4vzeml.jpg";
+        sha256 = "0akjdh1a7sj4yyx4xfhfayfvrryi68bnv1cqcvhwaddaidb2wfyw";
+      };
+    }
+    {
+      name = "Dark Leaves";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/6k/wallhaven-6kgl3l.jpg";
+        sha256 = "0wlwxmmrryj1yjmj43ql4xxfiiclg64881g2k6ryz2dzvzfwmqvz";
+      };
+    }
+    {
+      name = "Purple Hex";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/01/wallhaven-01vwg0.jpg";
+        sha256 = "0a3jk9fy2z8ac6vk2va5y3w188pcy595nbbfq244wcpznn995w55";
+      };
+    }
+    {
+      name = "4th Dimension";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/6o/wallhaven-6o7y8x.jpg";
+        sha256 = "1x63qnrkcmy0lvmqbygcl85iz6ahmii46023lx76np1rrpbpvaij";
+      };
+    }
+    {
+      name = "Blue Abstract";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/y8/wallhaven-y8vvmd.jpg";
+        sha256 = "0s5kllw8f7bnb1nlzl3dxcw3y9l7wfhxv7xpnmqvcg2k98l6q648";
+      };
+    }
+    {
+      name = "Urf";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/47/wallhaven-47jpxv.jpg";
+        sha256 = "1p3z8gjinyfzlrwfrbwfx48z7270jrxhprjbmkl97slr45fkvn6f";
+      };
+    }
+    {
+      name = "Final Frontier";
+      path = pkgs.fetchurl {
+        url = "https://w.wallhaven.cc/full/nm/wallhaven-nmpo19.jpg";
+        sha256 = "005cv0afh7xj6i5kg0z9dc83fjf1w3400hx755z75chnwy69zp6i";
+      };
     }
   ];
 
-  # Flat list of all wallpapers with display labels for the walker picker.
-  # Format: "Theme / Name · animated" or "Theme / Name · static"
-  # Each entry carries the theme's specialisation name (null for the default theme).
-  allWallpapers = lib.concatMap (theme:
-    map (w: w // {
-      label = "${theme.name} / ${w.name} · ${if w.animated then "animated" else "static"}";
-      specialisation = theme.specialisation;
-    }) theme.wallpapers
-  ) themes;
+  defaultWallpaper = builtins.head wallpapers;
 
-  staticWallpapers = lib.filter (w: !w.animated) allWallpapers;
-
-  # The specialisation name passed to maybe_switch — empty string means Nord (base system).
-  specArg = w: if w.specialisation == null then "" else w.specialisation;
-
-  # Walker dmenu picker — presents all wallpapers and switches to the chosen one.
-  # Order of operations:
-  #   1. Activate the NixOS specialisation first — this may restart systemd services.
-  #   2. Set the wallpaper after — so any service restarts don't conflict with our state.
-  #   3. Restart waybar via systemd — it reads its config on startup so it picks up the new colors.
+  # Walker dmenu picker for wallpapers
   wallpaperPicker = pkgs.writeShellScriptBin "wallpaper-picker" ''
-    CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.label) allWallpapers)}' \
+    CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.name) wallpapers)}' \
       | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
 
-    # Activate the target specialisation only if it isn't already active.
-    # Compares resolved store paths — switching wallpapers within the same theme skips the switch.
-    # Sets THEME_SWITCHED=1 if a switch happened (daemons need restarting), 0 if already active.
-    THEME_SWITCHED=0
-    maybe_switch() {
-      local spec="$1"
-      local target
-      if [ -z "$spec" ]; then
-        target=$(readlink -f /nix/var/nix/profiles/system)
-      else
-        target=$(readlink -f /nix/var/nix/profiles/system/specialisation/"$spec")
-      fi
-      if [ "$(readlink -f /run/current-system)" = "$target" ]; then
-        THEME_SWITCHED=0
-        return 0
-      fi
-      THEME_SWITCHED=1
-      if [ -z "$spec" ]; then
-        sudo /nix/var/nix/profiles/system/bin/switch-to-configuration switch
-      else
-        sudo /nix/var/nix/profiles/system/specialisation/"$spec"/bin/switch-to-configuration switch
-      fi
-    }
-
-    # Restart daemons that load their GTK theme or config once at startup.
-    # Heavy apps (VS Code, Obsidian, Firefox, Spotify) are left for the user to reopen.
-    restart_themed_daemons() {
-      systemctl --user restart waybar.service
-      systemctl --user restart mako.service
-      # Restart walker background service so it picks up the new GTK theme.
-      pkill -f "walker --gapplication-service" 2>/dev/null || true
-      sleep 0.5 && walker --gapplication-service &
-      # GTK4 apps load CSS once — kill so they get the new theme on next open.
-      pkill nautilus 2>/dev/null || true
-    }
-
     case "$CHOICE" in
-      ${lib.concatStringsSep "\n      " (map (w:
-        if !w.animated then ''
-          "${w.label}")
-              if maybe_switch "${specArg w}"; then
-                notify-send "Theme" "Switched to ${w.label}"
-              else
-                notify-send -u critical "Theme switch failed" "Check sudo rules in modules/nixos/optional/themes.nix"
-              fi
-
-              pkill mpvpaper 2>/dev/null || true
-              systemctl --user start hyprpaper.service
-              # Wait for hyprpaper socket to be ready before issuing commands
-              until hyprctl hyprpaper listloaded &>/dev/null; do sleep 0.1; done
-              hyprctl hyprpaper preload "${toString w.path}"
-              hyprctl hyprpaper wallpaper ",${toString w.path}"
-              [ "$THEME_SWITCHED" = "1" ] && restart_themed_daemons
-              ;;''
-        else ''
-          "${w.label}")
-              if maybe_switch "${specArg w}"; then
-                notify-send "Theme" "Switched to ${w.label}"
-              else
-                notify-send -u critical "Theme switch failed" "Check sudo rules in modules/nixos/optional/themes.nix"
-              fi
-
-              systemctl --user stop hyprpaper.service
-              pkill mpvpaper 2>/dev/null || true
-              # speed is optional — only wallpapers with a speed attribute (e.g. Eris) override playback rate
-              ${lib.getExe pkgs.mpvpaper} -o 'loop${if w ? speed then " speed=${toString w.speed}" else ""}' '*' ${toString w.path} &
-              [ "$THEME_SWITCHED" = "1" ] && restart_themed_daemons
-              ;;''
-      ) allWallpapers)}
+      ${lib.concatStringsSep "\n      " (map (w: ''
+        "${w.name}")
+            ${pkgs.swww}/bin/swww img "${w.path}" \
+              --transition-type grow \
+              --transition-duration 1 \
+              --transition-fps 60 \
+              --transition-pos center
+            ${pkgs.libnotify}/bin/notify-send -t 2000 "Wallpaper" "Switched to ${w.name}"
+            ;;''
+      ) wallpapers)}
     esac
   '';
 in
 {
-  home.packages = [ wallpaperPicker ];
+  home.packages = [
+    wallpaperPicker
+    pkgs.swww
+  ];
 
-  # Stylix's hyprpaper target is disabled so we can manage it ourselves.
-  # Stylix still uses its static image (in stylix.nix) for color scheme generation.
+  # Disable stylix hyprpaper since we use swww
   stylix.targets.hyprpaper.enable = lib.mkForce false;
 
-  services.hyprpaper = {
-    enable = true;
-    settings = {
-      # Preload all static wallpapers so switching between them is instant.
-      preload   = map (w: toString w.path) staticWallpapers;
-      # Default to the first static wallpaper on startup.
-      wallpaper = [ ",${toString (builtins.head staticWallpapers).path}" ];
-    };
-  };
-
+  # swww daemon and initial wallpaper
   wayland.windowManager.hyprland.settings = {
+    exec-once = [
+      "${pkgs.swww}/bin/swww-daemon"
+      "sleep 0.5 && ${pkgs.swww}/bin/swww img ${defaultWallpaper.path}"
+    ];
     bind = [
       "$mod SHIFT, W, exec, wallpaper-picker"
     ];

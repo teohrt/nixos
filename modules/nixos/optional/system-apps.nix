@@ -9,5 +9,6 @@
     gnumake
     stow
     nerd-fonts.jetbrains-mono
+    home-manager
   ];
 }

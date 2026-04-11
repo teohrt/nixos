@@ -191,9 +191,9 @@ in
       margin-right = 4;
       spacing = 8;
 
-      modules-left = [ "custom/launcher" "hyprland/workspaces" "custom/weather" ];
+      modules-left = [ "hyprland/workspaces" "custom/weather" ];
       modules-center = [ "battery" "clock" "custom/notification" ];
-      modules-right = [ "custom/wifi" "custom/cpu" "custom/mem" "pulseaudio" "bluetooth" "custom/power" ];
+      modules-right = [ "custom/wifi" "custom/cpu" "custom/mem" "bluetooth" "pulseaudio" ];
 
       "custom/launcher" = {
         format = "󱄅";
@@ -269,9 +269,10 @@ in
 
       pulseaudio = {
         format = "<span size=\"xx-large\">󰕾</span>";
-        format-muted = "<span size=\"xx-large\">󰝟</span>";
+        format-muted = "<span size=\"xx-large\">󰖁</span>";
         tooltip-format = "{volume}%";
         on-click = "${mkToggle "audio" "alacritty --title audio -e wiremix"}";
+        on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
       };
 
       "custom/power" = {
@@ -395,7 +396,10 @@ in
       }
 
       #pulseaudio {
-        padding: 2px 16px;
+        padding: 2px 14px;
+      }
+      #pulseaudio.muted {
+        padding: 2px 14px;
       }
 
       #custom-notification {
@@ -424,10 +428,6 @@ in
       #battery.low      { color: #ffaa44; }
       #battery.medium   { color: #ffdd44; }
       #battery.high     { color: #ffffff; }
-
-      #pulseaudio.muted {
-        color: rgba(255, 255, 255, 0.3);
-      }
 
     '';
   };
