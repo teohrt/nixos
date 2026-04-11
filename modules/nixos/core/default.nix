@@ -28,4 +28,6 @@
   };
 
   nixpkgs.config.allowUnfree = true;
+
+  environment.sessionVariables.EDITOR = "vim";
 }
