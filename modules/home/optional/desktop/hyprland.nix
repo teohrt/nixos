@@ -111,11 +111,11 @@ let
       mkdir -p ~/Videos/Recordings
       file=~/Videos/Recordings/$(date +%Y-%m-%d_%H-%M-%S).mp4
       echo "$file" > /tmp/current-recording
-      ${pkgs.libnotify}/bin/notify-send -u low "Recording in 3..."
+      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 3..."
       sleep 1
-      ${pkgs.libnotify}/bin/notify-send -u low "Recording in 2..."
+      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 2..."
       sleep 1
-      ${pkgs.libnotify}/bin/notify-send -u low "Recording in 1..."
+      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 1..."
       sleep 1
       if [[ "$1" == "audio" ]]; then
         ${pkgs.wf-recorder}/bin/wf-recorder -a -f "$file" &
