@@ -78,6 +78,12 @@ let
   # RSSI directly from iwctl (same source as impala) and applies impala's formula
   # (>= -50 dBm = 100%, else 2 * (100 + RSSI)) so the displayed percentage matches.
   wifiScript = pkgs.writeShellScript "waybar-wifi" ''
+    # Check if wifi is blocked by rfkill
+    if rfkill list wifi | grep -q "Soft blocked: yes"; then
+      echo '{"text": "<span size=\"200%\">󰤭</span>", "tooltip": "wifi off", "class": "off"}'
+      exit
+    fi
+
     IFACE=$(for dev in /sys/class/net/*/wireless; do
       [ -d "$dev" ] && basename "$(dirname "$dev")" && break
     done)
@@ -294,13 +300,15 @@ in
         return-type = "json";
         interval = 2;
         on-click = "${mkToggle "wifi" "rfkill unblock wifi && alacritty --title wifi -e impala"}";
+        on-click-right = "rfkill toggle wifi";
       };
 
       bluetooth = {
         format = "<span size=\"large\">󰂯</span>";
         format-connected = "<span size=\"large\">󰂱</span> {device_alias}";
         format-connected-battery = "<span size=\"large\">󰂱</span> {device_alias} {device_battery_percentage}%";
-        format-disabled = "<span size=\"large\">󰂲</span>";
+        format-disabled = "<span size=\"large\">󰂯</span>";
+        format-off = "<span size=\"large\">󰂯</span>";
         tooltip-format-connected = "{device_enumerate}";
         tooltip-format-enumerate-connected = "{device_alias} ({device_address})";
         tooltip-format-enumerate-connected-battery = "{device_alias} ({device_address}) {device_battery_percentage}%";
@@ -426,6 +434,11 @@ in
         padding: 2px 14px 2px 12px;
       }
 
+      #custom-wifi.off,
+      #custom-wifi.disconnected {
+        opacity: 0.4;
+      }
+
       #custom-cpu,
       #custom-mem {
         padding: 2px 7px;
@@ -450,6 +463,12 @@ in
 
       #bluetooth {
         padding: 2px 16px;
+      }
+
+      #bluetooth.off,
+      #bluetooth.disabled {
+        padding: 2px 16px;
+        opacity: 0.4;
       }
 
       #custom-power {
