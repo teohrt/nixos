@@ -92,7 +92,24 @@ let
       ${pkgs.libnotify}/bin/notify-send -u low "Recording started"
     }
 
-    choice=$(printf "Take Screenshot\nRecord Screen" | walker --dmenu -p "Toggle")
+    # Toggle webcam preview window for screen recordings with face cam
+    toggle_webcam() {
+      if pgrep -f "mpv.*video0" > /dev/null; then
+        pkill -f "mpv.*video0"
+      else
+        ${pkgs.mpv}/bin/mpv \
+          --no-osc \                    # hide on-screen controls
+          --geometry=320x240-10-10 \    # size and position (bottom-right, 10px margin)
+          --ontop --no-border \         # always on top, no window decorations
+          --title=webcam \              # window title for hyprland rules
+          --profile=low-latency \       # minimize delay
+          --untimed \                   # display frames immediately
+          --no-cache \                  # no buffering
+          av://v4l2:/dev/video0 &       # direct v4l2 access for lower latency
+      fi
+    }
+
+    choice=$(printf "Take Screenshot\nRecord Screen\nWebcam Preview" | walker --dmenu -p "Toggle")
     case "$choice" in
       "Take Screenshot")
         sub=$(printf "Region\nWindow\nScreen" | walker --dmenu -p "Screenshot")
@@ -108,6 +125,9 @@ let
           "With Audio") start_recording audio ;;
           "No Audio") start_recording ;;
         esac
+        ;;
+      "Webcam Preview")
+        toggle_webcam
         ;;
     esac
   '';
@@ -288,6 +308,12 @@ in
         "size 900 600, title:^(bluetooth)$"
         "center, title:^(bluetooth)$"
         "animation slide top, title:^(bluetooth)$"
+
+        "float, title:^(webcam)$"
+        "size 320 240, title:^(webcam)$"
+        "move 100%-330 100%-250, title:^(webcam)$"
+        "pin, title:^(webcam)$"
+        "noborder, title:^(webcam)$"
         "float, title:^(audio)$"
         "size 900 600, title:^(audio)$"
         "center, title:^(audio)$"
