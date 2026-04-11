@@ -68,40 +68,28 @@ let
         screen) sleep 1 && ${pkgs.grimblast}/bin/grimblast copysave screen "$file" ;;
       esac || return 1
       action=$(${pkgs.libnotify}/bin/notify-send -u low -a "Screenshot" -i "$file" \
-        "Screenshot saved" "$file" \
+        "Screenshot saved" "Copied to clipboard. $file" \
         --action="edit=Edit")
       [[ "$action" == "edit" ]] && ${pkgs.satty}/bin/satty --filename "$file"
     }
 
-    toggle_recording() {
-      if pgrep -x wf-recorder > /dev/null; then
-        pkill -x wf-recorder
-        while pgrep -x wf-recorder > /dev/null; do sleep 0.1; done  # wait for process to exit
-        pkill -RTMIN+8 waybar  # refresh recording indicator immediately
-        file=$(cat /tmp/current-recording 2>/dev/null)
-        rm -f /tmp/current-recording
-        if [[ -n "$file" && -f "$file" ]]; then
-          action=$(${pkgs.libnotify}/bin/notify-send -u low -a "Recording" \
-            "Recording saved" "$file" \
-            --action="open=Open")
-          [[ "$action" == "open" ]] && xdg-open "$file"
-        else
-          ${pkgs.libnotify}/bin/notify-send -u low "Recording stopped"
-        fi
+    start_recording() {
+      mkdir -p ~/Videos/Recordings
+      file=~/Videos/Recordings/$(date +%Y-%m-%d_%H-%M-%S).mp4
+      echo "$file" > /tmp/current-recording
+      ${pkgs.libnotify}/bin/notify-send -u low "Recording in 3..."
+      sleep 1
+      ${pkgs.libnotify}/bin/notify-send -u low "Recording in 2..."
+      sleep 1
+      ${pkgs.libnotify}/bin/notify-send -u low "Recording in 1..."
+      sleep 1
+      if [[ "$1" == "audio" ]]; then
+        ${pkgs.wf-recorder}/bin/wf-recorder -a -f "$file" &
       else
-        mkdir -p ~/Videos/Recordings
-        file=~/Videos/Recordings/$(date +%Y-%m-%d_%H-%M-%S).mp4
-        echo "$file" > /tmp/current-recording
-        ${pkgs.libnotify}/bin/notify-send -u low "Recording in 3..."
-        sleep 1
-        ${pkgs.libnotify}/bin/notify-send -u low "Recording in 2..."
-        sleep 1
-        ${pkgs.libnotify}/bin/notify-send -u low "Recording in 1..."
-        sleep 1
-        ${pkgs.wf-recorder}/bin/wf-recorder --bframes max_b_frames -a -f "$file" &
-        pkill -RTMIN+8 waybar  # refresh recording indicator immediately
-        ${pkgs.libnotify}/bin/notify-send -u low "Recording started"
+        ${pkgs.wf-recorder}/bin/wf-recorder -f "$file" &
       fi
+      pkill -RTMIN+8 waybar
+      ${pkgs.libnotify}/bin/notify-send -u low "Recording started"
     }
 
     choice=$(printf "Take Screenshot\nRecord Screen" | walker --dmenu -p "Toggle")
@@ -115,7 +103,11 @@ let
         esac
         ;;
       "Record Screen")
-        toggle_recording
+        sub=$(printf "With Audio\nNo Audio" | walker --dmenu -p "Record")
+        case "$sub" in
+          "With Audio") start_recording audio ;;
+          "No Audio") start_recording ;;
+        esac
         ;;
     esac
   '';
