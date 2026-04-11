@@ -13,6 +13,10 @@
     theme = "sddm-astronaut-theme";
     extraPackages = with pkgs; [ sddm-astronaut kdePackages.qtmultimedia ];
   };
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = "trace";
+  };
   environment.systemPackages = [ pkgs.sddm-astronaut ];
 
   # XDG portal for Hyprland
