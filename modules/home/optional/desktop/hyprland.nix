@@ -39,7 +39,7 @@ let
     ${pkgs.grimblast}/bin/grimblast copysave area "$file" || exit 1
     action=$(${pkgs.libnotify}/bin/notify-send -a "Screenshot" -i "$file" \
       "Screenshot saved" "$file" \
-      --action="edit=Edit with Satty")
+      --action="edit=Edit")
     [[ "$action" == "edit" ]] && ${pkgs.satty}/bin/satty --filename "$file"
   '';
 
