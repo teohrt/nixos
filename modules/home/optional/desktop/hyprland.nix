@@ -57,6 +57,17 @@ let
     exec alacritty --working-directory "$dir"
   '';
 
+  # Toggle menu - quick actions via walker dmenu
+  # Screen option has 1s delay to avoid capturing the menu itself
+  toggleMenu = pkgs.writeShellScript "toggle-menu" ''
+    choice=$(printf "Region\nWindow\nScreen" | walker --dmenu -p "Screenshot")
+    case "$choice" in
+      Region) ${pkgs.grimblast}/bin/grimblast copysave area ~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png ;;
+      Window) ${pkgs.grimblast}/bin/grimblast copysave active ~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png ;;
+      Screen) sleep 1 && ${pkgs.grimblast}/bin/grimblast copysave screen ~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png ;;
+    esac
+  '';
+
   # Reads all bindd-described bindings from Hyprland and shows them in a
   # searchable walker dmenu. Only bindings with descriptions appear.
   keybindingsMenu = pkgs.writeShellScript "keybindings-menu" ''
@@ -259,6 +270,7 @@ in
         "$mod, P,            Pseudo window,         pseudo"
         "$mod, O,            Pop window out,        exec, ${popWindow}"
         "$mod, K,            Show keybindings,      exec, ${keybindingsMenu}"
+        "$mod, T,            Toggle menu,           exec, ${toggleMenu}"
         "$mod, M,            Monitor settings,      exec, alacritty --title hyprmon -e hyprmon"
 
         # resize active window
