@@ -57,6 +57,39 @@ let
     exec alacritty --working-directory "$dir"
   '';
 
+  # Voice-to-text using whisper-cpp
+  # First press starts recording, second press stops and transcribes
+  voiceInput = pkgs.writeShellScript "voice-input" ''
+    MODEL_DIR="$HOME/.local/share/whisper"
+    MODEL="$MODEL_DIR/ggml-base.en.bin"
+    RECORDING="/tmp/voice-input.wav"
+
+    # Download model if not present
+    if [[ ! -f "$MODEL" ]]; then
+      mkdir -p "$MODEL_DIR"
+      ${pkgs.libnotify}/bin/notify-send -u low "Downloading speech model..." "This only happens once"
+      ${pkgs.curl}/bin/curl -L -o "$MODEL" \
+        "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin"
+    fi
+
+    if pgrep -f "pw-record.*voice-input" > /dev/null; then
+      # Stop recording and transcribe
+      pkill -f "pw-record.*voice-input"
+      sleep 0.2
+      ${pkgs.libnotify}/bin/notify-send -u low "Transcribing..."
+      # Extract text, strip timestamps like [00:00:00.000 --> 00:00:00.000]
+      text=$(${pkgs.whisper-cpp}/bin/whisper-cli -m "$MODEL" -f "$RECORDING" -np 2>/dev/null | sed 's/\[.*\] *//' | tr '\n' ' ' | xargs)
+      rm -f "$RECORDING"
+      if [[ -n "$text" ]]; then
+        ${pkgs.wtype}/bin/wtype "$text"
+      fi
+    else
+      # Start recording
+      ${pkgs.libnotify}/bin/notify-send -u low "Recording... Press Super+/ to stop"
+      ${pkgs.pipewire}/bin/pw-record --target=@DEFAULT_SOURCE@ "$RECORDING" &
+    fi
+  '';
+
   # Toggle menu - quick actions via walker dmenu
   # Screen option has 1s delay to avoid capturing the menu itself
   toggleMenu = pkgs.writeShellScript "toggle-menu" ''
@@ -160,7 +193,7 @@ let
 in
 
 {
-  home.packages = [ pkgs.hyprmon pkgs.wf-recorder ];
+  home.packages = [ pkgs.hyprmon pkgs.wf-recorder pkgs.whisper-cpp pkgs.wtype ];
 
   systemd.user.tmpfiles.rules = [
     "d %h/Pictures/Screenshots 0755 - - -"
@@ -336,6 +369,7 @@ in
         "$mod, O,            Pop window out,        exec, ${popWindow}"
         "$mod, K,            Show keybindings,      exec, ${keybindingsMenu}"
         "$mod, T,            Toggle menu,           exec, ${toggleMenu}"
+        "$mod, slash,        Voice input,           exec, ${voiceInput}"
         "$mod, M,            Monitor settings,      exec, alacritty --title hyprmon -e hyprmon"
 
         # resize active window
