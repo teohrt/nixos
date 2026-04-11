@@ -17,6 +17,7 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.timeout = 0; # Hold Space during boot to show menu
 
   programs.git.prompt.enable = true;
 
