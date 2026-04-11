@@ -1,13 +1,14 @@
 { pkgs, config, ... }:
 let
-  # Listens on Hyprland's IPC event socket and kills walker whenever the active
-  # workspace changes. Needed because walker is a layer surface (not a window)
-  # so it persists across workspace switches and ignores normal focus-loss rules.
+  # Listens on Hyprland's IPC event socket and closes walker popup whenever the
+  # active workspace changes. Needed because walker is a layer surface (not a
+  # window) so it persists across workspace switches and ignores normal focus-loss
+  # rules. Uses `walker --close` instead of pkill to preserve the background service.
   closeWalkerOnWorkspaceSwitch = pkgs.writeShellScript "close-walker-on-workspace-switch" ''
     socket="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
     ${pkgs.socat}/bin/socat -u "UNIX-CONNECT:$socket" - | while IFS= read -r line; do
       case "$line" in
-        workspace\>\>*) pkill walker || true ;;
+        workspace\>\>*) walker --close || true ;;
       esac
     done
   '';
@@ -213,8 +214,6 @@ in
       exec-once = [
         "swayosd-server"                                   # OSD server for volume/brightness popups
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" # auth agent for privilege escalation prompts
-        "elephant"                                         # indexes apps for walker to search
-        "sleep 2 && walker --gapplication-service"         # walker background service (delayed to let elephant index first)
         "${closeWalkerOnWorkspaceSwitch}"                  # close walker on workspace switch (layer surfaces ignore normal focus rules)
         "wl-clip-persist --clipboard regular"              # keep clipboard alive after source process exits
       ];
