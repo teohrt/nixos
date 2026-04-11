@@ -60,11 +60,29 @@ let
   # Toggle menu - quick actions via walker dmenu
   # Screen option has 1s delay to avoid capturing the menu itself
   toggleMenu = pkgs.writeShellScript "toggle-menu" ''
-    choice=$(printf "Region\nWindow\nScreen" | walker --dmenu -p "Screenshot")
+    take_screenshot() {
+      file=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
+      case "$1" in
+        region) ${pkgs.grimblast}/bin/grimblast copysave area "$file" ;;
+        window) ${pkgs.grimblast}/bin/grimblast copysave active "$file" ;;
+        screen) sleep 1 && ${pkgs.grimblast}/bin/grimblast copysave screen "$file" ;;
+      esac || return 1
+      action=$(${pkgs.libnotify}/bin/notify-send -u low -a "Screenshot" -i "$file" \
+        "Screenshot saved" "$file" \
+        --action="edit=Edit")
+      [[ "$action" == "edit" ]] && ${pkgs.satty}/bin/satty --filename "$file"
+    }
+
+    choice=$(printf "Take Screenshot" | walker --dmenu -p "Toggle")
     case "$choice" in
-      Region) ${pkgs.grimblast}/bin/grimblast copysave area ~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png ;;
-      Window) ${pkgs.grimblast}/bin/grimblast copysave active ~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png ;;
-      Screen) sleep 1 && ${pkgs.grimblast}/bin/grimblast copysave screen ~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png ;;
+      "Take Screenshot")
+        sub=$(printf "Region\nWindow\nScreen" | walker --dmenu -p "Screenshot")
+        case "$sub" in
+          Region) take_screenshot region ;;
+          Window) take_screenshot window ;;
+          Screen) take_screenshot screen ;;
+        esac
+        ;;
     esac
   '';
 
