@@ -144,6 +144,33 @@ let
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
   '';
 
+  # Shows red camera icon when wf-recorder is running
+  recordingScript = pkgs.writeShellScript "waybar-recording" ''
+    if pgrep -x wf-recorder > /dev/null; then
+      echo '{"text": "󰻃", "tooltip": "Recording... click to stop", "class": "recording"}'
+    else
+      echo '{"text": ""}'
+    fi
+  '';
+
+  # Stops recording and shows notification with option to open
+  stopRecordingScript = pkgs.writeShellScript "stop-recording" ''
+    file=$(cat /tmp/current-recording 2>/dev/null)
+    rm -f /tmp/current-recording
+    pkill -INT wf-recorder
+    sleep 0.2
+    pkill -RTMIN+8 waybar
+    # Run notification in background so script exits immediately
+    if [[ -n "$file" ]]; then
+      (sleep 0.5 && if [[ -f "$file" ]]; then
+        action=$(${pkgs.libnotify}/bin/notify-send -u low -a "Recording" \
+          "Recording saved" "$file" \
+          --action="open=Open")
+        [[ "$action" == "open" ]] && xdg-open "$file"
+      fi) &
+    fi
+  '';
+
   weatherScript = pkgs.writeShellScript "waybar-weather" ''
     WEATHER=$(${pkgs.curl}/bin/curl -sf "https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph")
     if [ -z "$WEATHER" ]; then
@@ -192,13 +219,22 @@ in
       spacing = 8;
 
       modules-left = [ "hyprland/workspaces" "custom/weather" ];
-      modules-center = [ "battery" "clock" "custom/notification" ];
+      modules-center = [ "custom/recording" "battery" "clock" "custom/notification" ];
       modules-right = [ "custom/wifi" "custom/cpu" "custom/mem" "bluetooth" "pulseaudio" ];
 
       "custom/launcher" = {
         format = "󱄅";
         on-click = "walker -N -H";
         tooltip = false;
+      };
+
+      "custom/recording" = {
+        exec = "echo '{\"text\": \"󰻃\", \"tooltip\": \"Recording... click to stop\", \"class\": \"recording\"}'";
+        exec-if = "pgrep -x wf-recorder";
+        return-type = "json";
+        interval = 1;
+        signal = 8;
+        on-click = "${stopRecordingScript}";
       };
 
       "custom/notification" = {
@@ -428,6 +464,20 @@ in
       #battery.low      { color: #ffaa44; }
       #battery.medium   { color: #ffdd44; }
       #battery.high     { color: #ffffff; }
+
+      #custom-recording {
+        padding: 0;
+        margin: 0;
+      }
+
+      #custom-recording.recording {
+        padding: 2px 12px;
+        background: rgba(255, 68, 68, 0.3);
+        border-radius: 20px;
+        margin: 3px 0;
+        color: #ff4444;
+        font-size: 16px;
+      }
 
     '';
   };

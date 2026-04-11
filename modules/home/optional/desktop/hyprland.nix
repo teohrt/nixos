@@ -76,10 +76,22 @@ let
     toggle_recording() {
       if pgrep -x wf-recorder > /dev/null; then
         pkill -x wf-recorder
-        ${pkgs.libnotify}/bin/notify-send -u low "Recording stopped"
+        while pgrep -x wf-recorder > /dev/null; do sleep 0.1; done  # wait for process to exit
+        pkill -RTMIN+8 waybar  # refresh recording indicator immediately
+        file=$(cat /tmp/current-recording 2>/dev/null)
+        rm -f /tmp/current-recording
+        if [[ -n "$file" && -f "$file" ]]; then
+          action=$(${pkgs.libnotify}/bin/notify-send -u low -a "Recording" \
+            "Recording saved" "$file" \
+            --action="open=Open")
+          [[ "$action" == "open" ]] && xdg-open "$file"
+        else
+          ${pkgs.libnotify}/bin/notify-send -u low "Recording stopped"
+        fi
       else
         mkdir -p ~/Videos/Recordings
         file=~/Videos/Recordings/$(date +%Y-%m-%d_%H-%M-%S).mp4
+        echo "$file" > /tmp/current-recording
         ${pkgs.libnotify}/bin/notify-send -u low "Recording in 3..."
         sleep 1
         ${pkgs.libnotify}/bin/notify-send -u low "Recording in 2..."
@@ -87,6 +99,7 @@ let
         ${pkgs.libnotify}/bin/notify-send -u low "Recording in 1..."
         sleep 1
         ${pkgs.wf-recorder}/bin/wf-recorder --bframes max_b_frames -a -f "$file" &
+        pkill -RTMIN+8 waybar  # refresh recording indicator immediately
         ${pkgs.libnotify}/bin/notify-send -u low "Recording started"
       fi
     }
