@@ -83,7 +83,7 @@ in
       timeout-low = 3;
       timeout-critical = 0;
       fit-to-screen = false;
-      control-center-height = 1000;
+      control-center-height = 900;
       control-center-positionX = "center";
       control-center-positionY = "center";
     };
