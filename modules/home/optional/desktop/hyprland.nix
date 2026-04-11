@@ -57,6 +57,109 @@ let
     exec alacritty --working-directory "$dir"
   '';
 
+  # Voice-to-text using whisper-cpp
+  # First press starts recording, second press stops and transcribes
+  voiceInput = pkgs.writeShellScript "voice-input" ''
+    MODEL_DIR="$HOME/.local/share/whisper"
+    MODEL="$MODEL_DIR/ggml-base.en.bin"
+    RECORDING="/tmp/voice-input.wav"
+
+    # Download model if not present
+    if [[ ! -f "$MODEL" ]]; then
+      mkdir -p "$MODEL_DIR"
+      ${pkgs.libnotify}/bin/notify-send -u low "Downloading speech model..." "This only happens once"
+      ${pkgs.curl}/bin/curl -L -o "$MODEL" \
+        "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin"
+    fi
+
+    if pgrep -f "pw-record.*voice-input" > /dev/null; then
+      # Stop recording and transcribe
+      pkill -f "pw-record.*voice-input"
+      sleep 0.2
+      ${pkgs.libnotify}/bin/notify-send -u low "Transcribing..."
+      # Extract text, strip timestamps like [00:00:00.000 --> 00:00:00.000]
+      text=$(${pkgs.whisper-cpp}/bin/whisper-cli -m "$MODEL" -f "$RECORDING" -np 2>/dev/null | sed 's/\[.*\] *//' | tr '\n' ' ' | xargs)
+      rm -f "$RECORDING"
+      if [[ -n "$text" ]]; then
+        ${pkgs.wtype}/bin/wtype "$text"
+      fi
+    else
+      # Start recording
+      ${pkgs.libnotify}/bin/notify-send -u low "Recording... Press Super+/ to stop"
+      ${pkgs.pipewire}/bin/pw-record --target=@DEFAULT_SOURCE@ "$RECORDING" &
+    fi
+  '';
+
+  # Toggle menu - quick actions via walker dmenu
+  # Screen option has 1s delay to avoid capturing the menu itself
+  toggleMenu = pkgs.writeShellScript "toggle-menu" ''
+    take_screenshot() {
+      file=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
+      case "$1" in
+        region) ${pkgs.grimblast}/bin/grimblast copysave area "$file" ;;
+        window) ${pkgs.grimblast}/bin/grimblast copysave active "$file" ;;
+        screen) sleep 1 && ${pkgs.grimblast}/bin/grimblast copysave screen "$file" ;;
+      esac || return 1
+      action=$(${pkgs.libnotify}/bin/notify-send -u low -a "Screenshot" -i "$file" \
+        "Screenshot saved" "Copied to clipboard. $file" \
+        --action="edit=Edit")
+      [[ "$action" == "edit" ]] && ${pkgs.satty}/bin/satty --filename "$file"
+    }
+
+    start_recording() {
+      mkdir -p ~/Videos/Recordings
+      file=~/Videos/Recordings/$(date +%Y-%m-%d_%H-%M-%S).mp4
+      echo "$file" > /tmp/current-recording
+      ${pkgs.libnotify}/bin/notify-send -u low "Recording in 3..."
+      sleep 1
+      ${pkgs.libnotify}/bin/notify-send -u low "Recording in 2..."
+      sleep 1
+      ${pkgs.libnotify}/bin/notify-send -u low "Recording in 1..."
+      sleep 1
+      if [[ "$1" == "audio" ]]; then
+        ${pkgs.wf-recorder}/bin/wf-recorder -a -f "$file" &
+      else
+        ${pkgs.wf-recorder}/bin/wf-recorder -f "$file" &
+      fi
+      pkill -RTMIN+8 waybar
+      ${pkgs.libnotify}/bin/notify-send -u low "Recording started"
+    }
+
+    # Toggle webcam preview window for screen recordings with face cam
+    # Uses low-latency mpv settings to minimize delay
+    toggle_webcam() {
+      if pgrep -f "mpv.*video0" > /dev/null; then
+        pkill -f "mpv.*video0"
+      else
+        ${pkgs.mpv}/bin/mpv --no-osc --geometry=320x240-10-10 --ontop --no-border \
+          --title=webcam --profile=low-latency --untimed --no-cache \
+          av://v4l2:/dev/video0 &
+      fi
+    }
+
+    choice=$(printf "Take Screenshot\nRecord Screen\nWebcam Preview" | walker --dmenu -p "Toggle")
+    case "$choice" in
+      "Take Screenshot")
+        sub=$(printf "Region\nWindow\nScreen" | walker --dmenu -p "Screenshot")
+        case "$sub" in
+          Region) take_screenshot region ;;
+          Window) take_screenshot window ;;
+          Screen) take_screenshot screen ;;
+        esac
+        ;;
+      "Record Screen")
+        sub=$(printf "With Audio\nNo Audio" | walker --dmenu -p "Record")
+        case "$sub" in
+          "With Audio") start_recording audio ;;
+          "No Audio") start_recording ;;
+        esac
+        ;;
+      "Webcam Preview")
+        toggle_webcam
+        ;;
+    esac
+  '';
+
   # Reads all bindd-described bindings from Hyprland and shows them in a
   # searchable walker dmenu. Only bindings with descriptions appear.
   keybindingsMenu = pkgs.writeShellScript "keybindings-menu" ''
@@ -90,7 +193,7 @@ let
 in
 
 {
-  home.packages = [ pkgs.hyprmon ];
+  home.packages = [ pkgs.hyprmon pkgs.wf-recorder pkgs.whisper-cpp pkgs.wtype ];
 
   systemd.user.tmpfiles.rules = [
     "d %h/Pictures/Screenshots 0755 - - -"
@@ -233,6 +336,12 @@ in
         "size 900 600, title:^(bluetooth)$"
         "center, title:^(bluetooth)$"
         "animation slide top, title:^(bluetooth)$"
+
+        "float, title:^(webcam)$"
+        "size 320 240, title:^(webcam)$"
+        "move 100%-330 100%-250, title:^(webcam)$"
+        "pin, title:^(webcam)$"
+        "noborder, title:^(webcam)$"
         "float, title:^(audio)$"
         "size 900 600, title:^(audio)$"
         "center, title:^(audio)$"
@@ -259,6 +368,8 @@ in
         "$mod, P,            Pseudo window,         pseudo"
         "$mod, O,            Pop window out,        exec, ${popWindow}"
         "$mod, K,            Show keybindings,      exec, ${keybindingsMenu}"
+        "$mod, T,            Toggle menu,           exec, ${toggleMenu}"
+        "$mod, slash,        Voice input,           exec, ${voiceInput}"
         "$mod, M,            Monitor settings,      exec, alacritty --title hyprmon -e hyprmon"
 
         # resize active window
