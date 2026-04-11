@@ -19,6 +19,11 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.timeout = 1;
 
+  # Quiet boot + faster kernel init
+  boot.kernelParams = [ "quiet" "loglevel=3" "systemd.show_status=auto" "rd.udev.log_level=3" "nowatchdog" ];
+  boot.consoleLogLevel = 0;
+  boot.extraModprobeConfig = "blacklist iTCO_wdt";
+
   programs.git.prompt.enable = true;
 
   users.users.trace = {
