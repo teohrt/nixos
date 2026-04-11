@@ -305,6 +305,7 @@ in
         tooltip-format-enumerate-connected = "{device_alias} ({device_address})";
         tooltip-format-enumerate-connected-battery = "{device_alias} ({device_address}) {device_battery_percentage}%";
         on-click = "${mkToggle "bluetooth" "rfkill unblock bluetooth && alacritty --title bluetooth -e bluetui"}";
+        on-click-right = "rfkill toggle bluetooth";
       };
 
       pulseaudio = {
