@@ -82,6 +82,10 @@ in
       timeout = 0;
       timeout-low = 3;
       timeout-critical = 0;
+      fit-to-screen = false;
+      control-center-height = 1000;
+      control-center-positionX = "center";
+      control-center-positionY = "center";
     };
     style = ''
       .notification-content {
@@ -90,6 +94,13 @@ in
 
       .control-center {
         background-color: alpha(@window_bg_color, 0.7);
+      }
+
+      /* Hide broken placeholder image when no notifications */
+      .control-center-list-placeholder image {
+        opacity: 0;
+        min-height: 0;
+        min-width: 0;
       }
     '';
   };

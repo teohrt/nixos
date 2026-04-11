@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, pkgs-walker, ... }:
 let
   # Full stylix application opacity as a float string for CSS alpha() calls.
   opacity    = toString config.stylix.opacity.applications;
@@ -230,6 +230,42 @@ in
     </interface>
   '';
 
+  # Systemd services for walker and elephant instead of hyprland exec-once:
+  # - More reliable startup (exec-once shell commands can fail silently)
+  # - Automatic restart on crash
+  # - Proper dependency ordering (walker waits for elephant)
+  # - Cleaner logs via journalctl --user -u walker/elephant
 
+  systemd.user.services.elephant = {
+    Unit = {
+      Description = "Elephant app indexer for Walker";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs-walker.elephant}/bin/elephant";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+  };
 
+  systemd.user.services.walker = {
+    Unit = {
+      Description = "Walker application launcher";
+      After = [ "graphical-session.target" "elephant.service" ];
+      PartOf = [ "graphical-session.target" ];
+      Requires = [ "elephant.service" ];
+    };
+    Service = {
+      ExecStart = "${pkgs-walker.walker}/bin/walker --gapplication-service";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+  };
 }

@@ -48,7 +48,7 @@ let
       pad = 8 - length(num)
       spaces = ""
       for (i = 0; i < pad; i++) spaces = spaces " "
-      printf "{\"text\": \"%s<span size='large'>󰘚</span>%s\", \"tooltip\": \"%s\"}\n", spaces, num, tooltip
+      printf "{\"text\": \"%s<span size='200%%'>󰍛</span><span rise='3500'>%s</span>\", \"tooltip\": \"%s\"}\n", spaces, num, tooltip
       exit
     }
   '';
@@ -67,7 +67,7 @@ let
         num = sprintf(" %.2f%%", pct)
         pad = 8 - length(num); spaces = ""
         for (i = 0; i < pad; i++) spaces = spaces " "
-        printf "{\"text\": \"%s<span size=\\\"large\\\">󰻠</span>%s\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
+        printf "{\"text\": \"%s<span size=\\\"200%%\\\">󰘚</span><span rise=\\\"3500\\\">%s</span>\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
           spaces, num, pct, used/1024/1024, total/1024/1024, avail/1024/1024
       }
     ' /proc/meminfo
@@ -78,12 +78,18 @@ let
   # RSSI directly from iwctl (same source as impala) and applies impala's formula
   # (>= -50 dBm = 100%, else 2 * (100 + RSSI)) so the displayed percentage matches.
   wifiScript = pkgs.writeShellScript "waybar-wifi" ''
+    # Check if wifi is blocked by rfkill
+    if rfkill list wifi | grep -q "Soft blocked: yes"; then
+      echo '{"text": "<span size=\"200%\">󰤭</span>", "tooltip": "wifi off", "class": "off"}'
+      exit
+    fi
+
     IFACE=$(for dev in /sys/class/net/*/wireless; do
       [ -d "$dev" ] && basename "$(dirname "$dev")" && break
     done)
 
     if [ -z "$IFACE" ]; then
-      echo '{"text": "<span size=\"large\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
+      echo '{"text": "<span size=\"200%\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
       exit
     fi
 
@@ -92,7 +98,7 @@ let
     RSSI=$(echo "$INFO" | awk '$1 == "RSSI" {print $2}')
 
     if [ -z "$SSID" ]; then
-      echo '{"text": "<span size=\"large\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
+      echo '{"text": "<span size=\"200%\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
       exit
     fi
 
@@ -128,9 +134,9 @@ let
     TX_FMT=$(fmt_bits "$TX_BITS" "↑")
     RX_FMT=$(fmt_bits "$RX_BITS" "↓")
 
-    if   [ "$PCT" -ge 75 ]; then ICON="󰤨"
-    elif [ "$PCT" -ge 50 ]; then ICON="󰤥"
-    elif [ "$PCT" -ge 25 ]; then ICON="󰤢"
+    if   [ "$PCT" -ge 90 ]; then ICON="󰤨"
+    elif [ "$PCT" -ge 60 ]; then ICON="󰤥"
+    elif [ "$PCT" -ge 30 ]; then ICON="󰤢"
     else                         ICON="󰤟"
     fi
 
@@ -138,7 +144,7 @@ let
     elif [ "''${PCT}" -lt 100 ]; then PCT_PAD=" "
     else                               PCT_PAD=""
     fi
-    TEXT="<span size='large'>$ICON</span> ''${PCT}%''${PCT_PAD} <span color='#ffffff99'>''${TX_FMT}</span> <span color='#ffffff99'>''${RX_FMT}</span>"
+    TEXT="<span size='200%'>$ICON</span>  <span rise='3500'>''${PCT}%''${PCT_PAD}</span> <span rise='3500' color='#ffffff99'>''${TX_FMT}</span> <span rise='3500' color='#ffffff99'>''${RX_FMT}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
@@ -265,10 +271,14 @@ in
       };
 
       battery = {
-        format = "<span size=\"large\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
+        format-high = "<span size=\"large\">{icon}</span>";
+        format-medium = "<span size=\"large\">{icon}</span>";
+        format-low = "<span size=\"large\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
+        format-critical = "<span size=\"large\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
         format-charging = "<span size=\"large\">󰂄</span> <span color=\"#ffffff\">{capacity}%</span>";
+        tooltip-format = "{capacity}%";
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
-        states = { critical = 20; low = 40; medium = 70; high = 100; };
+        states = { critical = 15; low = 25; medium = 50; high = 100; };
         interval = 2;
         on-click = "${mkToggle "battery" "alacritty --title battery -e bash -c 'upower -i $(upower -e | grep BAT); read'"}";
       };
@@ -290,17 +300,20 @@ in
         return-type = "json";
         interval = 2;
         on-click = "${mkToggle "wifi" "rfkill unblock wifi && alacritty --title wifi -e impala"}";
+        on-click-right = "rfkill toggle wifi";
       };
 
       bluetooth = {
         format = "<span size=\"large\">󰂯</span>";
         format-connected = "<span size=\"large\">󰂱</span> {device_alias}";
         format-connected-battery = "<span size=\"large\">󰂱</span> {device_alias} {device_battery_percentage}%";
-        format-disabled = "<span size=\"large\">󰂲</span>";
+        format-disabled = "<span size=\"large\">󰂯</span>";
+        format-off = "<span size=\"large\">󰂯</span>";
         tooltip-format-connected = "{device_enumerate}";
         tooltip-format-enumerate-connected = "{device_alias} ({device_address})";
         tooltip-format-enumerate-connected-battery = "{device_alias} ({device_address}) {device_battery_percentage}%";
         on-click = "${mkToggle "bluetooth" "rfkill unblock bluetooth && alacritty --title bluetooth -e bluetui"}";
+        on-click-right = "rfkill toggle bluetooth";
       };
 
       pulseaudio = {
@@ -418,7 +431,12 @@ in
       }
 
       #custom-wifi {
-        padding: 2px 8px 2px 6px;
+        padding: 2px 14px 2px 12px;
+      }
+
+      #custom-wifi.off,
+      #custom-wifi.disconnected {
+        opacity: 0.4;
       }
 
       #custom-cpu,
@@ -445,6 +463,12 @@ in
 
       #bluetooth {
         padding: 2px 16px;
+      }
+
+      #bluetooth.off,
+      #bluetooth.disabled {
+        padding: 2px 16px;
+        opacity: 0.4;
       }
 
       #custom-power {
