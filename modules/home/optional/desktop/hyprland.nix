@@ -136,6 +136,10 @@ in
         layout = "dwindle"; # binary space partitioning layout
       };
 
+      misc = {
+        focus_on_activate = true; # switch to workspace when app requests focus
+      };
+
       animations = {
         enabled = true;
         # smooth deceleration curve for all animations
