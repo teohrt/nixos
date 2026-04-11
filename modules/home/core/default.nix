@@ -82,6 +82,10 @@ in
       timeout = 0;
       timeout-low = 3;
       timeout-critical = 0;
+      fit-to-screen = false;
+      control-center-height = 1000;
+      control-center-positionX = "center";
+      control-center-positionY = "center";
     };
     style = ''
       .notification-content {
