@@ -83,7 +83,7 @@ let
     done)
 
     if [ -z "$IFACE" ]; then
-      echo '{"text": "<span size=\"large\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
+      echo '{"text": "<span size=\"200%\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
       exit
     fi
 
@@ -92,7 +92,7 @@ let
     RSSI=$(echo "$INFO" | awk '$1 == "RSSI" {print $2}')
 
     if [ -z "$SSID" ]; then
-      echo '{"text": "<span size=\"large\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
+      echo '{"text": "<span size=\"200%\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
       exit
     fi
 
@@ -128,9 +128,9 @@ let
     TX_FMT=$(fmt_bits "$TX_BITS" "↑")
     RX_FMT=$(fmt_bits "$RX_BITS" "↓")
 
-    if   [ "$PCT" -ge 75 ]; then ICON="󰤨"
-    elif [ "$PCT" -ge 50 ]; then ICON="󰤥"
-    elif [ "$PCT" -ge 25 ]; then ICON="󰤢"
+    if   [ "$PCT" -ge 90 ]; then ICON="󰤨"
+    elif [ "$PCT" -ge 60 ]; then ICON="󰤥"
+    elif [ "$PCT" -ge 30 ]; then ICON="󰤢"
     else                         ICON="󰤟"
     fi
 
@@ -138,7 +138,7 @@ let
     elif [ "''${PCT}" -lt 100 ]; then PCT_PAD=" "
     else                               PCT_PAD=""
     fi
-    TEXT="<span size='large'>$ICON</span> ''${PCT}%''${PCT_PAD} <span color='#ffffff99'>''${TX_FMT}</span> <span color='#ffffff99'>''${RX_FMT}</span>"
+    TEXT="<span size='200%'>$ICON</span>  <span rise='3500'>''${PCT}%''${PCT_PAD}</span> <span rise='3500' color='#ffffff99'>''${TX_FMT}</span> <span rise='3500' color='#ffffff99'>''${RX_FMT}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
@@ -422,7 +422,7 @@ in
       }
 
       #custom-wifi {
-        padding: 2px 8px 2px 6px;
+        padding: 2px 14px 2px 12px;
       }
 
       #custom-cpu,
