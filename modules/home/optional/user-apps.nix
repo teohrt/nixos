@@ -1,5 +1,20 @@
 # Packages that should be installed to the user profile.
-{ pkgs, pkgs-unstable, pkgs-walker, ... }: {
+{ pkgs, pkgs-unstable, pkgs-walker, ... }:
+let
+  # Wrap zoom-us to enable Wayland screen sharing via PipeWire
+  zoom-wayland = pkgs.symlinkJoin {
+    name = "zoom-wayland";
+    paths = [ pkgs.zoom-us ];
+    buildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/zoom \
+        --set XDG_CURRENT_DESKTOP Hyprland \
+        --set XDG_SESSION_TYPE wayland \
+        --set QT_QPA_PLATFORM xcb
+    '';
+  };
+in
+{
   home.packages = with pkgs; [
     # cli utilities
     terminaltexteffects  # tte — terminal text effects (used by screensaver)
@@ -24,7 +39,7 @@
     evince     # PDF viewer
     vlc        # video player
     slack
-    zoom-us
+    zoom-wayland         # wrapped for Wayland screen sharing
     pkgs-unstable.bruno  # API client (like Postman) — from unstable for v3.x
     easyeffects          # audio effects for PipeWire
 
