@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, pkgs-unstable, ... }:
 let
   # Alacritty config used exclusively for the screensaver window — black bg, hidden cursor.
   alacrittyScreensaverConfig = pkgs.writeText "alacritty-screensaver.toml" ''
@@ -41,10 +41,11 @@ let
 
     while true; do
       effect="''${EFFECTS[$((RANDOM % ''${#EFFECTS[@]}))]}"
-      ${pkgs.terminaltexteffects}/bin/tte \
+      ${pkgs-unstable.terminaltexteffects}/bin/tte \
         --input-file ${../../../../assets/screensaver.txt} \
         --frame-rate 120 --canvas-width 0 --canvas-height 0 \
         --anchor-canvas c --anchor-text c \
+        --no-eol --reuse-canvas \
         "$effect" &
       tte_pid=$!
 
