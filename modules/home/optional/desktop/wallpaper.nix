@@ -109,6 +109,13 @@ let
         sha256 = "08zylshl4ijbzk72mmw09jwsq9c9nbx481jdvmnnhnlafy7m835d";
       };
     }
+    {
+      name = "Blue Cross";
+      path = pkgs.fetchurl {
+        url = "https://videos.pexels.com/video-files/28257087/12341903_1920_1080_30fps.mp4";
+        sha256 = "1bflm533dgqkqp8c8k8v81gcrpnc8k88di4367imi9s6qidr2ba7";
+      };
+    }
   ];
 
   defaultWallpaper = builtins.head staticWallpapers;
