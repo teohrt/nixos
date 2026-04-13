@@ -151,6 +151,14 @@
     # Framework 16 specific: 1.25x scale (overrides shared 1.2x)
     wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1.25";
 
+    # Framework 16 specific: reduced mouse sensitivity
+    wayland.windowManager.hyprland.settings.input = lib.mkForce {
+      kb_layout = "us";
+      follow_mouse = 1;
+      sensitivity = -0.25; # range -1.0 to 1.0, negative = slower
+      accel_profile = "flat"; # no mouse acceleration
+    };
+
 
   };
 
