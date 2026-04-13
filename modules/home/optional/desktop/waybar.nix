@@ -177,38 +177,6 @@ let
     fi
   '';
 
-  weatherScript = pkgs.writeShellScript "waybar-weather" ''
-    WEATHER=$(${pkgs.curl}/bin/curl -sf "https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph")
-    if [ -z "$WEATHER" ]; then
-      echo '{"text": "󰖑", "tooltip": "Weather unavailable"}'
-      exit
-    fi
-
-    CODE=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current.weather_code')
-    TEMP=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current.temperature_2m | round')
-    FEELS=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current.apparent_temperature | round')
-    HUMIDITY=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current.relative_humidity_2m')
-    WIND=$(echo "$WEATHER" | ${pkgs.jq}/bin/jq -r '.current.wind_speed_10m | round')
-
-    case $CODE in
-      0)                     ICON="󰖙" DESC="Clear" ;;
-      1|2)                   ICON="󰖕" DESC="Partly cloudy" ;;
-      3)                     ICON="󰖐" DESC="Overcast" ;;
-      45|48)                 ICON="󰖑" DESC="Fog" ;;
-      51|53|55|56|57)        ICON="󰖗" DESC="Drizzle" ;;
-      61|63|65|66|67)        ICON="󰖗" DESC="Rain" ;;
-      71|73|75|77)           ICON="󰖘" DESC="Snow" ;;
-      80|81|82)              ICON="󰖗" DESC="Showers" ;;
-      85|86)                 ICON="󰖘" DESC="Snow showers" ;;
-      95|96|99)              ICON="󰖓" DESC="Thunderstorm" ;;
-      *)                     ICON="!" DESC="Unknown" ;;
-    esac
-
-    TEXT="$ICON"
-    TOOLTIP="''${TEMP}°F — $DESC\nFeels like: ''${FEELS}°F\nHumidity: ''${HUMIDITY}%\nWind: ''${WIND} mph"
-
-    echo "{\"text\": \"$TEXT\", \"tooltip\": \"$TOOLTIP\"}"
-  '';
 in
 {
   programs.waybar = {
@@ -224,7 +192,7 @@ in
       margin-right = 4;
       spacing = 8;
 
-      modules-left = [ "hyprland/workspaces" "custom/weather" "custom/recording" ];
+      modules-left = [ "hyprland/workspaces" "custom/recording" ];
       modules-center = [ "battery" "clock" "custom/notification" ];
       modules-right = [ "custom/wifi" "custom/cpu" "custom/mem" "bluetooth" "pulseaudio" ];
 
@@ -275,7 +243,10 @@ in
         format-medium = "<span size=\"large\">{icon}</span>";
         format-low = "<span size=\"large\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
         format-critical = "<span size=\"large\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
-        format-charging = "<span size=\"large\">󰂄</span> <span color=\"#ffffff\">{capacity}%</span>";
+        format-charging-high = "<span size=\"large\">󰂄</span>";
+        format-charging-medium = "<span size=\"large\">󰂄</span>";
+        format-charging-low = "<span size=\"large\">󰂄</span> <span color=\"#ffffff\">{capacity}%</span>";
+        format-charging-critical = "<span size=\"large\">󰂄</span> <span color=\"#ffffff\">{capacity}%</span>";
         tooltip-format = "{capacity}%";
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 15; low = 25; medium = 50; high = 100; };
@@ -330,14 +301,6 @@ in
         tooltip = false;
       };
 
-
-      "custom/weather" = {
-        exec = "${weatherScript}";
-        return-type = "json";
-        interval = 300;
-        tooltip = true;
-        format = "{}";
-      };
     }];
 
     style = ''
@@ -389,7 +352,6 @@ in
       #pulseaudio:hover,
       #custom-cpu:hover,
       #custom-mem:hover,
-      #custom-weather:hover,
       #custom-power:hover {
         background: rgba(255, 255, 255, 0.08);
         border-radius: 20px;
@@ -442,11 +404,6 @@ in
       #custom-cpu,
       #custom-mem {
         padding: 2px 7px;
-      }
-
-      #custom-weather {
-        padding: 2px 7px;
-        font-size: 18px;
       }
 
       #pulseaudio {

@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, ... }:
 {
   imports = [
     ./hardware.nix
@@ -34,6 +34,8 @@
       ../../modules/home/optional/apps/obsidian.nix
       ../../modules/home/optional/apps/spicetify.nix
     ];
+
+    wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1";
   };
 
   system.stateVersion = "25.11";

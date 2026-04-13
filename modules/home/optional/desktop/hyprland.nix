@@ -78,8 +78,17 @@ let
       pkill -f "pw-record.*voice-input"
       sleep 0.2
       ${pkgs.libnotify}/bin/notify-send -u low "Transcribing..."
-      # Extract text, strip timestamps like [00:00:00.000 --> 00:00:00.000]
-      text=$(${pkgs.whisper-cpp}/bin/whisper-cli -m "$MODEL" -f "$RECORDING" -np 2>/dev/null | sed 's/\[.*\] *//' | tr '\n' ' ' | xargs)
+      text=$(${pkgs.whisper-cpp}/bin/whisper-cli -m "$MODEL" -f "$RECORDING" -np 2>/dev/null \
+        | sed 's/^\[[^]]*\] *//' \
+        | grep -v '^[[:space:]]*$' \
+        | tr '\n' ' ' \
+        | sed 's/  */ /g; s/^ *//; s/ *$//')
+      # Pipeline explanation:
+      #   whisper-cli: transcribe audio, -np disables progress output
+      #   sed: strip timestamps like [00:00:00.000 --> 00:00:02.000] from line starts
+      #   grep -v: remove blank lines between sentences
+      #   tr: join all lines into one with spaces
+      #   sed: normalize multiple spaces to single, trim leading/trailing
       rm -f "$RECORDING"
       if [[ -n "$text" ]]; then
         ${pkgs.wtype}/bin/wtype "$text"
@@ -111,11 +120,11 @@ let
       mkdir -p ~/Videos/Recordings
       file=~/Videos/Recordings/$(date +%Y-%m-%d_%H-%M-%S).mp4
       echo "$file" > /tmp/current-recording
-      ${pkgs.libnotify}/bin/notify-send -u low "Recording in 3..."
+      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 3..."
       sleep 1
-      ${pkgs.libnotify}/bin/notify-send -u low "Recording in 2..."
+      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 2..."
       sleep 1
-      ${pkgs.libnotify}/bin/notify-send -u low "Recording in 1..."
+      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 1..."
       sleep 1
       if [[ "$1" == "audio" ]]; then
         ${pkgs.wf-recorder}/bin/wf-recorder -a -f "$file" &
@@ -307,6 +316,7 @@ in
         "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(spotify)$"
         "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(Slack)$"
         "opacity 0.9 0.9, class:^(code)$"
+        "opacity 0.9 0.9, class:^(obsidian)$"
         "float,      class:^(org.kde.partitionmanager)$"
         "size 650 450, class:^(org.kde.partitionmanager)$"
         "center,     class:^(org.kde.partitionmanager)$"
