@@ -1,12 +1,12 @@
 { pkgs, lib, pkgs-walker, ... }:
 
 let
-  # Wallpapers fetched from URLs at build time.
+  # Static wallpapers fetched from URLs at build time.
   # To add a new wallpaper:
   #   1. Get the URL
   #   2. Run: nix-prefetch-url <url>
   #   3. Add entry below with name, url, and sha256
-  wallpapers = [
+  staticWallpapers = [
     {
       name = "Dark - Black Hole";
       path = pkgs.fetchurl {
@@ -93,24 +93,89 @@ let
     }
   ];
 
-  defaultWallpaper = builtins.head wallpapers;
+  # Video wallpapers (played with mpvpaper)
+  videoWallpapers = [
+    {
+      name = "Misty Mountains";
+      path = pkgs.fetchurl {
+        url = "https://videos.pexels.com/video-files/35741881/15150580_2560_1440_25fps.mp4";
+        sha256 = "1kk72yfn4xq0g7dzs7bapk0gg371jxz5x4cjwjflhp1jv4agaz72";
+      };
+    }
+    {
+      name = "Turbulent Ocean";
+      path = pkgs.fetchurl {
+        url = "https://videos.pexels.com/video-files/36291053/15388865_2560_1440_60fps.mp4";
+        sha256 = "08zylshl4ijbzk72mmw09jwsq9c9nbx481jdvmnnhnlafy7m835d";
+      };
+    }
+  ];
 
-  # Walker dmenu picker for wallpapers
+  defaultWallpaper = builtins.head staticWallpapers;
+
+  # Walker dmenu picker for wallpapers with category submenus
   wallpaperPicker = pkgs.writeShellScriptBin "wallpaper-picker" ''
-    CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.name) wallpapers)}' \
-      | ${pkgs-walker.walker}/bin/walker --dmenu -N -H)
+    # Helper to switch to static wallpaper (swww)
+    set_static() {
+      pkill -f mpvpaper 2>/dev/null
+      sleep 0.2
+      if ! pgrep -f swww-daemon > /dev/null; then
+        ${pkgs.swww}/bin/swww-daemon &
+        # Wait for swww socket to be ready
+        for i in $(seq 1 20); do
+          ${pkgs.swww}/bin/swww query &>/dev/null && break
+          sleep 0.1
+        done
+      fi
+      ${pkgs.swww}/bin/swww img "$1" \
+        --transition-type grow \
+        --transition-duration 1 \
+        --transition-fps 60 \
+        --transition-pos center
+    }
 
-    case "$CHOICE" in
-      ${lib.concatStringsSep "\n      " (map (w: ''
-        "${w.name}")
-            ${pkgs.swww}/bin/swww img "${w.path}" \
-              --transition-type grow \
-              --transition-duration 1 \
-              --transition-fps 60 \
-              --transition-pos center
-            ${pkgs.libnotify}/bin/notify-send -t 2000 "Wallpaper" "Switched to ${w.name}"
-            ;;''
-      ) wallpapers)}
+    # Helper to switch to video wallpaper (mpvpaper)
+    set_video() {
+      pkill -f mpvpaper 2>/dev/null
+      ${pkgs.swww}/bin/swww clear 2>/dev/null
+      pkill -f swww-daemon 2>/dev/null
+      sleep 0.2
+      ${pkgs.mpvpaper}/bin/mpvpaper -o "loop" '*' "$1" &
+    }
+
+    # First menu: choose category
+    CATEGORY=$(printf 'Static\nVideo' \
+      | ${pkgs-walker.walker}/bin/walker --dmenu -N -H -p "Wallpaper Type")
+
+    [ -z "$CATEGORY" ] && exit 0
+
+    case "$CATEGORY" in
+      "Static")
+        CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.name) staticWallpapers)}' \
+          | ${pkgs-walker.walker}/bin/walker --dmenu -N -H -p "Static Wallpaper")
+        [ -z "$CHOICE" ] && exit 0
+        case "$CHOICE" in
+          ${lib.concatStringsSep "\n          " (map (w: ''
+            "${w.name}")
+              set_static "${w.path}"
+              ${pkgs.libnotify}/bin/notify-send -t 2000 "Wallpaper" "Switched to ${w.name}"
+              ;;''
+          ) staticWallpapers)}
+        esac
+        ;;
+      "Video")
+        CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.name) videoWallpapers)}' \
+          | ${pkgs-walker.walker}/bin/walker --dmenu -N -H -p "Video Wallpaper")
+        [ -z "$CHOICE" ] && exit 0
+        case "$CHOICE" in
+          ${lib.concatStringsSep "\n          " (map (w: ''
+            "${w.name}")
+              set_video "${w.path}"
+              ${pkgs.libnotify}/bin/notify-send -t 2000 "Wallpaper" "Switched to ${w.name}"
+              ;;''
+          ) videoWallpapers)}
+        esac
+        ;;
     esac
   '';
 in
@@ -118,6 +183,7 @@ in
   home.packages = [
     wallpaperPicker
     pkgs.swww
+    pkgs.mpvpaper
   ];
 
   # Disable stylix hyprpaper since we use swww
