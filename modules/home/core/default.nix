@@ -74,6 +74,8 @@ in
   home.homeDirectory = "/home/trace";
 
   programs.btop.enable = true;
+  # Disabled - .zshrc managed via dotfiles repo stow
+  programs.zsh.enable = false;
   services.swaync = {
     enable = true;
     settings = {

@@ -31,20 +31,15 @@
     description = "trace";
     extraGroups = [ "wheel" "video" "docker" ]; # video group allows brightnessctl without sudo; docker allows running docker without sudo
     packages = [];
+    shell = pkgs.zsh;
+  };
+
+  programs.zsh = {
+    enable = true;
+    autosuggestions.enable = true;
   };
 
   nixpkgs.config.allowUnfree = true;
 
-  environment.sessionVariables.EDITOR = "vim";
-
-  environment.systemPackages = [ pkgs.satty ];
-
-  xdg.mime.defaultApplications = {
-    "image/png" = "satty.desktop";
-    "image/jpeg" = "satty.desktop";
-    "image/gif" = "satty.desktop";
-    "image/webp" = "satty.desktop";
-    "image/bmp" = "satty.desktop";
-    "image/tiff" = "satty.desktop";
-  };
+  environment.sessionVariables.EDITOR = "nvim";
 }
