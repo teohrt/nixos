@@ -1,0 +1,9 @@
+# sops configuration
+keys:
+  - &my-thinkpad age1jqemx6vsd80dl3lwuyxmv456lujxcaty6sj889n4r9znpuydevksrt0jw8
+
+creation_rules:
+  - path_regex: secrets/secrets\.yaml$
+    key_groups:
+      - age:
+          - *my-thinkpad
