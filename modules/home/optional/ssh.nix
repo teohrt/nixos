@@ -14,6 +14,11 @@
         user = "git";
         identityFile = "~/.ssh/personal_github_ed25519";
       };
+      "github.com-work" = {
+        hostname = "github.com";
+        user = "git";
+        identityFile = "~/.ssh/work_github_ed25519";
+      };
     };
   };
 
