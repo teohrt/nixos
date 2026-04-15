@@ -137,13 +137,30 @@ let
 
     # Toggle webcam preview window for screen recordings with face cam
     # Uses low-latency mpv settings to minimize delay
+    # When webcam is on: turns it off. When off: shows camera selection menu.
     toggle_webcam() {
-      if pgrep -f "mpv.*video0" > /dev/null; then
-        pkill -f "mpv.*video0"
+      if pgrep -f "mpv.*title=webcam" > /dev/null; then
+        pkill -f "mpv.*title=webcam"
       else
+        # Build camera list from sysfs - only include even-numbered devices (capture, not metadata)
+        cameras=""
+        for dev in /dev/video*; do
+          num=$(basename "$dev" | tr -dc '0-9')
+          if [[ $((num % 2)) -eq 0 ]]; then
+            name=$(cat "/sys/class/video4linux/$(basename $dev)/name" 2>/dev/null | sed 's/:$//')
+            [[ -n "$name" ]] && cameras+="$name ($dev)\n"
+          fi
+        done
+
+        choice=$(printf "$cameras" | walker --dmenu -p "Camera")
+        [[ -z "$choice" ]] && return
+
+        # Extract device path from selection
+        device=$(echo "$choice" | grep -oP '/dev/video\d+')
+
         ${pkgs.mpv}/bin/mpv --no-osc --geometry=320x240-10-10 --ontop --no-border \
           --title=webcam --profile=low-latency --untimed --no-cache \
-          av://v4l2:/dev/video0 &
+          av://v4l2:"$device" &
       fi
     }
 
