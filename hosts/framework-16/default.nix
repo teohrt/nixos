@@ -120,6 +120,7 @@
     ../../modules/nixos/optional/networking.nix
     ../../modules/nixos/optional/docker.nix
     ../../modules/nixos/optional/system-apps.nix
+    ../../modules/nixos/optional/sops.nix
   ];
 
   networking.hostName = "framework-16";
@@ -146,6 +147,7 @@
       ../../modules/home/optional/apps/vscode.nix
       ../../modules/home/optional/apps/obsidian.nix
       ../../modules/home/optional/apps/spicetify.nix
+      ../../modules/home/optional/ssh.nix
     ];
 
     # Framework 16 specific: 1.25x scale (overrides shared 1.2x)

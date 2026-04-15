@@ -18,9 +18,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    sops-nix.url = "github:Mic92/sops-nix";
   };
 
-  outputs = inputs@{ nixpkgs, nixpkgs-unstable, nixpkgs-walker, home-manager, stylix, spicetify-nix, nixos-hardware, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-unstable, nixpkgs-walker, home-manager, stylix, spicetify-nix, nixos-hardware, sops-nix, ... }:
   let
     system = "x86_64-linux";
     pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
@@ -70,6 +71,7 @@
         specialArgs = { inherit pkgs-walker; };
         modules = [
           ./hosts/my-thinkpad
+          sops-nix.nixosModules.sops
           stylix.nixosModules.stylix
           { inherit (themeConfig) stylix; }
           home-manager.nixosModules.home-manager
@@ -82,6 +84,7 @@
         modules = [
           ./hosts/framework-16
           nixos-hardware.nixosModules.framework-16-7040-amd
+          sops-nix.nixosModules.sops
           stylix.nixosModules.stylix
           { inherit (themeConfig) stylix; }
           home-manager.nixosModules.home-manager

@@ -7,6 +7,7 @@
     ../../modules/nixos/optional/networking.nix
     ../../modules/nixos/optional/docker.nix
     ../../modules/nixos/optional/system-apps.nix
+    ../../modules/nixos/optional/sops.nix
   ];
 
   networking.hostName = "my-thinkpad";
@@ -33,6 +34,7 @@
       ../../modules/home/optional/apps/vscode.nix
       ../../modules/home/optional/apps/obsidian.nix
       ../../modules/home/optional/apps/spicetify.nix
+      ../../modules/home/optional/ssh.nix
     ];
 
     wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1";
