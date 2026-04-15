@@ -295,8 +295,10 @@ in
 
       input = {
         kb_layout = "us";
-        follow_mouse = 1; # focus follows mouse
-        sensitivity = 0;  # 0 = no pointer speed adjustment
+        follow_mouse = 1;   # focus follows mouse
+        sensitivity = 0;    # 0 = no pointer speed adjustment
+        repeat_rate = 50;   # keys per second when held (default: 25)
+        repeat_delay = 300; # ms before repeat starts (default: 600)
       };
 
       dwindle = {
