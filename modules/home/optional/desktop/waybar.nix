@@ -411,6 +411,7 @@ in
       }
       #pulseaudio.muted {
         padding: 2px 14px;
+        opacity: 0.4;
       }
 
       #custom-notification {
