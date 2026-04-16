@@ -45,6 +45,7 @@ let
   '';
 
   # Opens alacritty in the focused terminal's working directory (or home if not a terminal)
+  # If workspace is empty, centers the terminal; otherwise tiles normally
   terminalHere = pkgs.writeShellScript "terminal-here" ''
     pid=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid')
     dir="$HOME"
@@ -55,7 +56,21 @@ let
         dir=$(readlink "/proc/$child/cwd")
       fi
     fi
-    exec alacritty --working-directory "$dir"
+
+    # Check if current workspace is empty
+    workspace=$(hyprctl activeworkspace -j | ${pkgs.jq}/bin/jq -r '.id')
+    window_count=$(hyprctl clients -j | ${pkgs.jq}/bin/jq "[.[] | select(.workspace.id == $workspace)] | length")
+
+    if [[ "$window_count" -eq 0 ]]; then
+      # Empty workspace: launch, float, resize to half screen, and center
+      alacritty --working-directory "$dir" &
+      sleep 0.1
+      # Get monitor dimensions and resize to half
+      read -r width height < <(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width / .scale / 2 | floor) \(.height / .scale / 2 | floor)"')
+      hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact $width $height; dispatch centerwindow"
+    else
+      exec alacritty --working-directory "$dir"
+    fi
   '';
 
   # Voice-to-text using whisper-cpp
