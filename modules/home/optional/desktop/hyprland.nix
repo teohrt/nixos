@@ -494,12 +494,6 @@ in
         "$mod, mouse:272, movewindow"   # left click drag — move window
         "$mod, mouse:273, resizewindow" # right click drag — resize window
       ];
-
-      # lid switch handling — disable laptop display and backlight when closed
-      bindl = [
-        ", switch:on:Lid Switch, exec, hyprctl keyword monitor 'eDP-1,disable' && brightnessctl -d amdgpu_bl1 set 0"
-        ", switch:off:Lid Switch, exec, hyprctl keyword monitor 'eDP-1,preferred,auto,1.2' && brightnessctl -d amdgpu_bl1 set 100%"
-      ];
     };
   };
 }
