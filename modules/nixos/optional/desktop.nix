@@ -1,6 +1,7 @@
+# Desktop environment: Hyprland compositor, SDDM login, PipeWire audio, Bluetooth, printing.
 { pkgs, ... }:
 {
-  # Hyprland
+  # Hyprland Wayland compositor
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
@@ -37,6 +38,11 @@
     General = {
       # Enables AAC codec negotiation, battery reporting, and other modern features
       Experimental = true;
+      # Disable auto-pairing - require explicit pairing via TUI
+      JustWorksRepairing = "never";
+    };
+    Policy = {
+      AutoEnable = false;
     };
   };
 
@@ -47,11 +53,13 @@
     nssmdns4 = true; # enables network printer discovery on the local network
   };
 
+  # PAM integration for hyprlock (allows unlocking with user password)
   security.pam.services.hyprlock = {};
 
   # Required for Nautilus: trash, removable media, MTP, network shares
   services.gvfs.enable = true;
 
+  # Realtime scheduling for PipeWire (low-latency audio)
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -73,5 +81,6 @@
     ];
   };
 
+  # Battery status daemon (used by waybar, hypridle for battery-aware behavior)
   services.upower.enable = true;
 }

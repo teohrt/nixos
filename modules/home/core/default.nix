@@ -81,7 +81,7 @@ in
     settings = {
       border-radius = 10;
       width = 250;
-      timeout = 0;
+      timeout = 5;
       timeout-low = 3;
       timeout-critical = 0;
       fit-to-screen = false;

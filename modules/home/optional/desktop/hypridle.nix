@@ -1,3 +1,5 @@
+# Idle management: screensaver, screen lock, DPMS, and suspend timers.
+# Screensaver uses terminaltexteffects (tte) for animated text effects.
 { pkgs, pkgs-unstable, ... }:
 let
   # Alacritty config used exclusively for the screensaver window — black bg, hidden cursor.

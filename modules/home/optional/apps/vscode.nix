@@ -1,3 +1,4 @@
+# VS Code editor. Styled by Stylix.
 { pkgs, config, ... }:
 
 {
@@ -5,7 +6,8 @@
     enable = true;
     package = pkgs.vscode;
     profiles.default.userSettings = {
-      "window.backgroundOpacity" = 1;
+      "window.backgroundOpacity" = 1; # opaque background (no transparency)
+      "workbench.sideBar.location" = "right"; # file explorer on right side
     };
   };
 }

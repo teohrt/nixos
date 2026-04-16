@@ -1,6 +1,10 @@
+# Waybar status bar: workspaces, clock, battery, wifi, cpu, memory, bluetooth, audio.
+# Click handlers open TUI popups (impala, bluetui, pulsemixer) in floating windows.
 { pkgs, ... }:
 
 let
+  # Creates a toggle script: closes window if open, opens if closed.
+  # Used by waybar click handlers for TUI popups (wifi, bluetooth, audio, etc.)
   mkToggle = title: openCmd: pkgs.writeShellScript "toggle-${title}" ''
     if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.title == "${title}")' > /dev/null 2>&1; then
       hyprctl dispatch closewindow "title:^(${title})$"
@@ -9,6 +13,8 @@ let
     fi
   '';
 
+  # CPU usage calculation: samples /proc/stat twice (1s apart) to compute
+  # per-core and total utilization. Outputs JSON with usage % and load average.
   cpuAwk = pkgs.writeText "waybar-cpu.awk" ''
     BEGIN {
       while ((getline line < "/proc/stat") > 0) {
@@ -57,6 +63,7 @@ let
     awk -f ${cpuAwk}
   '';
 
+  # Memory usage from /proc/meminfo. Shows used %, total, and available RAM.
   memScript = pkgs.writeShellScript "waybar-mem" ''
     awk '
       /MemTotal/     { total = $2 }
@@ -411,6 +418,7 @@ in
       }
       #pulseaudio.muted {
         padding: 2px 14px;
+        opacity: 0.4;
       }
 
       #custom-notification {
@@ -461,5 +469,13 @@ in
       }
 
     '';
+  };
+
+  # Auto-restart waybar on crash
+  systemd.user.services.waybar = {
+    Service = {
+      Restart = "on-failure";
+      RestartSec = 1;
+    };
   };
 }

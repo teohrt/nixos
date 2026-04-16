@@ -1,3 +1,6 @@
+# Walker: GTK4 application launcher with dmenu mode for custom pickers.
+# Used for app launching (Super+Space) and various dmenu-style selectors
+# (wallpaper picker, keybindings menu, power menu, etc.)
 { config, lib, pkgs, pkgs-walker, ... }:
 let
   # Full stylix application opacity as a float string for CSS alpha() calls.

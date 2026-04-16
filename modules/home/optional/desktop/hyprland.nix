@@ -1,5 +1,15 @@
+# Hyprland window manager configuration: keybindings, window rules, animations,
+# and helper scripts for screenshots, screen recording, voice input, etc.
 { pkgs, config, ... }:
 let
+  # Outputs "width height" for half the focused monitor's dimensions (accounting for scale).
+  # Used by multiple scripts for consistent centered window sizing.
+  # Calculated dynamically rather than cached at login so it stays correct when
+  # monitors are connected/disconnected or scaling changes mid-session.
+  halfScreenSize = pkgs.writeShellScript "half-screen-size" ''
+    hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width / .scale / 2 | floor) \(.height / .scale / 2 | floor)"'
+  '';
+
   # Listens on Hyprland's IPC event socket and closes walker popup whenever the
   # active workspace changes. Needed because walker is a layer surface (not a
   # window) so it persists across workspace switches and ignores normal focus-loss
@@ -14,6 +24,7 @@ let
   '';
 
   # Floats, resizes, centers, and pins the active window. Run again to unpin and retile.
+  # Size is half the monitor dimensions (same as centered terminal behavior).
   popWindow = pkgs.writeShellScript "pop-window" ''
     active=$(hyprctl activewindow -j)
     pinned=$(echo "$active" | ${pkgs.jq}/bin/jq ".pinned")
@@ -24,8 +35,9 @@ let
         "dispatch pin address:$addr;" \
         "dispatch togglefloating address:$addr;"
     elif [[ -n $addr ]]; then
+      read -r width height < <(${halfScreenSize})
       hyprctl dispatch togglefloating address:$addr
-      hyprctl dispatch resizeactive exact 650 450
+      hyprctl dispatch resizeactive exact $width $height
       hyprctl dispatch centerwindow address:$addr
       hyprctl -q --batch \
         "dispatch pin address:$addr;" \
@@ -45,6 +57,7 @@ let
   '';
 
   # Opens alacritty in the focused terminal's working directory (or home if not a terminal)
+  # If workspace is empty, centers the terminal; otherwise tiles normally
   terminalHere = pkgs.writeShellScript "terminal-here" ''
     pid=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid')
     dir="$HOME"
@@ -55,7 +68,25 @@ let
         dir=$(readlink "/proc/$child/cwd")
       fi
     fi
-    exec alacritty --working-directory "$dir"
+
+    # Check if current workspace is empty
+    workspace=$(hyprctl activeworkspace -j | ${pkgs.jq}/bin/jq -r '.id')
+    window_count=$(hyprctl clients -j | ${pkgs.jq}/bin/jq "[.[] | select(.workspace.id == $workspace)] | length")
+
+    if [[ "$window_count" -eq 0 ]]; then
+      # Empty workspace: launch, float, resize to half screen, and center
+      alacritty --working-directory "$dir" &
+      sleep 0.1
+      read -r width height < <(${halfScreenSize})
+      hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact $width $height; dispatch centerwindow"
+    else
+      # Unfloat any floating terminals on this workspace before launching
+      floating=$(hyprctl clients -j | ${pkgs.jq}/bin/jq -r ".[] | select(.workspace.id == $workspace and .floating == true and .class == \"Alacritty\") | .address")
+      for addr in $floating; do
+        hyprctl dispatch togglefloating address:$addr
+      done
+      exec alacritty --working-directory "$dir"
+    fi
   '';
 
   # Voice-to-text using whisper-cpp
@@ -295,8 +326,10 @@ in
 
       input = {
         kb_layout = "us";
-        follow_mouse = 1; # focus follows mouse
-        sensitivity = 0;  # 0 = no pointer speed adjustment
+        follow_mouse = 1;   # focus follows mouse
+        sensitivity = 0;    # 0 = no pointer speed adjustment
+        repeat_rate = 50;   # keys per second when held (default: 25)
+        repeat_delay = 300; # ms before repeat starts (default: 600)
       };
 
       dwindle = {
@@ -386,10 +419,10 @@ in
         "$mod SHIFT, Return, Browser,               exec, google-chrome-stable"
         "$mod, F,            Fullscreen,            fullscreen"
         "$mod SHIFT, F,      File manager,          exec, nautilus --new-window"
-        "$mod, W,            Close window,          killactive"
+        "$mod, Q,            Close window,          killactive"
 
         "$mod, SPACE,        Launch apps,           exec, $menu"
-        "$mod, B,            Toggle waybar,         exec, pkill -SIGUSR1 waybar"
+        "$mod, B,            Toggle waybar,         exec, pgrep waybar && pkill -SIGUSR1 waybar || systemctl --user restart waybar"
         "$mod, J,            Toggle split,          togglesplit"
         "$mod, P,            Pseudo window,         pseudo"
         "$mod, O,            Pop window out,        exec, ${popWindow}"
