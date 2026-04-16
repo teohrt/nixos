@@ -17,6 +17,11 @@ in
     image = placeholderImage;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
 
+    # Override comment color (base03) to be more visible
+    override = {
+      base03 = "7B88A1"; # brighter than Nord's default #4C566A
+    };
+
     fonts.monospace = {
       package = pkgs.nerd-fonts.jetbrains-mono;
       name = "JetBrainsMono Nerd Font Mono";
