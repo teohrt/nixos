@@ -463,4 +463,12 @@ in
 
     '';
   };
+
+  # Auto-restart waybar on crash
+  systemd.user.services.waybar = {
+    Service = {
+      Restart = "on-failure";
+      RestartSec = 1;
+    };
+  };
 }

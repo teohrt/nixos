@@ -391,7 +391,7 @@ in
         "$mod, Q,            Close window,          killactive"
 
         "$mod, SPACE,        Launch apps,           exec, $menu"
-        "$mod, B,            Toggle waybar,         exec, pkill -SIGUSR1 waybar"
+        "$mod, B,            Toggle waybar,         exec, pgrep waybar && pkill -SIGUSR1 waybar || systemctl --user restart waybar"
         "$mod, J,            Toggle split,          togglesplit"
         "$mod, P,            Pseudo window,         pseudo"
         "$mod, O,            Pop window out,        exec, ${popWindow}"
