@@ -388,7 +388,7 @@ in
         "$mod SHIFT, Return, Browser,               exec, google-chrome-stable"
         "$mod, F,            Fullscreen,            fullscreen"
         "$mod SHIFT, F,      File manager,          exec, nautilus --new-window"
-        "$mod, W,            Close window,          killactive"
+        "$mod, Q,            Close window,          killactive"
 
         "$mod, SPACE,        Launch apps,           exec, $menu"
         "$mod, B,            Toggle waybar,         exec, pkill -SIGUSR1 waybar"
