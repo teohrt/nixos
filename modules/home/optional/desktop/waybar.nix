@@ -80,6 +80,37 @@ let
     ' /proc/meminfo
   '';
 
+  # CPU temperature from hwmon sensor. Tries k10temp (AMD) and coretemp (Intel).
+  # Finds hwmon dynamically since the number can change between boots.
+  tempScript = pkgs.writeShellScript "waybar-temp" ''
+    # Try common CPU temp sensors: k10temp (AMD), coretemp (Intel)
+    for sensor in k10temp coretemp; do
+      for hwmon in /sys/class/hwmon/hwmon*/; do
+        if [[ "$(cat "$hwmon/name" 2>/dev/null)" == "$sensor" ]]; then
+          temp=$(cat "$hwmon/temp1_input" 2>/dev/null)
+          break 2
+        fi
+      done
+    done
+
+    if [[ -z "$temp" ]]; then
+      echo '{"text": "", "tooltip": "No temp sensor"}'
+      exit
+    fi
+
+    # Convert millidegrees to Celsius
+    temp_c=$((temp / 1000))
+
+    # Icon/color based on temperature
+    if   [[ $temp_c -ge 80 ]]; then icon="󰸁"; class="critical"
+    elif [[ $temp_c -ge 60 ]]; then icon="󰔏"; class="warm"
+    else                            icon="󰔏"; class="normal"
+    fi
+
+    text="<span size='200%'>$icon</span> <span rise='3500'>''${temp_c}°C</span>"
+    printf '{"text": "%s", "tooltip": "CPU: %d°C", "class": "%s"}\n' "$text" "$temp_c" "$class"
+  '';
+
   # Waybar's built-in network module reads signal strength from NetworkManager,
   # which uses a different dBm-to-percentage formula than iwd. This script reads
   # RSSI directly from iwctl (same source as impala) and applies impala's formula
@@ -201,7 +232,7 @@ in
 
       modules-left = [ "hyprland/workspaces" "custom/recording" ];
       modules-center = [ "battery" "clock" "custom/notification" ];
-      modules-right = [ "custom/wifi" "custom/cpu" "custom/mem" "bluetooth" "pulseaudio" ];
+      modules-right = [ "custom/wifi" "custom/temp" "custom/cpu" "custom/mem" "bluetooth" "pulseaudio" ];
 
       "custom/launcher" = {
         format = "󱄅";
@@ -259,6 +290,12 @@ in
         states = { critical = 15; low = 25; medium = 50; high = 100; };
         interval = 2;
         on-click = "${mkToggle "battery" "alacritty --title battery -e bash -c 'upower -i $(upower -e | grep BAT); read'"}";
+      };
+
+      "custom/temp" = {
+        exec = "${tempScript}";
+        return-type = "json";
+        interval = 5;
       };
 
       "custom/cpu" = {
@@ -357,6 +394,7 @@ in
       #battery:hover,
       #bluetooth:hover,
       #pulseaudio:hover,
+      #custom-temp:hover,
       #custom-cpu:hover,
       #custom-mem:hover,
       #custom-power:hover {
@@ -408,10 +446,17 @@ in
         opacity: 0.4;
       }
 
+      #custom-temp {
+        padding: 2px 7px 2px 12px;
+      }
+
       #custom-cpu,
       #custom-mem {
         padding: 2px 7px;
       }
+
+      #custom-temp.warm     { color: #ffaa44; }
+      #custom-temp.critical { color: #ff4444; }
 
       #pulseaudio {
         padding: 2px 14px;

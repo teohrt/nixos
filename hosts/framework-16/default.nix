@@ -159,6 +159,13 @@
       # accel_profile defaults to "adaptive" (acceleration enabled)
     };
 
+    # Lid switch handling: disable laptop display and backlight when closed.
+    # Hardware-specific: uses amdgpu_bl1 backlight device and 1.2x scale for Framework 16.
+    # Other laptops would need different backlight device (e.g. intel_backlight) and scale.
+    wayland.windowManager.hyprland.settings.bindl = [
+      ", switch:on:Lid Switch, exec, hyprctl keyword monitor 'eDP-1,disable' && brightnessctl -d amdgpu_bl1 set 0"
+      ", switch:off:Lid Switch, exec, hyprctl keyword monitor 'eDP-1,preferred,auto,1.2' && brightnessctl -d amdgpu_bl1 set 100%"
+    ];
 
   };
 
