@@ -37,6 +37,11 @@
     General = {
       # Enables AAC codec negotiation, battery reporting, and other modern features
       Experimental = true;
+      # Disable auto-pairing - require explicit pairing via TUI
+      JustWorksRepairing = "never";
+    };
+    Policy = {
+      AutoEnable = false;
     };
   };
 
