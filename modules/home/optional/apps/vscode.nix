@@ -6,6 +6,7 @@
     package = pkgs.vscode;
     profiles.default.userSettings = {
       "window.backgroundOpacity" = 1;
+      "workbench.sideBar.location" = "right";
     };
   };
 }
