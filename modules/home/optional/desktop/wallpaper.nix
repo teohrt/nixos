@@ -1,3 +1,5 @@
+# Wallpaper management: static images via swww, video loops via mpvpaper.
+# Wallpaper picker accessible via Super+Shift+W.
 { pkgs, lib, pkgs-walker, ... }:
 
 let

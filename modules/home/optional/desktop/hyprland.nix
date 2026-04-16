@@ -1,3 +1,5 @@
+# Hyprland window manager configuration: keybindings, window rules, animations,
+# and helper scripts for screenshots, screen recording, voice input, etc.
 { pkgs, config, ... }:
 let
   # Listens on Hyprland's IPC event socket and closes walker popup whenever the
@@ -69,6 +71,11 @@ let
       read -r width height < <(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width / .scale / 2 | floor) \(.height / .scale / 2 | floor)"')
       hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact $width $height; dispatch centerwindow"
     else
+      # Unfloat any floating terminals on this workspace before launching
+      floating=$(hyprctl clients -j | ${pkgs.jq}/bin/jq -r ".[] | select(.workspace.id == $workspace and .floating == true and .class == \"Alacritty\") | .address")
+      for addr in $floating; do
+        hyprctl dispatch togglefloating address:$addr
+      done
       exec alacritty --working-directory "$dir"
     fi
   '';

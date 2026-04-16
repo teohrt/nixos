@@ -1,7 +1,8 @@
+# Network stack: iwd for WiFi, systemd-networkd for wired, systemd-resolved for DNS.
+# Uses iwd instead of NetworkManager for compatibility with impala WiFi TUI.
 { ... }:
 {
-  # iwd manages wifi (required by the impala TUI — impala talks directly to iwd
-  # over D-Bus and cannot coexist with NetworkManager)
+  # iwd manages wifi (required by impala TUI — talks directly to iwd over D-Bus)
   networking.wireless.iwd.enable = true;
   networking.wireless.iwd.settings = {
     General = {

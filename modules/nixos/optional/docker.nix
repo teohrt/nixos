@@ -1,3 +1,4 @@
+# Docker container runtime with socket activation (starts on first use, not at boot)
 { ... }:
 {
   virtualisation.docker = {
