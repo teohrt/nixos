@@ -8,7 +8,11 @@ hosts/<hostname>/
   hardware.nix
 ```
 
-## 2. Generate hardware config on the target machine
+## 2. Set up secrets
+
+Generate an age key for the new host and add it to the secrets file so it can decrypt on first deploy. Follow the [secrets management guide](secrets.md#adding-a-new-host).
+
+## 3. Generate hardware config on the target machine
 
 ```bash
 nixos-generate-config --show-hardware-config > hardware.nix
@@ -16,7 +20,7 @@ nixos-generate-config --show-hardware-config > hardware.nix
 
 Paste the output into `hosts/<hostname>/hardware.nix`.
 
-## 3. Check for hardware-specific modules
+## 4. Check for hardware-specific modules
 
 The flake includes [nixos-hardware](https://github.com/NixOS/nixos-hardware) for vendor-specific fixes. Check if your hardware has a module:
 
@@ -31,7 +35,7 @@ Common examples:
 - `lenovo-thinkpad-t480`
 - `dell-xps-15-9500`
 
-## 4. Write `hosts/<hostname>/default.nix`
+## 5. Write `hosts/<hostname>/default.nix`
 
 Use `hosts/framework-16/default.nix` as a reference:
 
@@ -76,7 +80,7 @@ Use `hosts/framework-16/default.nix` as a reference:
 }
 ```
 
-## 5. Register the host in `flake.nix`
+## 6. Register the host in `flake.nix`
 
 Add an entry to `nixosConfigurations`:
 
@@ -96,7 +100,7 @@ my-new-machine = nixpkgs.lib.nixosSystem {
 };
 ```
 
-## 6. Deploy
+## 7. Deploy
 
 On the target machine:
 
@@ -114,6 +118,8 @@ sudo nixos-rebuild switch --flake .#<hostname>
 | `networking.nix` | iwd (WiFi), systemd-networkd, systemd-resolved |
 | `docker.nix` | Docker (socket-activated) |
 | `system-apps.nix` | System-wide packages (vim, git, etc.) |
+| `sops.nix` | Secrets management with age encryption ([setup guide](secrets.md)) |
+| `steam.nix` | Steam, GameMode, 32-bit graphics |
 
 ### Home modules (`modules/home/optional/`)
 
@@ -131,6 +137,7 @@ sudo nixos-rebuild switch --flake .#<hostname>
 | `apps/obsidian.nix` | Note-taking |
 | `apps/spicetify.nix` | Spotify theming |
 | `user-apps.nix` | User-profile packages |
+| `ssh.nix` | SSH config with GitHub keys (requires [sops](secrets.md)) |
 
 ## Hardware-specific configuration
 
