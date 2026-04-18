@@ -121,6 +121,7 @@
     ../../modules/nixos/optional/docker.nix
     ../../modules/nixos/optional/system-apps.nix
     ../../modules/nixos/optional/sops.nix
+    ../../modules/nixos/optional/steam.nix
   ];
 
   networking.hostName = "framework-16";
