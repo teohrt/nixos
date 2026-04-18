@@ -516,8 +516,14 @@ in
     '';
   };
 
-  # Auto-restart waybar on crash
+  # Auto-restart waybar on crash. Increased restart tolerance because waybar
+  # may start before Hyprland is fully ready and fail a few times at login.
+  # Default is 5 restarts in 10 seconds, which is too aggressive for login timing.
   systemd.user.services.waybar = {
+    Unit = {
+      StartLimitBurst = 10;        # allow 10 restarts...
+      StartLimitIntervalSec = 30;  # ...within 30 seconds before giving up
+    };
     Service = {
       Restart = "on-failure";
       RestartSec = 1;
