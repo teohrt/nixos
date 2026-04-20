@@ -61,8 +61,9 @@
       "ctrl+8" = "goto_tab 8";
       "ctrl+9" = "goto_tab 9";
 
-      # Move window to new tab
+      # Tab management
       "ctrl+shift+t" = "detach_window new-tab";
+      "ctrl+t" = "set_tab_title";
     };
 
     # Applied AFTER Stylix's base16 include, so this actually overrides the background

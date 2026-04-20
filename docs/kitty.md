@@ -36,6 +36,7 @@ Keybindings mirror Hyprland, using `Ctrl` instead of `Super`.
 | `Ctrl+Shift+Enter` | New tab (inherits cwd) |
 | `Ctrl+1-9` | Switch to tab 1-9 |
 | `Ctrl+Shift+T` | Detach window to new tab |
+| `Ctrl+T` | Rename tab |
 
 ## Clipboard
 
