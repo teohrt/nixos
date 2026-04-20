@@ -1,4 +1,5 @@
 # Terminal emulator. Styled by Stylix, but with fixed dark background.
+# NOTE: Not currently imported — keeping config in case we switch back from Kitty.
 { lib, ... }: {
   programs.alacritty = {
     enable = true;
