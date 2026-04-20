@@ -7,8 +7,8 @@
       window_padding_width = 12;
 
       # Animated cursor trail (the feature you want)
-      cursor_trail = 1;               # trail segments
-      cursor_trail_decay = "0.1 0.3"; # smooth fade from previous position
+      cursor_trail = 3;
+      cursor_trail_decay = "0.1 0.4";
       cursor_trail_start_threshold = 0; # no threshold, always trail from previous position
 
       # Cursor appearance
