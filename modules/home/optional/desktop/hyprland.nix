@@ -62,10 +62,24 @@ let
     pid=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid')
     dir="$HOME"
     if [[ -n "$pid" && "$pid" != "null" ]]; then
-      # Find the shell child process of the terminal
-      child=$(${pkgs.procps}/bin/pgrep -P "$pid" | head -1)
-      if [[ -n "$child" ]] && [[ -d "/proc/$child/cwd" ]]; then
-        dir=$(readlink "/proc/$child/cwd")
+      # Find shell process among descendants (zsh, bash, fish, nu)
+      shell_pid=""
+      for child in $(${pkgs.procps}/bin/pgrep -P "$pid"); do
+        # Check direct children
+        if ${pkgs.procps}/bin/ps -p "$child" -o comm= | ${pkgs.gnugrep}/bin/grep -qE '^(zsh|bash|fish|nu)$'; then
+          shell_pid=$child
+          break
+        fi
+        # Check grandchildren
+        for grandchild in $(${pkgs.procps}/bin/pgrep -P "$child"); do
+          if ${pkgs.procps}/bin/ps -p "$grandchild" -o comm= | ${pkgs.gnugrep}/bin/grep -qE '^(zsh|bash|fish|nu)$'; then
+            shell_pid=$grandchild
+            break 2
+          fi
+        done
+      done
+      if [[ -n "$shell_pid" ]] && [[ -d "/proc/$shell_pid/cwd" ]]; then
+        dir=$(readlink "/proc/$shell_pid/cwd")
       fi
     fi
 
