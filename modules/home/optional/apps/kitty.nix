@@ -3,9 +3,6 @@
   programs.kitty = {
     enable = true;
     settings = {
-      # Fixed dark bg — overrides Stylix so light themes stay readable
-      background = lib.mkForce "#0d0f14";
-
       # Window padding (kitty uses single value for all sides)
       window_padding_width = 12;
 
@@ -28,5 +25,10 @@
       "super+c" = "copy_to_clipboard";
       "super+v" = "paste_from_clipboard";
     };
+
+    # Applied AFTER Stylix's base16 include, so this actually overrides the background
+    extraConfig = ''
+      background #0d0f14
+    '';
   };
 }
