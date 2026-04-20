@@ -8,6 +8,8 @@
     profiles.default.userSettings = {
       "window.backgroundOpacity" = 1; # opaque background (no transparency)
       "workbench.sideBar.location" = "right"; # file explorer on right side
+      "update.mode" = "none"; # updates managed by Nix
+      "window.menuBarVisibility" = "hidden";
     };
   };
 }
