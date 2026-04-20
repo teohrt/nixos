@@ -1,0 +1,32 @@
+# Terminal emulator with animated cursor trail. Styled by Stylix, but with fixed dark background.
+{ lib, ... }: {
+  programs.kitty = {
+    enable = true;
+    settings = {
+      # Fixed dark bg — overrides Stylix so light themes stay readable
+      background = lib.mkForce "#0d0f14";
+
+      # Window padding (kitty uses single value for all sides)
+      window_padding_width = 12;
+
+      # Animated cursor trail (the feature you want)
+      cursor_trail = 1;               # trail segments
+      cursor_trail_decay = "0.1 0.3"; # smooth fade from previous position
+      cursor_trail_start_threshold = 0; # no threshold, always trail from previous position
+
+      # Cursor appearance
+      cursor_shape = "beam";
+      cursor_beam_thickness = "1.5";
+      cursor_blink_interval = "0.5";
+
+      # Disable confirm on close (like alacritty behavior)
+      confirm_os_window_close = 0;
+    };
+
+    # macOS-style copy/paste keybindings
+    keybindings = {
+      "super+c" = "copy_to_clipboard";
+      "super+v" = "paste_from_clipboard";
+    };
+  };
+}
