@@ -56,7 +56,7 @@ let
     [[ "$action" == "edit" ]] && ${pkgs.satty}/bin/satty --filename "$file"
   '';
 
-  # Opens alacritty in the focused terminal's working directory (or home if not a terminal)
+  # Opens kitty in the focused terminal's working directory (or home if not a terminal)
   # If workspace is empty, centers the terminal; otherwise tiles normally
   terminalHere = pkgs.writeShellScript "terminal-here" ''
     pid=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid')
@@ -75,17 +75,17 @@ let
 
     if [[ "$window_count" -eq 0 ]]; then
       # Empty workspace: launch, float, resize to half screen, and center
-      alacritty --working-directory "$dir" &
+      kitty --directory "$dir" &
       sleep 0.1
       read -r width height < <(${halfScreenSize})
       hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact $width $height; dispatch centerwindow"
     else
       # Unfloat any floating terminals on this workspace before launching
-      floating=$(hyprctl clients -j | ${pkgs.jq}/bin/jq -r ".[] | select(.workspace.id == $workspace and .floating == true and .class == \"Alacritty\") | .address")
+      floating=$(hyprctl clients -j | ${pkgs.jq}/bin/jq -r ".[] | select(.workspace.id == $workspace and .floating == true and .class == \"kitty\") | .address")
       for addr in $floating; do
         hyprctl dispatch togglefloating address:$addr
       done
-      exec alacritty --working-directory "$dir"
+      exec kitty --directory "$dir"
     fi
   '';
 
@@ -264,7 +264,7 @@ in
       # use preferred resolution, auto-position, 1.2x scaling
       monitor = ",preferred,auto,1.2";
 
-      "$terminal" = "alacritty";
+      "$terminal" = "kitty";
       "$menu" = "walker -N -H";
       "$mod" = "SUPER";
 
@@ -429,7 +429,7 @@ in
         "$mod, K,            Show keybindings,      exec, ${keybindingsMenu}"
         "$mod, T,            Toggle menu,           exec, ${toggleMenu}"
         "$mod, slash,        Voice input,           exec, ${voiceInput}"
-        "$mod, M,            Monitor settings,      exec, alacritty --title hyprmon -e hyprmon"
+        "$mod, M,            Monitor settings,      exec, kitty --title hyprmon -e hyprmon"
 
         # resize active window
         "$mod, minus,        Expand window left,  resizeactive, -100 0"

@@ -4,7 +4,7 @@
     git
     neovim
     eza # A modern replacement for 'ls'
-    alacritty
+    kitty
     vscode
     gnumake
     stow

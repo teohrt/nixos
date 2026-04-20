@@ -289,7 +289,7 @@ in
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 15; low = 25; medium = 50; high = 100; };
         interval = 2;
-        on-click = "${mkToggle "battery" "alacritty --title battery -e bash -c 'upower -i $(upower -e | grep BAT); read'"}";
+        on-click = "${mkToggle "battery" "kitty --title battery -e bash -c 'upower -i $(upower -e | grep BAT); read'"}";
       };
 
       "custom/temp" = {
@@ -314,7 +314,7 @@ in
         exec = "${wifiScript}";
         return-type = "json";
         interval = 2;
-        on-click = "${mkToggle "wifi" "rfkill unblock wifi && alacritty --title wifi -e impala"}";
+        on-click = "${mkToggle "wifi" "rfkill unblock wifi && kitty --title wifi -e impala"}";
         on-click-right = "rfkill toggle wifi";
       };
 
@@ -327,7 +327,7 @@ in
         tooltip-format-connected = "{device_enumerate}";
         tooltip-format-enumerate-connected = "{device_alias} ({device_address})";
         tooltip-format-enumerate-connected-battery = "{device_alias} ({device_address}) {device_battery_percentage}%";
-        on-click = "${mkToggle "bluetooth" "rfkill unblock bluetooth && alacritty --title bluetooth -e bluetui"}";
+        on-click = "${mkToggle "bluetooth" "rfkill unblock bluetooth && kitty --title bluetooth -e bluetui"}";
         on-click-right = "rfkill toggle bluetooth";
       };
 
@@ -335,7 +335,7 @@ in
         format = "<span size=\"xx-large\">󰕾</span>";
         format-muted = "<span size=\"xx-large\">󰖁</span>";
         tooltip-format = "{volume}%";
-        on-click = "${mkToggle "audio" "alacritty --title audio -e wiremix"}";
+        on-click = "${mkToggle "audio" "kitty --title audio -e wiremix"}";
         on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
       };
 
