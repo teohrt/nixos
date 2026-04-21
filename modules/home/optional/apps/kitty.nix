@@ -21,7 +21,7 @@
 
       # Tabs and layouts
       enabled_layouts = "splits,stack";
-      tab_bar_edge = "top";
+      tab_bar_edge = "bottom";
       tab_bar_style = "powerline";
       tab_title_template = "{index} - {title}";
     };
