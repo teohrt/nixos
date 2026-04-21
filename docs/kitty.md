@@ -38,6 +38,15 @@ Keybindings mirror Hyprland, using `Ctrl` instead of `Super`.
 | `Ctrl+Shift+T` | Detach window to new tab |
 | `Ctrl+T` | Rename tab |
 
+## Sessions
+
+| Key | Action |
+|-----|--------|
+| `Ctrl+S` | Save session (prompts for name) |
+| `Ctrl+Shift+S` | Load session (picker) |
+
+Sessions are saved to `~/.config/kitty/sessions/`.
+
 ## Clipboard
 
 | Key | Action |

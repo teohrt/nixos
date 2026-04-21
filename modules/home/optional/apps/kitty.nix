@@ -1,5 +1,52 @@
 # Terminal emulator with animated cursor trail. Styled by Stylix, but with fixed dark background.
-{ lib, ... }: {
+{ lib, pkgs, ... }:
+
+let
+  sessionsDir = "$HOME/.config/kitty/sessions";
+
+  # Save current kitty session - prompts for name via walker
+  saveSession = pkgs.writeShellScript "kitty-save-session" ''
+    mkdir -p ${sessionsDir}
+
+    # Prompt for session name using walker
+    name=$(${pkgs.walker}/bin/walker --dmenu --inputonly --placeholder "Session name...")
+    [[ -z "$name" ]] && exit 0
+
+    # Sanitize name
+    name=$(echo "$name" | tr ' ' '-' | tr -cd '[:alnum:]-_')
+
+    # Get current state and convert to session format
+    ${pkgs.kitty}/bin/kitty @ --to "$KITTY_LISTEN_ON" ls | ${pkgs.jq}/bin/jq -r '
+      .[] | .tabs[] |
+      "new_tab \(.title // "tab")\nlayout \(.layout)\n" +
+      (.windows | to_entries | map(
+        "cd \(.value.cwd)\nlaunch " + (if .key == 0 then "zsh" else "--location=split zsh" end)
+      ) | join("\n"))
+    ' > "${sessionsDir}/$name.conf"
+
+    ${pkgs.libnotify}/bin/notify-send "Kitty" "Session '$name' saved"
+  '';
+
+  # Load a saved session via walker selection
+  loadSession = pkgs.writeShellScript "kitty-load-session" ''
+    shopt -s nullglob
+    sessions=(${sessionsDir}/*.conf)
+
+    if [[ ''${#sessions[@]} -eq 0 ]]; then
+      ${pkgs.libnotify}/bin/notify-send "Kitty" "No saved sessions"
+      exit 0
+    fi
+
+    # List session names for walker
+    names=$(for f in "''${sessions[@]}"; do basename "$f" .conf; done)
+
+    selected=$(echo "$names" | ${pkgs.walker}/bin/walker --dmenu --placeholder "Load session...")
+    [[ -z "$selected" ]] && exit 0
+
+    ${pkgs.kitty}/bin/kitty --session "${sessionsDir}/$selected.conf" &
+  '';
+in
+{
   programs.kitty = {
     enable = true;
     settings = {
@@ -18,6 +65,10 @@
 
       # Disable confirm on close (like alacritty behavior)
       confirm_os_window_close = 0;
+
+      # Enable remote control for session management
+      allow_remote_control = "yes";
+      listen_on = "unix:/tmp/kitty-socket";
 
       # Tabs and layouts
       enabled_layouts = "splits,stack";
@@ -65,6 +116,10 @@
       # Tab management
       "ctrl+shift+t" = "detach_window new-tab";
       "ctrl+t" = "set_tab_title";
+
+      # Session management
+      "ctrl+s" = "launch --type=overlay ${saveSession}";
+      "ctrl+shift+s" = "launch --type=background --copy-env ${loadSession}";
     };
 
     # Applied AFTER Stylix's base16 include, so this actually overrides the background
