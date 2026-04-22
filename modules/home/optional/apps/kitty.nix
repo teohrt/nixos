@@ -83,7 +83,7 @@ in
       enabled_layouts = "splits,stack";
       tab_bar_edge = "bottom";
       tab_bar_style = "fade";
-      tab_fade = "0.25 0.5 0.75 1";  # gradient steps from edge to center
+      tab_fade = "0.2 0.4 0.6 0.8 1";  # smaller fade area
       tab_title_template = "{index} - {title}";
           };
 
