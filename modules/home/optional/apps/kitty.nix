@@ -9,7 +9,7 @@ let
     mkdir -p ${sessionsDir}
 
     # Prompt for session name using walker
-    name=$(${pkgs.walker}/bin/walker --dmenu --inputonly --placeholder "Session name...")
+    name=$(echo "" | ${pkgs.walker}/bin/walker --dmenu --placeholder "Session name...")
     [[ -z "$name" ]] && exit 0
 
     # Sanitize name
@@ -25,6 +25,12 @@ let
     ' > "${sessionsDir}/$name.conf"
 
     ${pkgs.libnotify}/bin/notify-send "Kitty" "Session '$name' saved"
+  '';
+
+  # Open VS Code in the sessions directory
+  openVSCode = pkgs.writeShellScript "kitty-open-vscode" ''
+    mkdir -p ${sessionsDir}
+    code ${sessionsDir} &
   '';
 
   # Load a saved session via walker selection
@@ -118,8 +124,9 @@ in
       "ctrl+t" = "set_tab_title";
 
       # Session management
-      "ctrl+s" = "launch --type=overlay ${saveSession}";
+      "ctrl+s" = "launch --type=overlay --copy-env ${saveSession}";
       "ctrl+shift+s" = "launch --type=background --copy-env ${loadSession}";
+      "ctrl+e" = "launch --type=background --copy-env ${openVSCode}";
     };
 
     # Applied AFTER Stylix's base16 include, so this actually overrides the background
