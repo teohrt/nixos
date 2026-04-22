@@ -82,9 +82,10 @@ in
       # Tabs and layouts
       enabled_layouts = "splits,stack";
       tab_bar_edge = "bottom";
-      tab_bar_style = "powerline";
+      tab_bar_style = "fade";
+      tab_fade = "0.25 0.5 0.75 1";  # gradient steps from edge to center
       tab_title_template = "{index} - {title}";
-    };
+          };
 
     # Keybindings mirroring Hyprland (Ctrl instead of Super)
     keybindings = {
@@ -135,6 +136,8 @@ in
     # Applied AFTER Stylix's base16 include, so this actually overrides the background
     extraConfig = ''
       background #0d0f14
+      active_tab_background #4a6fa5
+      active_tab_foreground #ffffff
     '';
   };
 }
