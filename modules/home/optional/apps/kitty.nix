@@ -33,7 +33,7 @@ let
     code ${sessionsDir} &
   '';
 
-  # Load a saved session via walker selection
+  # Load a saved session via walker selection (replaces current session)
   loadSession = pkgs.writeShellScript "kitty-load-session" ''
     shopt -s nullglob
     sessions=(${sessionsDir}/*.conf)
@@ -49,7 +49,10 @@ let
     selected=$(echo "$names" | ${pkgs.walker}/bin/walker --dmenu --placeholder "Load session...")
     [[ -z "$selected" ]] && exit 0
 
+    # Launch new kitty with session, then close current instance
     ${pkgs.kitty}/bin/kitty --session "${sessionsDir}/$selected.conf" &
+    sleep 0.5
+    ${pkgs.kitty}/bin/kitty @ --to "$KITTY_LISTEN_ON" close-window --match all
   '';
 in
 {
