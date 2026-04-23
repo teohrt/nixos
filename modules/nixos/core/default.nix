@@ -37,6 +37,7 @@
   programs.zsh = {
     enable = true;
     autosuggestions.enable = true;
+    autosuggestions.highlightStyle = "fg=#888888";
   };
 
   nixpkgs.config.allowUnfree = true;
