@@ -2,21 +2,6 @@
 # Screensaver uses terminaltexteffects (tte) for animated text effects.
 { pkgs, pkgs-unstable, ... }:
 let
-  # Alacritty config used exclusively for the screensaver window — black bg, hidden cursor.
-  alacrittyScreensaverConfig = pkgs.writeText "alacritty-screensaver.toml" ''
-    [colors.primary]
-    background = "0x000000"
-
-    [colors.cursor]
-    cursor = "0x000000"
-
-    [font]
-    size = 18.0
-
-    [window]
-    opacity = 1.0
-  '';
-
   # Runs inside the screensaver terminal — loops tte with random effects.
   # Exits on any keypress or when the window loses focus.
   screensaverCmd = pkgs.writeShellScriptBin "screensaver-cmd" ''
@@ -84,10 +69,7 @@ let
 
     for m in $(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[] | .name'); do
       hyprctl dispatch focusmonitor "$m"
-      hyprctl dispatch exec -- alacritty \
-        --class=screensaver \
-        --config-file ${alacrittyScreensaverConfig} \
-        -e screensaver-cmd
+      hyprctl dispatch exec "kitty --class=screensaver -o background=#000000 -o cursor=#000000 -o font_size=18 -e screensaver-cmd"
     done
 
     hyprctl dispatch focusmonitor "$focused"
