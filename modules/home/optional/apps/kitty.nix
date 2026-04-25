@@ -72,7 +72,7 @@ in
       cursor_beam_thickness = "1.5";
       cursor_blink_interval = "0.5";
 
-      # Disable confirm on close (like alacritty behavior)
+      # Disable confirm on close
       confirm_os_window_close = 0;
 
       # Enable remote control for session management
