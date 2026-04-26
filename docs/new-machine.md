@@ -65,7 +65,7 @@ Use `hosts/framework-16/default.nix` as a reference:
       ../../modules/home/optional/desktop/wallpaper.nix
       ../../modules/home/optional/desktop/hyprlock.nix
       ../../modules/home/optional/desktop/hypridle.nix
-      ../../modules/home/optional/apps/alacritty.nix
+      ../../modules/home/optional/apps/kitty.nix
       ../../modules/home/optional/apps/firefox.nix
       ../../modules/home/optional/apps/vscode.nix
       ../../modules/home/optional/apps/obsidian.nix
@@ -131,7 +131,7 @@ sudo nixos-rebuild switch --flake .#<hostname>
 | `desktop/wallpaper.nix` | swww wallpaper daemon, wallpaper picker |
 | `desktop/hyprlock.nix` | Lock screen |
 | `desktop/hypridle.nix` | Idle management (screensaver, lock, suspend timers) |
-| `apps/alacritty.nix` | Terminal emulator |
+| `apps/kitty.nix` | Terminal emulator |
 | `apps/firefox.nix` | Browser |
 | `apps/vscode.nix` | Code editor |
 | `apps/obsidian.nix` | Note-taking |
