@@ -46,14 +46,37 @@ let
   '';
 
   # Takes a screenshot, copies to clipboard, and shows notification. Click notification to edit in Satty.
+  # Select region first, then hide cursor, capture, and restore cursor.
   screenshot = pkgs.writeShellScript "screenshot" ''
     file=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
     mkdir -p ~/Pictures/Screenshots
-    ${pkgs.grimblast}/bin/grimblast copysave area "$file" || exit 1
-    action=$(${pkgs.libnotify}/bin/notify-send -a "Screenshot" -i "$file" \
-      "Screenshot saved" "$file" \
-      --action="edit=Edit")
-    [[ "$action" == "edit" ]] && ${pkgs.satty}/bin/satty --filename "$file"
+
+    # Select region first (cursor visible)
+    region=$(${pkgs.slurp}/bin/slurp) || exit 1
+
+    # Hide cursor by moving it off-screen, capture, then restore
+    cursorpos=$(hyprctl cursorpos)
+    hyprctl dispatch movecursor 99999 99999
+    ${pkgs.grim}/bin/grim -g "$region" "$file"
+    result=$?
+    hyprctl dispatch movecursor ''${cursorpos// / }
+
+    [[ $result -ne 0 ]] && exit 1
+
+    # Copy to clipboard
+    ${pkgs.wl-clipboard}/bin/wl-copy < "$file"
+
+    # Notification in background so script doesn't block
+    (
+      action=$(${pkgs.libnotify}/bin/notify-send -a "Screenshot" -i "$file" \
+        "Screenshot saved" "$file" \
+        --action="default=Open" \
+        --action="edit=Edit")
+      case "$action" in
+        default) xdg-open "$file" ;;
+        edit) ${pkgs.satty}/bin/satty --filename "$file" ;;
+      esac
+    ) &
   '';
 
   # Opens kitty in the focused terminal's working directory (or home if not a terminal)
@@ -150,15 +173,43 @@ let
   toggleMenu = pkgs.writeShellScript "toggle-menu" ''
     take_screenshot() {
       file=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
+
       case "$1" in
-        region) ${pkgs.grimblast}/bin/grimblast copysave area "$file" ;;
-        window) ${pkgs.grimblast}/bin/grimblast copysave active "$file" ;;
-        screen) sleep 1 && ${pkgs.grimblast}/bin/grimblast copysave screen "$file" ;;
-      esac || return 1
-      action=$(${pkgs.libnotify}/bin/notify-send -u low -a "Screenshot" -i "$file" \
-        "Screenshot saved" "Copied to clipboard. $file" \
-        --action="edit=Edit")
-      [[ "$action" == "edit" ]] && ${pkgs.satty}/bin/satty --filename "$file"
+        region)
+          # Select region first (cursor visible), then hide cursor and capture
+          region=$(${pkgs.slurp}/bin/slurp) || return 1
+          cursorpos=$(hyprctl cursorpos)
+          hyprctl dispatch movecursor 99999 99999
+          ${pkgs.grim}/bin/grim -g "$region" "$file"
+          result=$?
+          hyprctl dispatch movecursor ''${cursorpos// / }
+          ${pkgs.wl-clipboard}/bin/wl-copy < "$file"
+          ;;
+        window|screen)
+          # Hide cursor, capture, restore
+          cursorpos=$(hyprctl cursorpos)
+          hyprctl dispatch movecursor 99999 99999
+          if [[ "$1" == "window" ]]; then
+            ${pkgs.grimblast}/bin/grimblast copysave active "$file"
+          else
+            ${pkgs.grimblast}/bin/grimblast copysave screen "$file"
+          fi
+          result=$?
+          hyprctl dispatch movecursor ''${cursorpos// / }
+          ;;
+      esac
+
+      [[ $result -ne 0 ]] && return 1
+      (
+        action=$(${pkgs.libnotify}/bin/notify-send -u low -a "Screenshot" -i "$file" \
+          "Screenshot saved" "Copied to clipboard. $file" \
+          --action="default=Open" \
+          --action="edit=Edit")
+        case "$action" in
+          default) xdg-open "$file" ;;
+          edit) ${pkgs.satty}/bin/satty --filename "$file" ;;
+        esac
+      ) &
     }
 
     start_recording() {
@@ -358,6 +409,7 @@ in
       };
 
       layerrule = [
+        "noanim, selection"                            # no animation for slurp (screenshot selection)
         "blur, waybar"
         "ignorezero, waybar"
         "blur, walker"
