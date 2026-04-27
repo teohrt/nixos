@@ -38,6 +38,7 @@
     enable = true;
     autosuggestions.enable = true;
     autosuggestions.highlightStyle = "fg=#888888";
+    syntaxHighlighting.enable = true;
   };
 
   nixpkgs.config.allowUnfree = true;
