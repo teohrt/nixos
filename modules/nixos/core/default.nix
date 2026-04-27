@@ -38,7 +38,13 @@
     enable = true;
     autosuggestions.enable = true;
     autosuggestions.highlightStyle = "fg=#888888";
-    syntaxHighlighting.enable = true;
+    syntaxHighlighting = {
+      enable = true;
+      styles = {
+        "path" = "underline";
+        "path_prefix" = "underline";
+      };
+    };
   };
 
   nixpkgs.config.allowUnfree = true;
