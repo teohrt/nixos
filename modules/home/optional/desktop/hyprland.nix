@@ -231,6 +231,12 @@ let
       ${pkgs.libnotify}/bin/notify-send -u low "Recording started"
     }
 
+    set_brightness() {
+      ${pkgs.brightnessctl}/bin/brightnessctl set "$1" -q
+      current=$(${pkgs.brightnessctl}/bin/brightnessctl -m | cut -d, -f4)
+      ${pkgs.libnotify}/bin/notify-send -u low -t 1000 "Brightness" "$current"
+    }
+
     # Toggle webcam preview window for screen recordings with face cam
     # Uses low-latency mpv settings to minimize delay
     # When webcam is on: turns it off. When off: shows camera selection menu.
@@ -260,7 +266,7 @@ let
       fi
     }
 
-    choice=$(printf "Take Screenshot\nRecord Screen\nWebcam Preview" | walker --dmenu -p "Toggle")
+    choice=$(printf "Take Screenshot\nRecord Screen\nWebcam Preview\nAdjust Brightness" | walker --dmenu -p "Toggle")
     case "$choice" in
       "Take Screenshot")
         sub=$(printf "Region\nWindow\nScreen" | walker --dmenu -p "Screenshot")
@@ -279,6 +285,17 @@ let
         ;;
       "Webcam Preview")
         toggle_webcam
+        ;;
+      "Adjust Brightness")
+        current=$(${pkgs.brightnessctl}/bin/brightnessctl -m | cut -d, -f4)
+        sub=$(printf "10%%\n25%%\n50%%\n75%%\n100%%" | walker --dmenu -p "Brightness ($current)")
+        case "$sub" in
+          10%) set_brightness 10% ;;
+          25%) set_brightness 25% ;;
+          50%) set_brightness 50% ;;
+          75%) set_brightness 75% ;;
+          100%) set_brightness 100% ;;
+        esac
         ;;
     esac
   '';
