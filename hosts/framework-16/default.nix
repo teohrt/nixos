@@ -1,34 +1,4 @@
 { pkgs, lib, ... }:
-let
-  # Auto-mirror: when external monitor connects, make laptop mirror it
-  autoMirror = pkgs.writeShellScript "auto-mirror" ''
-    handle_monitor() {
-      # Get first non-laptop monitor
-      external=$(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[] | select(.name != "eDP-1") | .name' | head -1)
-
-      if [[ -n "$external" ]]; then
-        # Make laptop mirror the external monitor
-        hyprctl keyword monitor "eDP-1,preferred,auto,1,mirror,$external"
-      else
-        # No external monitor, restore laptop to normal
-        hyprctl keyword monitor "eDP-1,preferred,auto,1.25"
-      fi
-    }
-
-    # Handle current state on startup
-    handle_monitor
-
-    # Listen for monitor events
-    ${pkgs.socat}/bin/socat -U - "UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" | while read -r line; do
-      case "$line" in
-        monitoraddedv2*|monitorremoved*)
-          sleep 0.5  # let Hyprland settle
-          handle_monitor
-          ;;
-      esac
-    done
-  '';
-in
 {
   # Zoom runs on XWayland — wrap it to self-scale so clicks align with force_zero_scaling
   nixpkgs.overlays = [
@@ -181,15 +151,11 @@ in
       ../../modules/home/optional/ssh.nix
     ];
 
-    # Framework 16 specific: auto-mirror laptop to external monitor when connected
-    # External runs at native resolution, laptop mirrors it
+    # Framework 16 specific: 1.25x scale for internal display
     wayland.windowManager.hyprland.settings.monitor = lib.mkForce [
       "eDP-1,preferred,auto,1.25"
       ",preferred,auto,1"  # external monitors use native resolution
     ];
-
-    # Run auto-mirror daemon on startup
-    wayland.windowManager.hyprland.settings.exec-once = [ "${autoMirror}" ];
 
     # Framework 16 specific: reduced mouse sensitivity
     wayland.windowManager.hyprland.settings.input = {

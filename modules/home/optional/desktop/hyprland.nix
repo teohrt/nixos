@@ -23,6 +23,38 @@ let
     done
   '';
 
+  # Auto-mirror: when external monitor connects, make laptop (eDP-*) mirror it
+  # External runs at native resolution, laptop shows scaled copy
+  autoMirror = pkgs.writeShellScript "auto-mirror" ''
+    handle_monitor() {
+      # Find internal display (eDP-*)
+      internal=$(hyprctl monitors all -j | ${pkgs.jq}/bin/jq -r '.[] | select(.name | startswith("eDP")) | .name' | head -1)
+      [[ -z "$internal" ]] && return  # not a laptop
+
+      # Find first external monitor
+      external=$(hyprctl monitors all -j | ${pkgs.jq}/bin/jq -r '.[] | select(.name | startswith("eDP") | not) | .name' | head -1)
+
+      if [[ -n "$external" ]]; then
+        # Make laptop mirror the external monitor
+        hyprctl keyword monitor "$internal,preferred,auto,1,mirror,$external"
+      fi
+    }
+
+    # Handle current state on startup
+    sleep 1  # let Hyprland initialize
+    handle_monitor
+
+    # Listen for monitor events
+    ${pkgs.socat}/bin/socat -U - "UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" | while read -r line; do
+      case "$line" in
+        monitoraddedv2*|monitorremoved*)
+          sleep 0.5  # let Hyprland settle
+          handle_monitor
+          ;;
+      esac
+    done
+  '';
+
   # Floats, resizes, centers, and pins the active window. Run again to unpin and retile.
   # Size is half the monitor dimensions (same as centered terminal behavior).
   popWindow = pkgs.writeShellScript "pop-window" ''
@@ -355,6 +387,7 @@ in
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" # auth agent for privilege escalation prompts
         "${closeWalkerOnWorkspaceSwitch}"                  # close walker on workspace switch (layer surfaces ignore normal focus rules)
         "wl-clip-persist --clipboard regular"              # keep clipboard alive after source process exits
+        "${autoMirror}"                                    # auto-mirror laptop to external monitor when connected
       ];
 
       env = [
