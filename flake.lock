@@ -193,6 +193,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-kitty": {
+      "locked": {
+        "lastModified": 1774081717,
+        "narHash": "sha256-W0k0TXKPxAFsPGDCZ9ntSgwK+GvauBbj/XBaWNj0Zso=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "54b9582d13af461680f6d6fdae4ee138dfd60d23",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "54b9582d13af461680f6d6fdae4ee138dfd60d23",
+        "type": "github"
+      }
+    },
     "nixpkgs-unstable": {
       "locked": {
         "lastModified": 1775423009,
@@ -271,6 +287,7 @@
         "home-manager": "home-manager",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-kitty": "nixpkgs-kitty",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nixpkgs-walker": "nixpkgs-walker",
         "sops-nix": "sops-nix",

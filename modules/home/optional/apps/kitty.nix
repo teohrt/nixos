@@ -1,5 +1,5 @@
-# Terminal emulator with animated cursor trail. Styled by Stylix, but with fixed dark background.
-{ lib, pkgs, ... }:
+# Terminal emulator with cursor trail and smooth scrolling. Styled by Stylix, but with fixed dark background.
+{ lib, pkgs, pkgs-kitty, ... }:
 
 let
   sessionsDir = "$HOME/.config/kitty/sessions";
@@ -58,6 +58,7 @@ in
 {
   programs.kitty = {
     enable = true;
+    package = pkgs-kitty.kitty;
     settings = {
       # Window padding (kitty uses single value for all sides)
       window_padding_width = 12;
@@ -71,6 +72,10 @@ in
       cursor_shape = "beam";
       cursor_beam_thickness = "1.5";
       cursor_blink_interval = "0.5";
+
+      # Smooth scrolling (kitty 0.46+)
+      pixel_scroll = true;
+      momentum_scroll = "0.8";
 
       # Disable confirm on close
       confirm_os_window_close = 0;

@@ -5,6 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-walker.url = "github:nixos/nixpkgs/46db2e09e1d3f113a13c0d7b81e2f221c63b8ce9";
+    nixpkgs-kitty.url = "github:nixos/nixpkgs/54b9582d13af461680f6d6fdae4ee138dfd60d23";  # kitty 0.46.2
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,12 +22,13 @@
     sops-nix.url = "github:Mic92/sops-nix";
   };
 
-  outputs = inputs@{ nixpkgs, nixpkgs-unstable, nixpkgs-walker, home-manager, stylix, spicetify-nix, nixos-hardware, sops-nix, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-unstable, nixpkgs-walker, nixpkgs-kitty, home-manager, stylix, spicetify-nix, nixos-hardware, sops-nix, ... }:
   let
     system = "x86_64-linux";
     pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
     pkgs-unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
     pkgs-walker = nixpkgs-walker.legacyPackages.${system};
+    pkgs-kitty = nixpkgs-kitty.legacyPackages.${system};
 
     # Import stylix theme config (nord)
     themeConfig = import ./modules/home/themes.nix { inherit pkgs; };
@@ -61,7 +63,7 @@
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.backupFileExtension = "nixos-hm-backup";
-      home-manager.extraSpecialArgs = { inherit pkgs-unstable pkgs-walker spicetify-nix; };
+      home-manager.extraSpecialArgs = { inherit pkgs-unstable pkgs-walker pkgs-kitty spicetify-nix; };
     };
   in
   {
