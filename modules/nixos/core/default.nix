@@ -13,6 +13,18 @@
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
+    # Deduplicate identical files in the store
+    auto-optimise-store = true;
+  };
+
+  # nh - modern nix CLI helper with better UX
+  programs.nh = {
+    enable = true;
+    flake = "/home/trace/Dev/other/nixos";
+    clean = {
+      enable = true;
+      extraArgs = "--keep-since 7d";
+    };
   };
 
   boot.loader.systemd-boot.enable = true;
