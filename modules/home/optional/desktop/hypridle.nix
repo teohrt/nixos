@@ -69,7 +69,7 @@ let
 
     for m in $(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[] | .name'); do
       hyprctl dispatch focusmonitor "$m"
-      hyprctl dispatch exec "kitty --class=screensaver -o background=#000000 -o cursor=#000000 -o font_size=18 -e screensaver-cmd"
+      hyprctl dispatch exec "kitty --class=screensaver -o background=#000000 -o cursor=#000000 -o cursor_trail=0 -o font_size=18 -e screensaver-cmd"
     done
 
     hyprctl dispatch focusmonitor "$focused"
