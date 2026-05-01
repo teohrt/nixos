@@ -23,33 +23,100 @@ let
     done
   '';
 
+  # Toggle waybar on/off - includes fix for waybar not appearing after monitor changes
+  toggleWaybar = pkgs.writeShellScript "toggle-waybar" ''
+    notify() {
+      ${pkgs.libnotify}/bin/notify-send -u low -t 2000 "Waybar" "$1"
+    }
+
+    # Check if waybar has a visible layer surface
+    waybar_visible() {
+      hyprctl layers | grep -q "namespace: waybar"
+    }
+
+    # Reset internal display to fix layer-shell state
+    reset_display() {
+      internal=$(hyprctl monitors all -j | ${pkgs.jq}/bin/jq -r '.[] | select(.name | startswith("eDP")) | .name' | head -1)
+      [[ -z "$internal" ]] && return 1
+      hyprctl keyword monitor "$internal,disable"
+      sleep 0.3
+      hyprctl keyword monitor "$internal,preferred,auto,1.25"
+    }
+
+    # If waybar is running but not visible, reset display and restart waybar
+    if systemctl --user is-active waybar &>/dev/null && ! waybar_visible; then
+      reset_display
+      sleep 0.3
+      pkill -9 waybar 2>/dev/null
+      sleep 0.3
+      systemctl --user start waybar
+      hyprctl reload  # fix duplicate cursor
+      notify "Restored"
+    elif systemctl --user is-active waybar &>/dev/null; then
+      systemctl --user stop waybar
+      notify "Stopped"
+    else
+      systemctl --user start waybar
+      notify "Started"
+    fi
+  '';
+
   # Auto-mirror: when external monitor connects, make laptop (eDP-*) mirror it
   # External runs at native resolution, laptop shows scaled copy
   autoMirror = pkgs.writeShellScript "auto-mirror" ''
-    handle_monitor() {
-      # Find internal display (eDP-*)
-      internal=$(hyprctl monitors all -j | ${pkgs.jq}/bin/jq -r '.[] | select(.name | startswith("eDP")) | .name' | head -1)
-      [[ -z "$internal" ]] && return  # not a laptop
-
-      # Find first external monitor
-      external=$(hyprctl monitors all -j | ${pkgs.jq}/bin/jq -r '.[] | select(.name | startswith("eDP") | not) | .name' | head -1)
-
-      if [[ -n "$external" ]]; then
-        # Make laptop mirror the external monitor
-        hyprctl keyword monitor "$internal,preferred,auto,1,mirror,$external"
+    # Kill any other instances (not ourselves)
+    for pid in $(pgrep -f "auto-mirror"); do
+      if [[ "$pid" != "$$" ]]; then
+        kill "$pid" 2>/dev/null || true
       fi
+    done
+
+    get_internal() {
+      hyprctl monitors all -j | ${pkgs.jq}/bin/jq -r '.[] | select(.name | startswith("eDP")) | .name' | head -1
+    }
+
+    get_external() {
+      hyprctl monitors all -j | ${pkgs.jq}/bin/jq -r '.[] | select(.name | startswith("eDP") | not) | .name' | head -1
+    }
+
+    handle_connect() {
+      local internal=$(get_internal)
+      local external=$(get_external)
+      [[ -z "$internal" || -z "$external" ]] && return
+
+      hyprctl keyword monitor "$internal,preferred,auto,1,mirror,$external"
+    }
+
+    handle_disconnect() {
+      local internal=$(get_internal)
+      [[ -z "$internal" ]] && return
+
+      # Restore internal monitor config
+      hyprctl keyword monitor "$internal,preferred,auto,1.25"
+
+      # Restore wallpaper
+      sleep 1
+      ${pkgs.swww}/bin/swww restore 2>/dev/null || true
     }
 
     # Handle current state on startup
-    sleep 1  # let Hyprland initialize
-    handle_monitor
+    sleep 1
+    [[ -n "$(get_external)" ]] && handle_connect
 
     # Listen for monitor events
     ${pkgs.socat}/bin/socat -U - "UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" | while read -r line; do
       case "$line" in
-        monitoraddedv2*|monitorremoved*)
-          sleep 0.5  # let Hyprland settle
-          handle_monitor
+        monitoraddedv2*)
+          sleep 0.5
+          handle_connect
+          ;;
+        monitorremoved*)
+          # Extract monitor name from event: "monitorremoved>>NAME"
+          removed_monitor="''${line#*>>}"
+          # Only handle removal of external monitors, ignore internal (eDP)
+          [[ "$removed_monitor" == eDP* ]] && continue
+          sleep 0.5
+          handle_disconnect
           ;;
       esac
     done
@@ -538,7 +605,7 @@ in
         "$mod, Q,            Close window,          killactive"
 
         "$mod, SPACE,        Launch apps,           exec, $menu"
-        "$mod, B,            Toggle waybar,         exec, pgrep waybar && pkill -SIGUSR1 waybar || systemctl --user restart waybar"
+        "$mod, B,            Toggle waybar,         exec, ${toggleWaybar}"
         "$mod, J,            Toggle split,          togglesplit"
         "$mod, P,            Pseudo window,         pseudo"
         "$mod, O,            Pop window out,        exec, ${popWindow}"
