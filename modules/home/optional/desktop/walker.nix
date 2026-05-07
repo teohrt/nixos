@@ -24,7 +24,7 @@ in
 
     [providers]
     max_results = 256
-    default = ["desktopapplications"]
+    default = ["desktopapplications", "calc"]
   '';
 
   # Walker 2.x themes are directories containing layout.xml + style.css.
@@ -105,6 +105,50 @@ in
     .item-image {
       margin-right: 10px;
     }
+
+  '';
+
+  # Calc provider item layout: stripped the GtkImage (which shows a broken icon
+  # since calc results have no app icon) and the unused ItemImageFont label.
+  xdg.configFile."walker/themes/stylix-nixos/item_calc.xml".text = ''
+    <?xml version="1.0" encoding="UTF-8"?>
+    <interface>
+      <requires lib="gtk" version="4.0"></requires>
+      <object class="GtkBox" id="ItemBox">
+        <style><class name="item-box"></class></style>
+        <property name="orientation">horizontal</property>
+        <property name="spacing">10</property>
+        <child>
+          <object class="GtkBox" id="ItemTextBox">
+            <style><class name="item-text-box"></class></style>
+            <property name="orientation">vertical</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">true</property>
+            <property name="vexpand-set">true</property>
+            <property name="spacing">0</property>
+            <child>
+              <object class="GtkLabel" id="ItemText">
+                <style><class name="item-text"></class></style>
+                <property name="wrap">false</property>
+                <property name="vexpand_set">true</property>
+                <property name="vexpand">true</property>
+                <property name="xalign">0</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="ItemSubtext">
+                <style><class name="item-subtext"></class></style>
+                <property name="wrap">true</property>
+                <property name="vexpand_set">true</property>
+                <property name="vexpand">true</property>
+                <property name="xalign">0</property>
+                <property name="yalign">0</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </interface>
   '';
 
   xdg.configFile."walker/themes/stylix-nixos/layout.xml".text = ''
