@@ -75,7 +75,7 @@ in
 
       # Smooth scrolling (kitty 0.46+)
       pixel_scroll = true;
-      momentum_scroll = "0.8";
+      momentum_scroll = "0.95";
 
       # Disable confirm on close
       confirm_os_window_close = 0;
