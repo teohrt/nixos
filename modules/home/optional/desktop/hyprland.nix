@@ -512,6 +512,10 @@ in
         sensitivity = 0;    # 0 = no pointer speed adjustment
         repeat_rate = 50;   # keys per second when held (default: 25)
         repeat_delay = 300; # ms before repeat starts (default: 600)
+
+        touchpad = {
+          disable_while_typing = false;
+        };
       };
 
       dwindle = {
