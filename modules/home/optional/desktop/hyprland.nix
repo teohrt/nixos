@@ -387,9 +387,9 @@ let
         ;;
       "Adjust Brightness")
         current=$(${pkgs.brightnessctl}/bin/brightnessctl -m | cut -d, -f4)
-        sub=$(printf "10%%\n25%%\n50%%\n75%%\n100%%" | walker --dmenu -p "Brightness ($current)")
+        sub=$(printf "Minimum\n25%%\n50%%\n75%%\n100%%" | walker --dmenu -p "Brightness ($current)")
         case "$sub" in
-          10%) set_brightness 10% ;;
+          Minimum) set_brightness 1 ;;
           25%) set_brightness 25% ;;
           50%) set_brightness 50% ;;
           75%) set_brightness 75% ;;
