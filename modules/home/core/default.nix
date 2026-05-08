@@ -55,13 +55,27 @@ let
   '';
 
   powerMenu = pkgs.writeShellScriptBin "power-menu" ''
-    CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nScreensaver\nToggle Screensaver\nCaffeine\nLog Out" \
+    set_power_profile() {
+      powerprofilesctl set "$1"
+      ${pkgs.libnotify}/bin/notify-send -u low -t 1500 "Power Profile" "$(powerprofilesctl get)"
+    }
+
+    CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nPower Profile\nScreensaver\nToggle Screensaver\nCaffeine\nLog Out" \
       | ${walker} --dmenu -N -H)
     case "$CHOICE" in
       Shutdown)           systemctl poweroff ;;
       Restart)            systemctl reboot ;;
       Lock)               hyprlock ;;
       Suspend)            systemctl suspend ;;
+      "Power Profile")
+        current=$(powerprofilesctl get)
+        sub=$(printf "Power Saver\nBalanced\nPerformance" | ${walker} --dmenu -N -H -p "Profile ($current)")
+        case "$sub" in
+          "Power Saver") set_power_profile power-saver ;;
+          Balanced)      set_power_profile balanced ;;
+          Performance)   set_power_profile performance ;;
+        esac
+        ;;
       Screensaver)        launch-screensaver ;;
       "Toggle Screensaver") toggle-screensaver ;;
       Caffeine)           caffeine-menu ;;
