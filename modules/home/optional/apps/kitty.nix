@@ -72,8 +72,8 @@ in
       window_padding_width = 12;
 
       # Animated cursor trail (the feature you want)
-      cursor_trail = 3;
-      cursor_trail_decay = "0.1 0.4";
+      cursor_trail = 5;
+      cursor_trail_decay = "0.07 0.27";
       cursor_trail_start_threshold = 0;
 
       # Cursor appearance
