@@ -362,7 +362,7 @@ in
       window#waybar {
         background: rgba(13, 15, 20, 0.7);
         border-radius: 0;
-        padding: 6px 0;
+        padding: 100px 0;
       }
 
       .modules-left,
@@ -380,6 +380,7 @@ in
       #custom-power {
         background: rgba(255, 255, 255, 0.18);
         border-radius: 0;
+        border: none;
         margin: 3px 0;
       }
 
@@ -414,6 +415,7 @@ in
         color: #b3b3b3;
         box-shadow: none;
         border-radius: 0;
+        border: none;
         background: transparent;
         margin: 0 2px;
         transition: all 0.2s ease;
@@ -424,6 +426,21 @@ in
         color: #ffffff;
         background: rgba(255, 255, 255, 0.18);
         border-radius: 0;
+      }
+
+      .modules-left #workspaces button,
+      .modules-center #workspaces button,
+      .modules-right #workspaces button {
+        border-bottom: none;
+      }
+
+      .modules-left #workspaces button.active,
+      .modules-left #workspaces button.focused,
+      .modules-center #workspaces button.active,
+      .modules-center #workspaces button.focused,
+      .modules-right #workspaces button.active,
+      .modules-right #workspaces button.focused {
+        border-bottom: none;
       }
 
       #workspaces button:hover {
