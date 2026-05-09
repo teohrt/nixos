@@ -362,6 +362,7 @@ in
       window#waybar {
         background: rgba(13, 15, 20, 0.7);
         border-radius: 0;
+        padding: 6px 0;
       }
 
       .modules-left,

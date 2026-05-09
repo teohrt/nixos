@@ -520,7 +520,7 @@ in
       };
 
       decoration = {
-        rounding = 10; # rounded corners radius (px)
+        rounding = 0;
         blur = {
           enabled = true;
           size = 4;
