@@ -378,7 +378,7 @@ in
       #bluetooth,
       #pulseaudio,
       #custom-power {
-        background: rgba(255, 255, 255, 0.18);
+        background: #2e3440;
         border-radius: 0;
         border: none;
         margin: 3px 0;
@@ -424,7 +424,7 @@ in
       #workspaces button.active {
         padding: 2px 22px;
         color: #ffffff;
-        background: rgba(255, 255, 255, 0.18);
+        background: #2e3440;
         border-radius: 0;
       }
 
@@ -461,7 +461,7 @@ in
 
       #custom-wifi.off,
       #custom-wifi.disconnected {
-        opacity: 0.4;
+        opacity: 0.25;
       }
 
       #custom-temp {
@@ -481,7 +481,7 @@ in
       }
       #pulseaudio.muted {
         padding: 2px 14px;
-        opacity: 0.4;
+        opacity: 0.25;
       }
 
       #custom-notification {
@@ -496,7 +496,7 @@ in
       #bluetooth.off,
       #bluetooth.disabled {
         padding: 2px 16px;
-        opacity: 0.4;
+        opacity: 0.25;
       }
 
       #custom-power {
