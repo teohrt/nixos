@@ -149,6 +149,8 @@ in
     # Applied AFTER Stylix's base16 include, so this actually overrides the background
     extraConfig = ''
       background #0d0f14
+      tab_bar_background #0d0f14
+      inactive_tab_background #0d0f14
       active_tab_background #4a6fa5
       active_tab_foreground #ffffff
     '';
