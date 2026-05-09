@@ -18,6 +18,7 @@ in
 
     [placeholders]
     "default" = { input = "Search...", list = "No Results" }
+    "calc" = { input = "Search...", list = "boom, quick maths" }
 
     [keybinds]
     quick_activate = []
