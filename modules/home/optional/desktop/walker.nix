@@ -277,6 +277,11 @@ in
     </interface>
   '';
 
+  # Disable calc history so selected results don't persist across sessions.
+  xdg.configFile."elephant/calc.toml".text = ''
+    max_items = 0
+  '';
+
   # Systemd services for walker and elephant instead of hyprland exec-once:
   # - More reliable startup (exec-once shell commands can fail silently)
   # - Automatic restart on crash
