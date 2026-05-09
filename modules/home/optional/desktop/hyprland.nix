@@ -1,6 +1,6 @@
 # Hyprland window manager configuration: keybindings, window rules, animations,
 # and helper scripts for screenshots, screen recording, voice input, etc.
-{ pkgs, config, ... }:
+{ pkgs, lib, config, ... }:
 let
   # Outputs "width height" for half the focused monitor's dimensions (accounting for scale).
   # Used by multiple scripts for consistent centered window sizing.
@@ -499,6 +499,8 @@ in
         gaps_in = 0;
         gaps_out = 0;
         border_size = 1;
+        "col.active_border" = lib.mkForce "rgba(ffffff2e)";
+        "col.inactive_border" = lib.mkForce "rgba(ffffff2e)";
         layout = "dwindle"; # binary space partitioning layout
       };
 
