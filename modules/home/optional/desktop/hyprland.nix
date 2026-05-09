@@ -31,9 +31,15 @@ let
     ${pkgs.socat}/bin/socat -u "UNIX-CONNECT:$socket" - | while IFS= read -r line; do
       case "$line" in
         openwindow\>\>*)
-          # Extract workspace ID from the event: openwindow>>ADDR,WORKSPACE,CLASS,TITLE
-          ws=$(echo "$line" | cut -d',' -f2)
-          # Find floating kitty windows on that workspace
+          # Extract fields from: openwindow>>ADDR,WORKSPACE,CLASS,TITLE
+          IFS=',' read -r addr_field ws class title <<< "''${line#openwindow>>}"
+
+          # Skip waybar-spawned floating terminals (they have specific titles)
+          case "$title" in
+            hyprmon|wifi|bluetooth|audio|battery|webcam) continue ;;
+          esac
+
+          # Find floating kitty windows on that workspace and unfloat them
           floating=$(hyprctl clients -j | ${pkgs.jq}/bin/jq -r \
             ".[] | select(.workspace.id == $ws and .floating == true and .class == \"kitty\") | .address")
           for addr in $floating; do

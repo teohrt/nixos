@@ -360,8 +360,8 @@ in
 
 
       window#waybar {
-        background: transparent;
-        border-radius: 16px;
+        background: rgba(13, 15, 20, 0.7);
+        border-radius: 0;
       }
 
       .modules-left,
