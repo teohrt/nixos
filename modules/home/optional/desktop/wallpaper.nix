@@ -152,13 +152,38 @@ let
       ${pkgs.mpvpaper}/bin/mpvpaper -o "loop" '*' "$1" &
     }
 
+    # Helper to switch to solid color wallpaper
+    set_solid() {
+      pkill -f mpvpaper 2>/dev/null
+      sleep 0.2
+      if ! pgrep -f swww-daemon > /dev/null; then
+        ${pkgs.swww}/bin/swww-daemon &
+        for i in $(seq 1 20); do
+          ${pkgs.swww}/bin/swww query &>/dev/null && break
+          sleep 0.1
+        done
+      fi
+      ${pkgs.swww}/bin/swww clear "$1"
+    }
+
     # First menu: choose category
-    CATEGORY=$(printf 'Static\nVideo' \
+    CATEGORY=$(printf 'Static\nVideo\nSolid' \
       | ${pkgs-walker.walker}/bin/walker --dmenu -N -H -p "Wallpaper Type")
 
     [ -z "$CATEGORY" ] && exit 0
 
     case "$CATEGORY" in
+      "Solid")
+        CHOICE=$(printf 'Nord Grey' \
+          | ${pkgs-walker.walker}/bin/walker --dmenu -N -H -p "Solid Color")
+        [ -z "$CHOICE" ] && exit 0
+        case "$CHOICE" in
+          "Nord Grey")
+            set_solid "2e3440"
+            ${pkgs.libnotify}/bin/notify-send -t 2000 "Wallpaper" "Switched to Nord Grey"
+            ;;
+        esac
+        ;;
       "Static")
         CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.name) staticWallpapers)}' \
           | ${pkgs-walker.walker}/bin/walker --dmenu -N -H -p "Static Wallpaper")
