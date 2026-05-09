@@ -505,8 +505,8 @@ in
         # smooth deceleration curve for all animations
         bezier = "easeOutQuart, 0.25, 1, 0.5, 1";
         animation = [
-          "windows, 1, 2, easeOutQuart, slide"
-          "windowsOut, 1, 2, easeOutQuart, slide"
+          "windows, 1, 0.75, easeOutQuart, slide"
+          "windowsOut, 1, 0.75, easeOutQuart, slide"
           "fade, 1, 2, easeOutQuart"
           "workspaces, 1, 0.75, easeOutQuart, slide"
           "layers, 1, 2, easeOutQuart, popin 80%"
