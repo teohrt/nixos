@@ -109,7 +109,11 @@ in
       }
 
       .control-center {
-        background-color: alpha(@window_bg_color, 0.7);
+        background-color: rgba(13, 15, 20, 0.7);
+      }
+
+      .notification {
+        background-color: rgba(13, 15, 20, 0.7);
       }
 
       /* Hide broken placeholder image when no notifications */
