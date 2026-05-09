@@ -23,6 +23,27 @@ let
     done
   '';
 
+  # When a new window opens on a workspace that has a solo floating kitty,
+  # unfloat the kitty so both windows tile. This complements the terminalHere
+  # script which floats kitty on empty workspaces for a centered single-window look.
+  unfloatOnNewWindow = pkgs.writeShellScript "unfloat-on-new-window" ''
+    socket="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
+    ${pkgs.socat}/bin/socat -u "UNIX-CONNECT:$socket" - | while IFS= read -r line; do
+      case "$line" in
+        openwindow\>\>*)
+          # Extract workspace ID from the event: openwindow>>ADDR,WORKSPACE,CLASS,TITLE
+          ws=$(echo "$line" | cut -d',' -f2)
+          # Find floating kitty windows on that workspace
+          floating=$(hyprctl clients -j | ${pkgs.jq}/bin/jq -r \
+            ".[] | select(.workspace.id == $ws and .floating == true and .class == \"kitty\") | .address")
+          for addr in $floating; do
+            hyprctl dispatch togglefloating "address:$addr"
+          done
+          ;;
+      esac
+    done
+  '';
+
   # Toggle waybar on/off - includes fix for waybar not appearing after monitor changes
   toggleWaybar = pkgs.writeShellScript "toggle-waybar" ''
     notify() {
@@ -179,7 +200,9 @@ let
   '';
 
   # Opens kitty in the focused terminal's working directory (or home if not a terminal)
-  # If workspace is empty, centers the terminal; otherwise tiles normally
+  # If workspace is empty, centers the terminal; otherwise tiles normally.
+  # A separate IPC listener (unfloatOnNewWindow) handles unfloating when any
+  # new window joins the workspace.
   terminalHere = pkgs.writeShellScript "terminal-here" ''
     pid=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid')
     dir="$HOME"
@@ -216,11 +239,6 @@ let
       read -r width height < <(${halfScreenSize})
       hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact $width $height; dispatch centerwindow"
     else
-      # Unfloat any floating terminals on this workspace before launching
-      floating=$(hyprctl clients -j | ${pkgs.jq}/bin/jq -r ".[] | select(.workspace.id == $workspace and .floating == true and .class == \"kitty\") | .address")
-      for addr in $floating; do
-        hyprctl dispatch togglefloating address:$addr
-      done
       exec kitty --directory "$dir"
     fi
   '';
@@ -453,6 +471,7 @@ in
         "swayosd-server"                                   # OSD server for volume/brightness popups
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" # auth agent for privilege escalation prompts
         "${closeWalkerOnWorkspaceSwitch}"                  # close walker on workspace switch (layer surfaces ignore normal focus rules)
+        "${unfloatOnNewWindow}"                              # unfloat solo floating kitty when another window joins the workspace
         "wl-clip-persist --clipboard regular"              # keep clipboard alive after source process exits
         "${autoMirror}"                                    # auto-mirror laptop to external monitor when connected
       ];
