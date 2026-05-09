@@ -379,7 +379,7 @@ in
       #pulseaudio,
       #custom-power {
         background: rgba(255, 255, 255, 0.18);
-        border-radius: 20px;
+        border-radius: 0;
         margin: 3px 0;
       }
 
@@ -400,7 +400,7 @@ in
       #custom-mem:hover,
       #custom-power:hover {
         background: rgba(255, 255, 255, 0.08);
-        border-radius: 20px;
+        border-radius: 0;
         margin: 3px 0;
       }
 
@@ -413,7 +413,7 @@ in
         padding: 2px 7px;
         color: #b3b3b3;
         box-shadow: none;
-        border-radius: 20px;
+        border-radius: 0;
         background: transparent;
         margin: 0 2px;
         transition: all 0.2s ease;
@@ -423,7 +423,7 @@ in
         padding: 2px 22px;
         color: #ffffff;
         background: rgba(255, 255, 255, 0.18);
-        border-radius: 20px;
+        border-radius: 0;
       }
 
       #workspaces button:hover {
@@ -508,7 +508,7 @@ in
       #custom-recording.recording {
         padding: 2px 12px;
         background: rgba(255, 68, 68, 0.3);
-        border-radius: 20px;
+        border-radius: 0;
         margin: 3px 0;
         color: #ff4444;
         font-size: 16px;
