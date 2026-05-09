@@ -4,6 +4,14 @@
 let
   sessionsDir = "$HOME/.config/kitty/sessions";
 
+  # Unfloat the active window if it's floating (used before kitty splits)
+  unfloatIfFloating = pkgs.writeShellScript "unfloat-if-floating" ''
+    floating=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.floating')
+    if [[ "$floating" == "true" ]]; then
+      hyprctl dispatch togglefloating
+    fi
+  '';
+
   # Save current kitty session - prompts for name via walker
   saveSession = pkgs.writeShellScript "kitty-save-session" ''
     mkdir -p ${sessionsDir}
@@ -112,7 +120,7 @@ in
 
       # Window management
       "ctrl+q" = "close_window";
-      "ctrl+enter" = "launch --location=split --cwd=current";
+      "ctrl+enter" = "combine : launch --type=background ${unfloatIfFloating} : launch --location=split --cwd=current";
       "ctrl+shift+enter" = "new_tab_with_cwd";
       "ctrl+f" = "toggle_layout stack";
       "ctrl+j" = "layout_action rotate";
