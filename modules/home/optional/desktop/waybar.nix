@@ -17,69 +17,6 @@ let
     fi
   '';
 
-  # Now playing with cava visualizer — uses jq for safe JSON output
-  nowPlayingScript = pkgs.writeShellScript "waybar-nowplaying" ''
-    bars=(" " "▁" "▂" "▃" "▄" "▅" "▆" "▇")
-
-    config_file=$(mktemp)
-    cat > "$config_file" <<EOF
-    [general]
-    bars = 20
-    framerate = 60
-    [input]
-    method = pulse
-    source = auto
-    [output]
-    method = raw
-    raw_target = /dev/stdout
-    data_format = ascii
-    ascii_max_range = 7
-    [smoothing]
-    monstercat = 1
-    noise_reduction = 70
-    EOF
-
-    ${pkgs.cava}/bin/cava -p "$config_file" 2>/dev/null | while IFS=";" read -r -a levels; do
-      viz=""
-      for level in "''${levels[@]}"; do
-        level=''${level//[^0-9]/}
-        [[ -z "$level" ]] && continue
-        (( level > 7 )) && level=7
-        viz+="''${bars[$level]}"
-      done
-
-      # Find the player that's actually playing
-      active=""
-      while IFS= read -r p; do
-        s=$(${pkgs.playerctl}/bin/playerctl -p "$p" status 2>/dev/null)
-        if [[ "$s" == "Playing" ]]; then
-          active="$p"
-          break
-        fi
-      done < <(${pkgs.playerctl}/bin/playerctl -l 2>/dev/null)
-
-      if [[ -n "$active" ]]; then
-        player=$(${pkgs.playerctl}/bin/playerctl -p "$active" metadata --format "{{playerName}}" 2>/dev/null)
-        tooltip=$(${pkgs.playerctl}/bin/playerctl -p "$active" metadata --format "{{playerName}}: {{artist}} — {{title}}" 2>/dev/null)
-
-        case "''${player,,}" in
-          spotify*)    icon="󰓇" ;;
-          firefox*|mozilla*) icon="󰈹" ;;
-          chrom*)      icon="󰊯" ;;
-          vlc*)        icon="󰕼" ;;
-          mpv*)        icon="" ;;
-          *)           icon="󰎆" ;;
-        esac
-        text="<span size=\"200%\">$icon</span>  <span size=\"large\" rise=\"3500\">$viz</span>"
-        ${pkgs.jq}/bin/jq -cn --arg text "$text" --arg tooltip "$tooltip" \
-          '{"text": $text, "tooltip": $tooltip, "class": "playing"}'
-      else
-        echo '{"text": "", "class": ""}'
-      fi
-    done
-
-    rm -f "$config_file"
-  '';
 
   # CPU usage calculation: samples /proc/stat twice (1s apart) to compute
   # per-core and total utilization. Outputs JSON with usage % and load average.
@@ -298,7 +235,7 @@ in
       margin-right = 0;
       spacing = 0;
 
-      modules-left = [ "hyprland/workspaces" "custom/recording" "custom/nowplaying" ];
+      modules-left = [ "hyprland/workspaces" "custom/recording" ];
       modules-center = [ "battery" "clock" "custom/notification" ];
       modules-right = [ "custom/wifi" "custom/temp" "custom/cpu" "custom/mem" "bluetooth" "pulseaudio" ];
 
@@ -407,17 +344,6 @@ in
         on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
       };
 
-      "custom/nowplaying" = {
-        exec = "${nowPlayingScript}";
-        return-type = "json";
-        format = "{}";
-        max-length = 80;
-        on-click = "${pkgs.playerctl}/bin/playerctl play-pause";
-        on-click-right = "${pkgs.playerctl}/bin/playerctl next";
-        on-scroll-up = "${pkgs.playerctl}/bin/playerctl volume 0.05+";
-        on-scroll-down = "${pkgs.playerctl}/bin/playerctl volume 0.05-";
-        tooltip = true;
-      };
 
       "custom/power" = {
         format = "<span size=\"200%\">⏻</span>";
@@ -586,10 +512,6 @@ in
         opacity: 0.25;
       }
 
-      #custom-nowplaying {
-        padding: 0 16px;
-        margin: 0;
-      }
 
       #custom-power {
         padding: 2px 16px 2px 16px;
