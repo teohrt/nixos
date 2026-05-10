@@ -17,6 +17,84 @@ let
     fi
   '';
 
+  # Now playing with cava visualizer — uses jq for safe JSON output
+  nowPlayingScript = pkgs.writeShellScript "waybar-nowplaying" ''
+    bars=("▁" "▂" "▃" "▄" "▅" "▆" "▇" "█")
+
+    config_file=$(mktemp)
+    cat > "$config_file" <<EOF
+    [general]
+    bars = 10
+    framerate = 60
+    [input]
+    method = pipewire
+    [output]
+    method = raw
+    raw_target = /dev/stdout
+    data_format = ascii
+    ascii_max_range = 7
+    [smoothing]
+    monstercat = 1
+    noise_reduction = 70
+    EOF
+
+    scroll_pos=0
+    scroll_width=20
+    frame=0
+    scroll_speed=6  # shift every N frames
+    pause_frames=180  # 3 seconds at 60fps
+    pausing=0
+
+    ${pkgs.cava}/bin/cava -p "$config_file" 2>/dev/null | while IFS=";" read -r -a levels; do
+      viz=""
+      for level in "''${levels[@]}"; do
+        level=''${level//[^0-9]/}
+        [[ -z "$level" ]] && continue
+        (( level > 7 )) && level=7
+        viz+="''${bars[$level]}"
+      done
+
+      meta=$(${pkgs.playerctl}/bin/playerctl metadata --format "{{artist}} — {{title}}" 2>/dev/null)
+      player=$(${pkgs.playerctl}/bin/playerctl metadata --format "{{playerName}}" 2>/dev/null)
+      tooltip=$(${pkgs.playerctl}/bin/playerctl metadata --format "{{playerName}}: {{artist}} — {{title}}" 2>/dev/null)
+      status=$(${pkgs.playerctl}/bin/playerctl status 2>/dev/null)
+
+      if [[ "$status" == "Playing" && -n "$meta" && "$meta" != " — " ]]; then
+        meta_len=''${#meta}
+        if (( meta_len > scroll_width )); then
+          padded="$meta     $meta"
+          display=''${padded:$scroll_pos:$scroll_width}
+          if (( pausing > 0 )); then
+            (( pausing-- ))
+          else
+            (( frame++ ))
+            if (( frame >= scroll_speed )); then
+              frame=0
+              (( scroll_pos++ ))
+              if (( scroll_pos >= meta_len + 5 )); then
+                scroll_pos=0
+                pausing=$pause_frames
+              fi
+            fi
+          fi
+        else
+          display="$meta"
+        fi
+        esc_display=$(echo "$display" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
+        esc_player=$(echo "$player" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
+        text="<span size=\"large\">$viz</span>  $esc_player: $esc_display"
+        ${pkgs.jq}/bin/jq -cn --arg text "$text" --arg tooltip "$tooltip" \
+          '{"text": $text, "tooltip": $tooltip, "class": "playing"}'
+      else
+        scroll_pos=0
+        frame=0
+        echo '{"text": "", "class": ""}'
+      fi
+    done
+
+    rm -f "$config_file"
+  '';
+
   # CPU usage calculation: samples /proc/stat twice (1s apart) to compute
   # per-core and total utilization. Outputs JSON with usage % and load average.
   cpuAwk = pkgs.writeText "waybar-cpu.awk" ''
@@ -234,7 +312,7 @@ in
       margin-right = 0;
       spacing = 0;
 
-      modules-left = [ "hyprland/workspaces" "custom/recording" ];
+      modules-left = [ "hyprland/workspaces" "custom/recording" "custom/nowplaying" ];
       modules-center = [ "battery" "clock" "custom/notification" ];
       modules-right = [ "custom/wifi" "custom/temp" "custom/cpu" "custom/mem" "bluetooth" "pulseaudio" ];
 
@@ -341,6 +419,18 @@ in
         tooltip-format = "{volume}%";
         on-click = "${mkToggle "audio" "kitty --title audio -e wiremix"}";
         on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+      };
+
+      "custom/nowplaying" = {
+        exec = "${nowPlayingScript}";
+        return-type = "json";
+        format = "{}";
+        max-length = 80;
+        on-click = "${pkgs.playerctl}/bin/playerctl play-pause";
+        on-click-right = "${pkgs.playerctl}/bin/playerctl next";
+        on-scroll-up = "${pkgs.playerctl}/bin/playerctl volume 0.05+";
+        on-scroll-down = "${pkgs.playerctl}/bin/playerctl volume 0.05-";
+        tooltip = true;
       };
 
       "custom/power" = {
@@ -508,6 +598,12 @@ in
       #bluetooth.disabled {
         padding: 2px 16px;
         opacity: 0.25;
+      }
+
+      #custom-nowplaying {
+        padding: 2px 16px;
+        background: #2e3440;
+        margin: 0;
       }
 
       #custom-power {
