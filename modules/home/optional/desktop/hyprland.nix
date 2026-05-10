@@ -618,6 +618,12 @@ in
         "center,     title:^(hyprmon)$"
         "animation slide top, title:^(hyprmon)$"
 
+        "float, class:^(floating-btop)$"
+        "center, class:^(floating-btop)$"
+        "animation slide top, class:^(floating-btop)$"
+        "bordersize 1, class:^(floating-btop)$"
+        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), class:^(floating-btop)$"
+
         "float, title:^(wifi)$"
         "center, title:^(wifi)$"
         "animation slide top, title:^(wifi)$"

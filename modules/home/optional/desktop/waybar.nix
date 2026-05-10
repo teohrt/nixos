@@ -5,6 +5,18 @@
 let
   # Creates a toggle script: closes window if open, opens if closed.
   # Used by waybar click handlers for TUI popups (wifi, bluetooth, audio, etc.)
+  toggleBtop = pkgs.writeShellScript "toggle-btop" ''
+    if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.class == "floating-btop")' > /dev/null 2>&1; then
+      hyprctl dispatch closewindow "class:^(floating-btop)$"
+    else
+      kitty --class floating-btop -e btop &
+      sleep 0.15
+      read -r width height < <(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width / .scale / 2 | floor) \(.height / .scale / 2 | floor)"')
+      hyprctl dispatch resizeactive exact "$width" "$height"
+      hyprctl dispatch centerwindow
+    fi
+  '';
+
   mkToggle = title: openCmd: pkgs.writeShellScript "toggle-${title}" ''
     if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.title == "${title}")' > /dev/null 2>&1; then
       hyprctl dispatch closewindow "title:^(${title})$"
@@ -315,12 +327,14 @@ in
         exec = "${cpuScript}";
         return-type = "json";
         interval = 2;
+        on-click = "${toggleBtop}";
       };
 
       "custom/mem" = {
         exec = "${memScript}";
         return-type = "json";
         interval = 2;
+        on-click = "${toggleBtop}";
       };
 
       "custom/wifi" = {
