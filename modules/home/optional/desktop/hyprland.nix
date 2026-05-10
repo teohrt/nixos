@@ -571,6 +571,8 @@ in
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
 
+        "workspace 2, class:^(kitty)$, initialTitle:^(kitty)$"
+
         "fullscreen, class:^(screensaver)$"
         "noanim,     class:^(screensaver)$"
         "nodim,      class:^(screensaver)$"
