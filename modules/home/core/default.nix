@@ -114,33 +114,35 @@ in
 
       .control-center,
       .control-center * {
-        border-radius: 0;
+        border-radius: 0 !important;
         background-color: rgba(13, 15, 20, 0.7);
+        border-color: #ffffff !important;
       }
 
       .notification,
-      .notification-row,
-      .notification-background,
-      .notification-row *,
-      .notification-background * {
-        border-radius: 0;
-        border-color: #ffffff;
-      }
-
-      .notification {
-        background-color: rgba(13, 15, 20, 0.7);
-      }
-
+      .notification.low,
+      .notification.normal,
+      .notification.critical,
       .notification-row,
       .notification-background {
+        border-radius: 0 !important;
+        border: none !important;
+        outline: none !important;
         background-color: transparent;
+      }
+
+      .notification,
+      .notification.low,
+      .notification.normal,
+      .notification.critical {
+        background-color: rgba(13, 15, 20, 0.7);
       }
 
       .notification-content,
       .notification-default-action,
       .notification-action {
         background-color: rgba(13, 15, 20, 0.7);
-        border-color: #ffffff;
+        border: 1px solid #ffffff !important;
       }
 
       /* Hide broken placeholder image when no notifications */
