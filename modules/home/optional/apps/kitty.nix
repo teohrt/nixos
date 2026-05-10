@@ -1,5 +1,5 @@
 # Terminal emulator with cursor trail and smooth scrolling. Styled by Stylix, but with fixed dark background.
-{ lib, pkgs, pkgs-kitty, ... }:
+{ lib, pkgs, pkgs-kitty, config, ... }:
 
 let
   sessionsDir = "$HOME/.config/kitty/sessions";
@@ -97,8 +97,7 @@ in
       # Tabs and layouts
       enabled_layouts = "splits,stack";
       tab_bar_edge = "bottom";
-      tab_bar_style = "custom";
-      tab_bar_margin_height = "4 0";
+      tab_bar_margin_height = "0 0";
       startup_session = "~/.config/kitty/startup.conf";
           };
 
@@ -151,46 +150,16 @@ in
     # Applied AFTER Stylix's base16 include, so this actually overrides the background
     extraConfig = ''
       background #0d0f14
+      tab_bar_style fade
+      tab_fade 1
       tab_bar_background #0d0f14
       inactive_tab_background #0d0f14
-      active_tab_background #2e3440
+      active_tab_background #${config.lib.stylix.colors.base0D}
       active_tab_foreground #ffffff
-      active_border_color #2e3440
+      active_border_color #${config.lib.stylix.colors.base0D}
       inactive_border_color #2e3440
     '';
   };
-
-  xdg.configFile."kitty/tab_bar.py".text = ''
-    from kitty.fast_data_types import Screen
-    from kitty.tab_bar import DrawData, ExtraData, TabBarData
-
-    def draw_tab(
-        draw_data: DrawData,
-        screen: Screen,
-        tab: TabBarData,
-        before: int,
-        max_title_length: int,
-        index: int,
-        is_last: bool,
-        extra_data: ExtraData,
-    ) -> int:
-        if tab.is_active:
-            screen.cursor.bg = draw_data.active_bg
-            screen.cursor.fg = draw_data.active_fg
-        else:
-            screen.cursor.bg = draw_data.inactive_bg
-            screen.cursor.fg = draw_data.inactive_fg
-
-        padding = "     "
-        title = f"{index + 1} - {tab.title}"
-        screen.draw(padding + title + padding)
-
-        # separator gap
-        screen.cursor.bg = draw_data.default_bg
-        screen.draw("   ")
-
-        return screen.cursor.x
-  '';
 
   xdg.configFile."kitty/startup.conf".text = ''
     new_tab work
