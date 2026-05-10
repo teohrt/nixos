@@ -491,6 +491,11 @@ in
         font-size: 18px;
       }
 
+      #custom-notification.dnd-none,
+      #custom-notification.dnd-notification {
+        opacity: 0.25;
+      }
+
       #bluetooth {
         padding: 2px 16px;
       }
