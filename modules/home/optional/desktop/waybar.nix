@@ -122,7 +122,7 @@ let
       pad = 8 - length(num)
       spaces = ""
       for (i = 0; i < pad; i++) spaces = spaces " "
-      printf "{\"text\": \"%s<span size='200%%'>󰍛</span><span rise='3500'>%s</span>\", \"tooltip\": \"%s\"}\n", spaces, num, tooltip
+      printf "{\"text\": \"%s<span size='200%%'>󰍛</span><span rise='3500' size='130%%'>%s</span>\", \"tooltip\": \"%s\"}\n", spaces, num, tooltip
       exit
     }
   '';
@@ -142,7 +142,7 @@ let
         num = sprintf(" %.2f%%", pct)
         pad = 8 - length(num); spaces = ""
         for (i = 0; i < pad; i++) spaces = spaces " "
-        printf "{\"text\": \"%s<span size=\\\"200%%\\\">󰘚</span><span rise=\\\"3500\\\">%s</span>\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
+        printf "{\"text\": \"%s<span size=\\\"200%%\\\">󰘚</span><span rise=\\\"3500\\\" size=\\\"130%%\\\">%s</span>\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
           spaces, num, pct, used/1024/1024, total/1024/1024, avail/1024/1024
       }
     ' /proc/meminfo
@@ -175,7 +175,7 @@ let
     else                            icon="󰔏"; class="normal"
     fi
 
-    text="<span size='200%'>$icon</span> <span rise='3500'>''${temp_c}°C</span>"
+    text="<span size='200%'>$icon</span> <span rise='3500' size='130%'>''${temp_c}°C</span>"
     printf '{"text": "%s", "tooltip": "CPU: %d°C", "class": "%s"}\n' "$text" "$temp_c" "$class"
   '';
 
@@ -250,7 +250,7 @@ let
     elif [ "''${PCT}" -lt 100 ]; then PCT_PAD=" "
     else                               PCT_PAD=""
     fi
-    TEXT="<span rise='9000' color='#ffffff99'>''${TX_FMT}</span> <span rise='9000' color='#ffffff99'>''${RX_FMT}</span>  <span size='300%'>$ICON</span>  <span rise='9000'>''${PCT}%''${PCT_PAD}</span>"
+    TEXT="<span rise='9000' size='130%' color='#ffffff99'>''${TX_FMT}</span> <span rise='9000' size='130%' color='#ffffff99'>''${RX_FMT}</span>  <span size='300%'>$ICON</span>  <span rise='9000' size='130%'>''${PCT}%''${PCT_PAD}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
@@ -292,7 +292,7 @@ in
     settings = [{
       layer = "top";
       position = "top";
-      height = 32;
+      height = 24;
       margin-top = 0;
       margin-left = 0;
       margin-right = 0;
@@ -334,25 +334,25 @@ in
       };
 
       "hyprland/workspaces" = {
-        format = "{id}";
+        format = "<span size=\"130%\">{id}</span>";
         on-scroll-up = "hyprctl dispatch workspace e+1";
         on-scroll-down = "hyprctl dispatch workspace e-1";
       };
 
       clock = {
-        format = "{:%I:%M %p}";
+        format = "<span size=\"130%\">{:%I:%M %p}</span>";
         tooltip-format = "{:%A: %m/%d/%Y}";
       };
 
       battery = {
         format-high = "<span size=\"200%\">{icon}</span>";
         format-medium = "<span size=\"200%\">{icon}</span>";
-        format-low = "<span size=\"200%\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
-        format-critical = "<span size=\"200%\">{icon}</span> <span color=\"#ffffff\">{capacity}%</span>";
+        format-low = "<span size=\"200%\">{icon}</span> <span color=\"#ffffff\" size=\"130%\">{capacity}%</span>";
+        format-critical = "<span size=\"200%\">{icon}</span> <span color=\"#ffffff\" size=\"130%\">{capacity}%</span>";
         format-charging-high = "<span size=\"200%\">󰂄</span>";
         format-charging-medium = "<span size=\"200%\">󰂄</span>";
-        format-charging-low = "<span size=\"200%\">󰂄</span> <span color=\"#ffffff\">{capacity}%</span>";
-        format-charging-critical = "<span size=\"200%\">󰂄</span> <span color=\"#ffffff\">{capacity}%</span>";
+        format-charging-low = "<span size=\"200%\">󰂄</span> <span color=\"#ffffff\" size=\"130%\">{capacity}%</span>";
+        format-charging-critical = "<span size=\"200%\">󰂄</span> <span color=\"#ffffff\" size=\"130%\">{capacity}%</span>";
         tooltip-format = "{capacity}%";
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 15; low = 25; medium = 50; high = 100; };
@@ -388,8 +388,8 @@ in
 
       bluetooth = {
         format = "<span size=\"200%\">󰂯</span>";
-        format-connected = "<span size=\"200%\">󰂱</span> {device_alias}";
-        format-connected-battery = "<span size=\"200%\">󰂱</span> {device_alias} {device_battery_percentage}%";
+        format-connected = "<span size=\"200%\">󰂱</span> <span size=\"130%\">{device_alias}</span>";
+        format-connected-battery = "<span size=\"200%\">󰂱</span> <span size=\"130%\">{device_alias} {device_battery_percentage}%</span>";
         format-disabled = "<span size=\"200%\">󰂯</span>";
         format-off = "<span size=\"200%\">󰂯</span>";
         tooltip-format-connected = "{device_enumerate}";
@@ -430,7 +430,7 @@ in
     style = ''
       * {
         font-family: "JetBrains Mono", monospace;
-        font-size: 14px;
+        font-size: 12px;
         border: none;
         border-radius: 0;
         min-height: 0;
@@ -444,6 +444,7 @@ in
         border-radius: 0;
         padding: 0;
       }
+
 
       .modules-left,
       .modules-center,
