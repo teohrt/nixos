@@ -228,7 +228,7 @@ in
       margin-top = 0;
       margin-left = 0;
       margin-right = 0;
-      spacing = 8;
+      spacing = 0;
 
       modules-left = [ "hyprland/workspaces" "custom/recording" ];
       modules-center = [ "battery" "clock" "custom/notification" ];
@@ -407,25 +407,27 @@ in
 
       #workspaces {
         background: transparent;
-        padding: 3px 5px;
+        padding: 0;
+        margin: 0;
       }
 
       #workspaces button {
-        padding: 2px 7px;
+        padding: 2px 16px;
         color: #b3b3b3;
         box-shadow: none;
         border-radius: 0;
         border: none;
         background: transparent;
-        margin: 0 2px;
+        margin: 0;
         transition: all 0.2s ease;
       }
 
       #workspaces button.active {
-        padding: 2px 22px;
+        padding: 2px 16px;
         color: #ffffff;
         background: #2e3440;
         border-radius: 0;
+        margin: 0;
       }
 
       .modules-left #workspaces button,
