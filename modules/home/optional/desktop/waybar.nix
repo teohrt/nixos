@@ -54,12 +54,27 @@ let
         viz+="''${bars[$level]}"
       done
 
-      meta=$(${pkgs.playerctl}/bin/playerctl metadata --format "{{artist}} — {{title}}" 2>/dev/null)
-      player=$(${pkgs.playerctl}/bin/playerctl metadata --format "{{playerName}}" 2>/dev/null)
-      tooltip=$(${pkgs.playerctl}/bin/playerctl metadata --format "{{playerName}}: {{artist}} — {{title}}" 2>/dev/null)
-      status=$(${pkgs.playerctl}/bin/playerctl status 2>/dev/null)
+      # Find the player that's actually playing
+      active=""
+      while IFS= read -r p; do
+        s=$(${pkgs.playerctl}/bin/playerctl -p "$p" status 2>/dev/null)
+        if [[ "$s" == "Playing" ]]; then
+          active="$p"
+          break
+        fi
+      done < <(${pkgs.playerctl}/bin/playerctl -l 2>/dev/null)
 
-      if [[ "$status" == "Playing" && -n "$meta" && "$meta" != " — " ]]; then
+      if [[ -n "$active" ]]; then
+        meta=$(${pkgs.playerctl}/bin/playerctl -p "$active" metadata --format "{{artist}} — {{title}}" 2>/dev/null)
+        player=$(${pkgs.playerctl}/bin/playerctl -p "$active" metadata --format "{{playerName}}" 2>/dev/null)
+        tooltip=$(${pkgs.playerctl}/bin/playerctl -p "$active" metadata --format "{{playerName}}: {{artist}} — {{title}}" 2>/dev/null)
+      else
+        meta=""
+        player=""
+        tooltip=""
+      fi
+
+      if [[ -n "$active" && -n "$meta" && "$meta" != " — " ]]; then
         meta_len=''${#meta}
         if (( meta_len > scroll_width )); then
           padded="$meta     $meta"
