@@ -1,6 +1,6 @@
 # Wallpaper management: static images via swww, video loops via mpvpaper.
 # Wallpaper picker accessible via Super+Shift+W.
-{ pkgs, lib, pkgs-walker, ... }:
+{ pkgs, lib, config, pkgs-walker, ... }:
 
 let
   # Static wallpapers fetched from URLs at build time.
@@ -124,6 +124,15 @@ let
 
   # Walker dmenu picker for wallpapers with category submenus
   wallpaperPicker = pkgs.writeShellScriptBin "wallpaper-picker" ''
+    # Stretch image to monitor resolution using ImageMagick
+    stretch_to_screen() {
+      local res
+      res=$(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width)x\(.height)"')
+      local tmp="/tmp/wallpaper-stretched.png"
+      ${pkgs.imagemagick}/bin/magick "$1" -resize "''${res}!" "$tmp"
+      echo "$tmp"
+    }
+
     # Helper to switch to static wallpaper (swww)
     set_static() {
       pkill -f mpvpaper 2>/dev/null
@@ -136,7 +145,9 @@ let
           sleep 0.1
         done
       fi
-      ${pkgs.swww}/bin/swww img "$1" \
+      local img
+      img=$(stretch_to_screen "$1")
+      ${pkgs.swww}/bin/swww img "$img" \
         --transition-type grow \
         --transition-duration 1 \
         --transition-fps 60 \
@@ -227,7 +238,7 @@ in
   wayland.windowManager.hyprland.settings = {
     exec-once = [
       "${pkgs.swww}/bin/swww-daemon"
-      "sleep 0.5 && ${pkgs.swww}/bin/swww img ${defaultWallpaper.path}"
+      "sleep 0.5 && RES=$(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | \"\\(.width)x\\(.height)\"') && ${pkgs.imagemagick}/bin/magick ${defaultWallpaper.path} -resize \"$RES!\" /tmp/wallpaper-stretched.png && ${pkgs.swww}/bin/swww img /tmp/wallpaper-stretched.png"
     ];
     bind = [
       "$mod SHIFT, W, exec, wallpaper-picker"
