@@ -112,7 +112,9 @@ in
         padding: 1em 1em;
       }
 
-      .control-center {
+      .control-center,
+      .control-center * {
+        border-radius: 0;
         background-color: rgba(13, 15, 20, 0.7);
       }
 
