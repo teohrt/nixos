@@ -96,6 +96,7 @@ in
 
     # Applied AFTER Stylix's base16 include, so this actually overrides the background
     extraConfig = ''
+      font_size 16
       background #0d0f14
       tab_bar_style fade
       tab_fade 1
