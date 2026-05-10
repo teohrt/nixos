@@ -207,7 +207,7 @@ let
     elif [ "''${PCT}" -lt 100 ]; then PCT_PAD=" "
     else                               PCT_PAD=""
     fi
-    TEXT="<span size='200%' color='#${config.lib.stylix.colors.base0E}'>$ICON</span>  <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0E}'>''${PCT}%''${PCT_PAD}</span> <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0E}'>''${RX_FMT}</span>  <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0E}'>''${TX_FMT}</span>"
+    TEXT="<span size='200%' color='#${config.lib.stylix.colors.base0E}'>$ICON</span>  <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0E}'>''${PCT}%''${PCT_PAD}</span> <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0E}'>''${RX_FMT}</span>  <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0E}'>''${TX_FMT}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
