@@ -2,65 +2,12 @@
 { lib, pkgs, pkgs-kitty, config, ... }:
 
 let
-  sessionsDir = "$HOME/.config/kitty/sessions";
-
   # Unfloat the active window if it's floating (used before kitty splits)
   unfloatIfFloating = pkgs.writeShellScript "unfloat-if-floating" ''
     floating=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.floating')
     if [[ "$floating" == "true" ]]; then
       hyprctl dispatch togglefloating
     fi
-  '';
-
-  # Save current kitty session - prompts for name via walker
-  saveSession = pkgs.writeShellScript "kitty-save-session" ''
-    mkdir -p ${sessionsDir}
-
-    # Prompt for session name using walker
-    name=$(echo "" | ${pkgs.walker}/bin/walker --dmenu --placeholder "Session name...")
-    [[ -z "$name" ]] && exit 0
-
-    # Sanitize name
-    name=$(echo "$name" | tr ' ' '-' | tr -cd '[:alnum:]-_')
-
-    # Get current state and convert to session format
-    ${pkgs.kitty}/bin/kitty @ --to "$KITTY_LISTEN_ON" ls | ${pkgs.jq}/bin/jq -r '
-      .[] | .tabs[] |
-      "new_tab \(.title // "tab")\nlayout \(.layout)\n" +
-      (.windows | to_entries | map(
-        "cd \(.value.cwd)\nlaunch " + (if .key == 0 then "zsh" else "--location=split zsh" end)
-      ) | join("\n"))
-    ' > "${sessionsDir}/$name.conf"
-
-    ${pkgs.libnotify}/bin/notify-send "Kitty" "Session '$name' saved"
-  '';
-
-  # Open VS Code in the sessions directory
-  openVSCode = pkgs.writeShellScript "kitty-open-vscode" ''
-    mkdir -p ${sessionsDir}
-    code ${sessionsDir} &
-  '';
-
-  # Load a saved session via walker selection (replaces current session)
-  loadSession = pkgs.writeShellScript "kitty-load-session" ''
-    shopt -s nullglob
-    sessions=(${sessionsDir}/*.conf)
-
-    if [[ ''${#sessions[@]} -eq 0 ]]; then
-      ${pkgs.libnotify}/bin/notify-send "Kitty" "No saved sessions"
-      exit 0
-    fi
-
-    # List session names for walker
-    names=$(for f in "''${sessions[@]}"; do basename "$f" .conf; done)
-
-    selected=$(echo "$names" | ${pkgs.walker}/bin/walker --dmenu --placeholder "Load session...")
-    [[ -z "$selected" ]] && exit 0
-
-    # Launch new kitty with session, then close current instance
-    ${pkgs.kitty}/bin/kitty --session "${sessionsDir}/$selected.conf" &
-    sleep 0.5
-    ${pkgs.kitty}/bin/kitty @ --to "$KITTY_LISTEN_ON" close-window --match all
   '';
 in
 {
@@ -141,10 +88,6 @@ in
       "ctrl+shift+t" = "detach_window new-tab";
       "ctrl+t" = "set_tab_title";
 
-      # Session management
-      "ctrl+s" = "launch --type=overlay --copy-env ${saveSession}";
-      "ctrl+shift+s" = "launch --type=background --copy-env ${loadSession}";
-      "ctrl+e" = "launch --type=background --copy-env ${openVSCode}";
     };
 
     # Applied AFTER Stylix's base16 include, so this actually overrides the background
