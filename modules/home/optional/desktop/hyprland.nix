@@ -571,6 +571,7 @@ in
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
 
+        "workspace 1, class:^(chromium-browser|google-chrome|Chromium)$"
         "workspace 2, class:^(kitty)$, initialTitle:^(kitty)$"
 
         "fullscreen, class:^(screensaver)$"
