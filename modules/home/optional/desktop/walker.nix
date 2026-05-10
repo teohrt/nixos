@@ -56,7 +56,7 @@ in
     .box-wrapper {
       background: alpha(@base, ${bgOpacity});
       padding: 20px;
-      border: 2px solid @accent;
+      border: 1px solid @accent;
       border-radius: 0;
       min-width: 360px;
       max-width: 360px;
