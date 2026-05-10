@@ -93,7 +93,7 @@ in
   services.swaync = {
     enable = true;
     settings = {
-      border-radius = 10;
+      border-radius = 0;
       width = 250;
       timeout = 5;
       timeout-low = 3;
@@ -116,16 +116,29 @@ in
         background-color: rgba(13, 15, 20, 0.7);
       }
 
+      .notification,
+      .notification-row,
+      .notification-background,
+      .notification-row *,
+      .notification-background * {
+        border-radius: 0;
+        border-color: #ffffff;
+      }
+
       .notification {
         background-color: rgba(13, 15, 20, 0.7);
-        border-color: rgba(13, 15, 20, 0.7);
+      }
+
+      .notification-row,
+      .notification-background {
+        background-color: transparent;
       }
 
       .notification-content,
       .notification-default-action,
       .notification-action {
         background-color: rgba(13, 15, 20, 0.7);
-        border-color: rgba(13, 15, 20, 0.7);
+        border-color: #ffffff;
       }
 
       /* Hide broken placeholder image when no notifications */
