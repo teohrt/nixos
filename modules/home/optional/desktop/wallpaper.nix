@@ -160,7 +160,7 @@ let
       ${pkgs.swww}/bin/swww clear 2>/dev/null
       pkill -f swww-daemon 2>/dev/null
       sleep 0.2
-      ${pkgs.mpvpaper}/bin/mpvpaper -o "loop" '*' "$1" &
+      ${pkgs.mpvpaper}/bin/mpvpaper -o "loop --keepaspect=no" '*' "$1" &
     }
 
     # Helper to switch to solid color wallpaper
