@@ -500,8 +500,8 @@ in
         gaps_out = 0;
         border_size = 1;
         no_border_on_floating = false;
-        "col.active_border" = lib.mkForce "rgba(ffffff2e)";
-        "col.inactive_border" = lib.mkForce "rgba(ffffff2e)";
+        "col.active_border" = lib.mkForce "rgba(${config.lib.stylix.colors.base0D}ff)";
+        "col.inactive_border" = lib.mkForce "rgba(${config.lib.stylix.colors.base0D}ff)";
         layout = "dwindle"; # binary space partitioning layout
       };
 
@@ -572,8 +572,6 @@ in
 
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
-
-        "bordersize 0, onworkspace:w[t1]"
 
         "workspace 1, class:^(chromium-browser|google-chrome|Chromium)$"
         "workspace 2, class:^(kitty)$, initialTitle:^(kitty)$"
