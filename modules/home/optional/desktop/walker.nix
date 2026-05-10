@@ -57,14 +57,14 @@ in
       background: alpha(@base, ${bgOpacity});
       padding: 20px;
       border: 2px solid @accent;
-      border-radius: 10px;
+      border-radius: 0;
       min-width: 360px;
       max-width: 360px;
     }
 
     .search-container {
       background: alpha(@surface, ${opacity});
-      border-radius: 6px;
+      border-radius: 0;
       padding: 12px 16px;
     }
 
@@ -81,7 +81,7 @@ in
     child:hover .item-box,
     child:selected .item-box {
       background: alpha(@overlay, ${opacity});
-      border-radius: 4px;
+      border-radius: 0;
     }
 
     child:selected .item-box * {
