@@ -499,7 +499,7 @@ in
         gaps_in = 0;
         gaps_out = 0;
         border_size = 1;
-        no_border_on_floating = true;
+        no_border_on_floating = false;
         "col.active_border" = lib.mkForce "rgba(ffffff2e)";
         "col.inactive_border" = lib.mkForce "rgba(ffffff2e)";
         layout = "dwindle"; # binary space partitioning layout
@@ -615,9 +615,13 @@ in
         "float, title:^(wifi)$"
         "center, title:^(wifi)$"
         "animation slide top, title:^(wifi)$"
+        "bordersize 1, title:^(wifi)$"
+        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(wifi)$"
         "float, title:^(bluetooth)$"
         "center, title:^(bluetooth)$"
         "animation slide top, title:^(bluetooth)$"
+        "bordersize 1, title:^(bluetooth)$"
+        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(bluetooth)$"
 
         "float, title:^(webcam)$"
         "size 320 240, title:^(webcam)$"
@@ -627,9 +631,13 @@ in
         "float, title:^(audio)$"
         "center, title:^(audio)$"
         "animation slide top, title:^(audio)$"
+        "bordersize 1, title:^(audio)$"
+        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(audio)$"
         "float, title:^(battery)$"
         "center, title:^(battery)$"
         "animation slide top, title:^(battery)$"
+        "bordersize 1, title:^(battery)$"
+        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(battery)$"
       ];
 
       # standard key bindings with descriptions (bindd = bind with description)
