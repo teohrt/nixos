@@ -19,15 +19,16 @@ let
 
   # Now playing with cava visualizer — uses jq for safe JSON output
   nowPlayingScript = pkgs.writeShellScript "waybar-nowplaying" ''
-    bars=("▁" "▂" "▃" "▄" "▅" "▆" "▇" "█")
+    bars=(" " "▁" "▂" "▃" "▄" "▅" "▆" "▇")
 
     config_file=$(mktemp)
     cat > "$config_file" <<EOF
     [general]
-    bars = 10
+    bars = 20
     framerate = 60
     [input]
-    method = pipewire
+    method = pulse
+    source = auto
     [output]
     method = raw
     raw_target = /dev/stdout
@@ -37,13 +38,6 @@ let
     monstercat = 1
     noise_reduction = 70
     EOF
-
-    scroll_pos=0
-    scroll_width=20
-    frame=0
-    scroll_speed=6  # shift every N frames
-    pause_frames=180  # 3 seconds at 60fps
-    pausing=0
 
     ${pkgs.cava}/bin/cava -p "$config_file" 2>/dev/null | while IFS=";" read -r -a levels; do
       viz=""
@@ -65,44 +59,21 @@ let
       done < <(${pkgs.playerctl}/bin/playerctl -l 2>/dev/null)
 
       if [[ -n "$active" ]]; then
-        meta=$(${pkgs.playerctl}/bin/playerctl -p "$active" metadata --format "{{artist}} — {{title}}" 2>/dev/null)
         player=$(${pkgs.playerctl}/bin/playerctl -p "$active" metadata --format "{{playerName}}" 2>/dev/null)
         tooltip=$(${pkgs.playerctl}/bin/playerctl -p "$active" metadata --format "{{playerName}}: {{artist}} — {{title}}" 2>/dev/null)
-      else
-        meta=""
-        player=""
-        tooltip=""
-      fi
 
-      if [[ -n "$active" && -n "$meta" && "$meta" != " — " ]]; then
-        meta_len=''${#meta}
-        if (( meta_len > scroll_width )); then
-          padded="$meta     $meta"
-          display=''${padded:$scroll_pos:$scroll_width}
-          if (( pausing > 0 )); then
-            (( pausing-- ))
-          else
-            (( frame++ ))
-            if (( frame >= scroll_speed )); then
-              frame=0
-              (( scroll_pos++ ))
-              if (( scroll_pos >= meta_len + 5 )); then
-                scroll_pos=0
-                pausing=$pause_frames
-              fi
-            fi
-          fi
-        else
-          display="$meta"
-        fi
-        esc_display=$(echo "$display" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
-        esc_player=$(echo "$player" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
-        text="<span size=\"large\">$viz</span>  $esc_player: $esc_display"
+        case "''${player,,}" in
+          spotify*)    icon="󰓇" ;;
+          firefox*|mozilla*) icon="󰈹" ;;
+          chrom*)      icon="󰊯" ;;
+          vlc*)        icon="󰕼" ;;
+          mpv*)        icon="" ;;
+          *)           icon="󰎆" ;;
+        esac
+        text="<span size=\"200%\">$icon</span>  <span size=\"large\" rise=\"3500\">$viz</span>"
         ${pkgs.jq}/bin/jq -cn --arg text "$text" --arg tooltip "$tooltip" \
           '{"text": $text, "tooltip": $tooltip, "class": "playing"}'
       else
-        scroll_pos=0
-        frame=0
         echo '{"text": "", "class": ""}'
       fi
     done
@@ -471,7 +442,7 @@ in
       window#waybar {
         background: rgba(13, 15, 20, 0.7);
         border-radius: 0;
-        padding: 100px 0;
+        padding: 0;
       }
 
       .modules-left,
@@ -616,7 +587,7 @@ in
       }
 
       #custom-nowplaying {
-        padding: 2px 16px;
+        padding: 0 16px;
         background: #2e3440;
         margin: 0;
       }
