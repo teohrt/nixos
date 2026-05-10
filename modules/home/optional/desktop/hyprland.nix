@@ -602,11 +602,9 @@ in
         "animation slide top, title:^(hyprmon)$"
 
         "float, title:^(wifi)$"
-        "size 900 600, title:^(wifi)$"
         "center, title:^(wifi)$"
         "animation slide top, title:^(wifi)$"
         "float, title:^(bluetooth)$"
-        "size 900 600, title:^(bluetooth)$"
         "center, title:^(bluetooth)$"
         "animation slide top, title:^(bluetooth)$"
 
@@ -616,11 +614,9 @@ in
         "pin, title:^(webcam)$"
         "noborder, title:^(webcam)$"
         "float, title:^(audio)$"
-        "size 900 600, title:^(audio)$"
         "center, title:^(audio)$"
         "animation slide top, title:^(audio)$"
         "float, title:^(battery)$"
-        "size 600 800, title:^(battery)$"
         "center, title:^(battery)$"
         "animation slide top, title:^(battery)$"
       ];

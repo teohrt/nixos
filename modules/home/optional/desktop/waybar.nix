@@ -9,7 +9,11 @@ let
     if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.title == "${title}")' > /dev/null 2>&1; then
       hyprctl dispatch closewindow "title:^(${title})$"
     else
-      ${openCmd}
+      ${openCmd} &
+      sleep 0.15
+      read -r width height < <(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width / .scale / 2 | floor) \(.height / .scale / 2 | floor)"')
+      hyprctl dispatch resizeactive exact "$width" "$height"
+      hyprctl dispatch centerwindow
     fi
   '';
 
