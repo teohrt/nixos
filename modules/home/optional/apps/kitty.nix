@@ -153,6 +153,7 @@ in
       inactive_tab_background #0d0f14
       active_tab_background #4a6fa5
       active_tab_foreground #ffffff
+      active_border_color #2e3440
     '';
   };
 }

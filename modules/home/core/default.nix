@@ -104,8 +104,12 @@ in
       control-center-positionY = "center";
     };
     style = ''
+      .floating-notifications {
+        margin: 20px 10px 10px 10px;
+      }
+
       .notification-content {
-        padding: 1em;
+        padding: 1em 1em;
       }
 
       .control-center {
@@ -114,6 +118,14 @@ in
 
       .notification {
         background-color: rgba(13, 15, 20, 0.7);
+        border-color: rgba(13, 15, 20, 0.7);
+      }
+
+      .notification-content,
+      .notification-default-action,
+      .notification-action {
+        background-color: rgba(13, 15, 20, 0.7);
+        border-color: rgba(13, 15, 20, 0.7);
       }
 
       /* Hide broken placeholder image when no notifications */
