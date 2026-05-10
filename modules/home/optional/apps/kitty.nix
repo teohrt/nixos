@@ -97,15 +97,18 @@ in
     # Applied AFTER Stylix's base16 include, so this actually overrides the background
     extraConfig = ''
       font_size 16
+      placement_strategy top-left
       background #0d0f14
-      tab_bar_style fade
-      tab_fade 1
-      tab_bar_background #0d0f14
-      inactive_tab_background #0d0f14
-      active_tab_background #${config.lib.stylix.colors.base0D}
-      active_tab_foreground #000000
+      tab_bar_style separator
+      tab_separator ""
+      tab_title_template " {title} "
+      tab_bar_margin_color #${config.lib.stylix.colors.base0D}
+      tab_bar_background #${config.lib.stylix.colors.base0D}
+      inactive_tab_background #${config.lib.stylix.colors.base0D}
+      inactive_tab_foreground #000000
+      active_tab_background #0d0f14
+      active_tab_foreground #${config.lib.stylix.colors.base0D}
       active_border_color #${config.lib.stylix.colors.base0D}
-      inactive_tab_foreground #${config.lib.stylix.colors.base0D}
       inactive_border_color #2e3440
     '';
   };
