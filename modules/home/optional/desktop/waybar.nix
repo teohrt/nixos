@@ -165,12 +165,20 @@ let
 
     fmt_bits() {
       awk -v b="$1" -v dir="$2" 'BEGIN {
-        if (b >= 1000000) { num = sprintf("%.1f", b/1000000); unit = "Mb/s" }
-        else              { num = sprintf("%.0f", b/1000);    unit = "Kb/s" }
-        pad = 4 - length(num)
-        spaces = ""
-        for (i = 0; i < pad; i++) spaces = spaces " "
-        printf "%s%s%s %s", spaces, dir, num, unit
+        if      (b >= 1000000000) { v = b / 1000000000; u = "Gb"; w = 6; d = 3 }
+        else if (b >= 100000)     { v = b / 1000000;    u = "Mb"; w = 6; d = 3 }
+        else if (b >= 100)        { v = b / 1000;       u = "Kb"; w = 5; d = 2 }
+        else                      { v = b;              u = "b "; w = 5; d = 2 }
+        if (v == 0) {
+          num = sprintf("%*s0", w - 1, "")
+        } else {
+          num = sprintf("%0*.*f", w, 2, v)
+          for (i = 1; i <= d; i++) {
+            if (substr(num, i, 1) == "0") num = substr(num, 1, i-1) " " substr(num, i+1)
+            else break
+          }
+        }
+        printf "%s%s %s", dir, num, u
       }'
     }
 
@@ -187,7 +195,7 @@ let
     elif [ "''${PCT}" -lt 100 ]; then PCT_PAD=" "
     else                               PCT_PAD=""
     fi
-    TEXT="<span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0E}'>''${TX_FMT}</span> <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0E}'>''${RX_FMT}</span>    <span size='200%' color='#${config.lib.stylix.colors.base0E}'>$ICON</span>  <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0E}'>''${PCT}%''${PCT_PAD}</span>"
+    TEXT="<span size='200%' color='#${config.lib.stylix.colors.base0E}'>$ICON</span>  <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0E}'>''${PCT}%''${PCT_PAD}</span> <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0E}'>''${RX_FMT}</span>  <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0E}'>''${TX_FMT}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
