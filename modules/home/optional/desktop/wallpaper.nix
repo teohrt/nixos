@@ -179,7 +179,7 @@ let
         [ -z "$CHOICE" ] && exit 0
         case "$CHOICE" in
           "Nord Grey")
-            set_solid "2e3440"
+            set_solid "0d0f14"
             ${pkgs.libnotify}/bin/notify-send -t 2000 "Wallpaper" "Switched to Nord Grey"
             ;;
         esac
