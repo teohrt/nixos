@@ -112,7 +112,7 @@ let
     else                            icon="󰔏"; class="normal"
     fi
 
-    text="<span size='200%'>$icon</span> <span rise='3500' size='130%'>''${temp_c}°C</span>"
+    text="<span size='150%'>$icon</span> <span rise='2000' size='130%'>''${temp_c}°C</span>"
     printf '{"text": "%s", "tooltip": "CPU: %d°C", "class": "%s"}\n' "$text" "$temp_c" "$class"
   '';
 
@@ -123,7 +123,7 @@ let
   wifiScript = pkgs.writeShellScript "waybar-wifi" ''
     # Check if wifi is blocked by rfkill
     if rfkill list wifi | grep -q "Soft blocked: yes"; then
-      echo '{"text": "<span size=\"300%\">󰤭</span>", "tooltip": "wifi off", "class": "off"}'
+      echo '{"text": "<span size=\"200%\">󰤭</span>", "tooltip": "wifi off", "class": "off"}'
       exit
     fi
 
@@ -132,7 +132,7 @@ let
     done)
 
     if [ -z "$IFACE" ]; then
-      echo '{"text": "<span size=\"300%\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
+      echo '{"text": "<span size=\"200%\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
       exit
     fi
 
@@ -141,7 +141,7 @@ let
     RSSI=$(echo "$INFO" | awk '$1 == "RSSI" {print $2}')
 
     if [ -z "$SSID" ]; then
-      echo '{"text": "<span size=\"300%\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
+      echo '{"text": "<span size=\"200%\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
       exit
     fi
 
@@ -187,7 +187,7 @@ let
     elif [ "''${PCT}" -lt 100 ]; then PCT_PAD=" "
     else                               PCT_PAD=""
     fi
-    TEXT="<span rise='9000' size='130%' color='#${config.lib.stylix.colors.base0D}99'>''${TX_FMT}</span> <span rise='9000' size='130%' color='#${config.lib.stylix.colors.base0D}99'>''${RX_FMT}</span>  <span size='300%'>$ICON</span>  <span rise='9000' size='130%'>''${PCT}%''${PCT_PAD}</span>"
+    TEXT="<span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0D}99'>''${TX_FMT}</span> <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0D}99'>''${RX_FMT}</span>  <span size='200%'>$ICON</span>  <span rise='3500' size='130%'>''${PCT}%''${PCT_PAD}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
@@ -282,14 +282,14 @@ in
       };
 
       battery = {
-        format-high = "<span size=\"200%\">{icon}</span>";
-        format-medium = "<span size=\"200%\">{icon}</span>";
-        format-low = "<span size=\"200%\">{icon}</span> <span color=\"#${config.lib.stylix.colors.base0D}\" size=\"130%\">{capacity}%</span>";
-        format-critical = "<span size=\"200%\">{icon}</span> <span color=\"#${config.lib.stylix.colors.base0D}\" size=\"130%\">{capacity}%</span>";
-        format-charging-high = "<span size=\"200%\">󰂄</span>";
-        format-charging-medium = "<span size=\"200%\">󰂄</span>";
-        format-charging-low = "<span size=\"200%\">󰂄</span> <span color=\"#${config.lib.stylix.colors.base0D}\" size=\"130%\">{capacity}%</span>";
-        format-charging-critical = "<span size=\"200%\">󰂄</span> <span color=\"#${config.lib.stylix.colors.base0D}\" size=\"130%\">{capacity}%</span>";
+        format-high = "<span size=\"150%\">{icon}</span>";
+        format-medium = "<span size=\"150%\">{icon}</span>";
+        format-low = "<span size=\"150%\">{icon}</span> <span color=\"#${config.lib.stylix.colors.base0D}\" size=\"130%\">{capacity}%</span>";
+        format-critical = "<span size=\"150%\">{icon}</span> <span color=\"#${config.lib.stylix.colors.base0D}\" size=\"130%\">{capacity}%</span>";
+        format-charging-high = "<span size=\"150%\">󰂄</span>";
+        format-charging-medium = "<span size=\"150%\">󰂄</span>";
+        format-charging-low = "<span size=\"150%\">󰂄</span> <span color=\"#${config.lib.stylix.colors.base0D}\" size=\"130%\">{capacity}%</span>";
+        format-charging-critical = "<span size=\"150%\">󰂄</span> <span color=\"#${config.lib.stylix.colors.base0D}\" size=\"130%\">{capacity}%</span>";
         tooltip-format = "{capacity}%";
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 15; low = 25; medium = 50; high = 100; };
@@ -324,11 +324,11 @@ in
       };
 
       bluetooth = {
-        format = "<span size=\"200%\">󰂯</span>";
-        format-connected = "<span size=\"200%\">󰂱</span> <span size=\"130%\">{device_alias}</span>";
-        format-connected-battery = "<span size=\"200%\">󰂱</span> <span size=\"130%\">{device_alias} {device_battery_percentage}%</span>";
-        format-disabled = "<span size=\"200%\">󰂯</span>";
-        format-off = "<span size=\"200%\">󰂯</span>";
+        format = "<span size=\"150%\">󰂯</span>";
+        format-connected = "<span size=\"150%\">󰂱</span> <span size=\"130%\">{device_alias}</span>";
+        format-connected-battery = "<span size=\"150%\">󰂱</span> <span size=\"130%\">{device_alias} {device_battery_percentage}%</span>";
+        format-disabled = "<span size=\"150%\">󰂯</span>";
+        format-off = "<span size=\"150%\">󰂯</span>";
         tooltip-format-connected = "{device_enumerate}";
         tooltip-format-enumerate-connected = "{device_alias} ({device_address})";
         tooltip-format-enumerate-connected-battery = "{device_alias} ({device_address}) {device_battery_percentage}%";
