@@ -1,6 +1,6 @@
 # Waybar status bar: workspaces, clock, battery, wifi, cpu, memory, bluetooth, audio.
 # Click handlers open TUI popups (impala, bluetui, pulsemixer) in floating windows.
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 let
   # Creates a toggle script: closes window if open, opens if closed.
@@ -458,7 +458,6 @@ in
       #bluetooth,
       #pulseaudio,
       #custom-power {
-        background: #2e3440;
         border-radius: 0;
         border: none;
         margin: 0;
@@ -505,7 +504,7 @@ in
       #workspaces button.active {
         padding: 2px 16px;
         color: #ffffff;
-        background: #2e3440;
+        background: #${config.lib.stylix.colors.base0D};
         border-radius: 0;
         margin: 0;
       }
@@ -588,7 +587,6 @@ in
 
       #custom-nowplaying {
         padding: 0 16px;
-        background: #2e3440;
         margin: 0;
       }
 
