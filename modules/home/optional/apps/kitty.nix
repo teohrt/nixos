@@ -70,6 +70,8 @@ in
     settings = {
       # Window padding (kitty uses single value for all sides)
       window_padding_width = 12;
+      window_border_width = "0.5pt";
+      draw_minimal_borders = "yes";
 
       # Animated cursor trail (the feature you want)
       cursor_trail = 5;
@@ -153,7 +155,8 @@ in
       inactive_tab_background #0d0f14
       active_tab_background #2e3440
       active_tab_foreground #ffffff
-      active_border_color #2e3440
+      active_border_color #0d0f14
+      inactive_border_color #0d0f14
     '';
   };
 
