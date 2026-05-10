@@ -112,10 +112,15 @@ in
         padding: 1em 1em;
       }
 
-      .control-center,
-      .control-center * {
+      .control-center {
         border-radius: 0 !important;
         background-color: rgba(13, 15, 20, 0.7);
+        border-color: #ffffff !important;
+      }
+
+      .control-center * {
+        border-radius: 0 !important;
+        background-color: transparent;
         border-color: #ffffff !important;
       }
 
@@ -143,6 +148,15 @@ in
       .notification-action {
         background-color: rgba(13, 15, 20, 0.7);
         border: 1px solid #ffffff !important;
+      }
+
+      .widget-title > button {
+        background: transparent !important;
+        border: none !important;
+      }
+
+      .notification-content image {
+        border-radius: 50% !important;
       }
 
       /* Hide broken placeholder image when no notifications */
