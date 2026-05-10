@@ -368,7 +368,7 @@ in
       .modules-left,
       .modules-center,
       .modules-right {
-        padding: 0 4px;
+        padding: 0;
       }
 
       #custom-launcher,
@@ -381,7 +381,7 @@ in
         background: #2e3440;
         border-radius: 0;
         border: none;
-        margin: 3px 0;
+        margin: 0;
       }
 
       #custom-launcher {
@@ -402,7 +402,7 @@ in
       #custom-power:hover {
         background: rgba(255, 255, 255, 0.08);
         border-radius: 0;
-        margin: 3px 0;
+        margin: 0;
       }
 
       #workspaces {
@@ -526,7 +526,7 @@ in
         padding: 2px 12px;
         background: rgba(255, 68, 68, 0.3);
         border-radius: 0;
-        margin: 3px 0;
+        margin: 0;
         color: #ff4444;
         font-size: 16px;
       }
