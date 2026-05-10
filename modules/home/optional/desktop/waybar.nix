@@ -314,7 +314,7 @@ in
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 15; low = 25; medium = 50; high = 100; };
         interval = 2;
-        on-click = "${mkToggle "battery" "kitty --title battery -e bash -c 'upower -i $(upower -e | grep BAT); read'"}";
+        on-click = "${mkToggle "battery" "kitty --title battery -e ${pkgs.batmon}/bin/batmon"}";
       };
 
       "custom/temp" = {
