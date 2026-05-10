@@ -575,6 +575,7 @@ in
 
         "workspace 1, class:^(chromium-browser|google-chrome|Chromium)$"
         "workspace 2, class:^(kitty)$, initialTitle:^(kitty)$"
+        "noborder,   class:^(kitty)$, initialTitle:^(kitty)$"
         "workspace 3, class:^(code|Code|code-url-handler)$"
         "workspace 6, class:^(Slack|slack)$"
         "workspace 7, class:^(obsidian)$"

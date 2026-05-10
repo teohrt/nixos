@@ -106,7 +106,7 @@ in
       tab_bar_background #${config.lib.stylix.colors.base0D}
       inactive_tab_background #${config.lib.stylix.colors.base0D}
       inactive_tab_foreground #000000
-      active_tab_background #${config.lib.stylix.colors.base0B}
+      active_tab_background #${config.lib.stylix.colors.base02}
       active_tab_foreground #000000
       active_tab_font_style bold
       active_border_color #${config.lib.stylix.colors.base0D}
