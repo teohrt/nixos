@@ -250,7 +250,7 @@ let
     elif [ "''${PCT}" -lt 100 ]; then PCT_PAD=" "
     else                               PCT_PAD=""
     fi
-    TEXT="<span rise='9000' size='130%' color='#ffffff99'>''${TX_FMT}</span> <span rise='9000' size='130%' color='#ffffff99'>''${RX_FMT}</span>  <span size='300%'>$ICON</span>  <span rise='9000' size='130%'>''${PCT}%''${PCT_PAD}</span>"
+    TEXT="<span rise='9000' size='130%' color='#${config.lib.stylix.colors.base0D}99'>''${TX_FMT}</span> <span rise='9000' size='130%' color='#${config.lib.stylix.colors.base0D}99'>''${RX_FMT}</span>  <span size='300%'>$ICON</span>  <span rise='9000' size='130%'>''${PCT}%''${PCT_PAD}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
@@ -347,12 +347,12 @@ in
       battery = {
         format-high = "<span size=\"200%\">{icon}</span>";
         format-medium = "<span size=\"200%\">{icon}</span>";
-        format-low = "<span size=\"200%\">{icon}</span> <span color=\"#ffffff\" size=\"130%\">{capacity}%</span>";
-        format-critical = "<span size=\"200%\">{icon}</span> <span color=\"#ffffff\" size=\"130%\">{capacity}%</span>";
+        format-low = "<span size=\"200%\">{icon}</span> <span color=\"#${config.lib.stylix.colors.base0D}\" size=\"130%\">{capacity}%</span>";
+        format-critical = "<span size=\"200%\">{icon}</span> <span color=\"#${config.lib.stylix.colors.base0D}\" size=\"130%\">{capacity}%</span>";
         format-charging-high = "<span size=\"200%\">󰂄</span>";
         format-charging-medium = "<span size=\"200%\">󰂄</span>";
-        format-charging-low = "<span size=\"200%\">󰂄</span> <span color=\"#ffffff\" size=\"130%\">{capacity}%</span>";
-        format-charging-critical = "<span size=\"200%\">󰂄</span> <span color=\"#ffffff\" size=\"130%\">{capacity}%</span>";
+        format-charging-low = "<span size=\"200%\">󰂄</span> <span color=\"#${config.lib.stylix.colors.base0D}\" size=\"130%\">{capacity}%</span>";
+        format-charging-critical = "<span size=\"200%\">󰂄</span> <span color=\"#${config.lib.stylix.colors.base0D}\" size=\"130%\">{capacity}%</span>";
         tooltip-format = "{capacity}%";
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 15; low = 25; medium = 50; high = 100; };
@@ -435,14 +435,15 @@ in
         border-radius: 0;
         min-height: 0;
         background: transparent;
-        color: #ffffff;
       }
+
 
 
       window#waybar {
         background: rgba(13, 15, 20, 0.7);
         border-radius: 0;
         padding: 0;
+        color: #${config.lib.stylix.colors.base0D};
       }
 
 
@@ -493,7 +494,7 @@ in
 
       #workspaces button {
         padding: 2px 16px;
-        color: #b3b3b3;
+        color: #${config.lib.stylix.colors.base0D};
         box-shadow: none;
         border-radius: 0;
         border: none;
@@ -504,7 +505,7 @@ in
 
       #workspaces button.active {
         padding: 2px 16px;
-        color: #ffffff;
+        color: #000000;
         background: #${config.lib.stylix.colors.base0D};
         border-radius: 0;
         margin: 0;
@@ -599,14 +600,14 @@ in
         background: rgba(10, 10, 15, 0.85);
         border: none;
         border-radius: 8px;
-        color: #ffffff;
+        color: #${config.lib.stylix.colors.base0D};
         padding: 4px 8px;
       }
 
       #battery.critical { color: #ff4444; }
       #battery.low      { color: #ffaa44; }
       #battery.medium   { color: #ffdd44; }
-      #battery.high     { color: #ffffff; }
+      #battery.high     { color: #${config.lib.stylix.colors.base0D}; }
 
       #custom-recording {
         padding: 0;
