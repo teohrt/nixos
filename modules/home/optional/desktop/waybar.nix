@@ -177,10 +177,10 @@ let
 
     fmt_bits() {
       awk -v b="$1" -v dir="$2" 'BEGIN {
-        if      (b >= 1000000000) { v = b / 1000000000; u = "Gb"; w = 6; d = 3 }
-        else if (b >= 100000)     { v = b / 1000000;    u = "Mb"; w = 6; d = 3 }
-        else if (b >= 100)        { v = b / 1000;       u = "Kb"; w = 5; d = 2 }
-        else                      { v = b;              u = "b "; w = 5; d = 2 }
+        if      (b >= 1000000000) { v = b / 1000000000; u = "Gb/s"; w = 6; d = 3 }
+        else if (b >= 100000)     { v = b / 1000000;    u = "Mb/s"; w = 6; d = 3 }
+        else if (b >= 1000)       { v = b / 1000;       u = "Kb/s"; w = 6; d = 3 }
+        else                      { v = b;              u = "b/s "; w = 6; d = 3 }
         if (v == 0) {
           num = sprintf("%*s0", w - 1, "")
         } else {
