@@ -88,6 +88,10 @@ in
       "ctrl+shift+t" = "detach_window new-tab";
       "ctrl+t" = "set_tab_title";
 
+      # Font size
+      "ctrl+equal" = "change_font_size all +1.0";
+      "ctrl+minus" = "change_font_size all -1.0";
+
     };
 
     # Applied AFTER Stylix's base16 include, so this actually overrides the background
