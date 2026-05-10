@@ -104,6 +104,11 @@ in
       control-center-positionY = "center";
     };
     style = ''
+      * {
+        --border-radius: 0;
+        border-radius: 0 !important;
+      }
+
       .floating-notifications {
         margin: 20px 10px 10px 10px;
       }
