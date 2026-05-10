@@ -98,6 +98,7 @@ in
       tab_bar_style = "fade";
       tab_fade = "0.2 0.4 0.6 0.8 1";  # smaller fade area
       tab_title_template = "{index} - {title}";
+      startup_session = "~/.config/kitty/startup.conf";
           };
 
     # Keybindings mirroring Hyprland (Ctrl instead of Super)
@@ -156,4 +157,22 @@ in
       active_border_color #2e3440
     '';
   };
+
+  xdg.configFile."kitty/startup.conf".text = ''
+    new_tab work
+    cd ~/Dev/work
+    launch zsh
+
+    new_tab misc
+    cd ~/Dev
+    launch zsh
+
+    new_tab nixos
+    cd ~/Dev/other/nixos
+    launch zsh
+
+    new_tab dotfiles
+    cd ~/Dev/other/dotfiles
+    launch zsh
+  '';
 }
