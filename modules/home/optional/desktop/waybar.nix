@@ -250,7 +250,7 @@ let
     elif [ "''${PCT}" -lt 100 ]; then PCT_PAD=" "
     else                               PCT_PAD=""
     fi
-    TEXT="<span size='200%'>$ICON</span>  <span rise='3500'>''${PCT}%''${PCT_PAD}</span> <span rise='3500' color='#ffffff99'>''${TX_FMT}</span> <span rise='3500' color='#ffffff99'>''${RX_FMT}</span>"
+    TEXT="<span rise='3500' color='#ffffff99'>''${TX_FMT}</span> <span rise='3500' color='#ffffff99'>''${RX_FMT}</span>  <span size='200%'>$ICON</span>  <span rise='3500'>''${PCT}%''${PCT_PAD}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
