@@ -102,6 +102,7 @@ in
       control-center-height = 900;
       control-center-positionX = "center";
       control-center-positionY = "center";
+      notification-body-click = "default";
     };
     style = ''
       * {
