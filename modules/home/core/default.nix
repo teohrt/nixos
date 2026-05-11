@@ -55,13 +55,27 @@ let
   '';
 
   powerMenu = pkgs.writeShellScriptBin "power-menu" ''
-    CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nScreensaver\nToggle Screensaver\nCaffeine\nLog Out" \
+    set_power_profile() {
+      powerprofilesctl set "$1"
+      ${pkgs.libnotify}/bin/notify-send -u low -t 1500 "Power Profile" "$(powerprofilesctl get)"
+    }
+
+    CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nPower Profile\nScreensaver\nToggle Screensaver\nCaffeine\nLog Out" \
       | ${walker} --dmenu -N -H)
     case "$CHOICE" in
       Shutdown)           systemctl poweroff ;;
       Restart)            systemctl reboot ;;
       Lock)               hyprlock ;;
       Suspend)            systemctl suspend ;;
+      "Power Profile")
+        current=$(powerprofilesctl get)
+        sub=$(printf "Power Saver\nBalanced\nPerformance" | ${walker} --dmenu -N -H -p "Profile ($current)")
+        case "$sub" in
+          "Power Saver") set_power_profile power-saver ;;
+          Balanced)      set_power_profile balanced ;;
+          Performance)   set_power_profile performance ;;
+        esac
+        ;;
       Screensaver)        launch-screensaver ;;
       "Toggle Screensaver") toggle-screensaver ;;
       Caffeine)           caffeine-menu ;;
@@ -79,7 +93,7 @@ in
   services.swaync = {
     enable = true;
     settings = {
-      border-radius = 10;
+      border-radius = 0;
       width = 250;
       timeout = 5;
       timeout-low = 3;
@@ -90,12 +104,64 @@ in
       control-center-positionY = "center";
     };
     style = ''
+      * {
+        --border-radius: 0;
+        border-radius: 0 !important;
+      }
+
+      .floating-notifications {
+        margin: 20px 10px 10px 10px;
+      }
+
       .notification-content {
-        padding: 1em;
+        padding: 1em 1em;
       }
 
       .control-center {
-        background-color: alpha(@window_bg_color, 0.7);
+        border-radius: 0 !important;
+        background-color: rgba(13, 15, 20, 0.7);
+        border-color: #ffffff !important;
+      }
+
+      .control-center * {
+        border-radius: 0 !important;
+        background-color: transparent;
+        border-color: #ffffff !important;
+      }
+
+      .notification,
+      .notification.low,
+      .notification.normal,
+      .notification.critical,
+      .notification-row,
+      .notification-background {
+        border-radius: 0 !important;
+        border: none !important;
+        outline: none !important;
+        background-color: transparent;
+      }
+
+      .notification,
+      .notification.low,
+      .notification.normal,
+      .notification.critical {
+        background-color: rgba(13, 15, 20, 0.7);
+      }
+
+      .notification-content,
+      .notification-default-action,
+      .notification-action {
+        background-color: rgba(13, 15, 20, 0.7);
+        border: 1px solid #ffffff !important;
+      }
+
+      .widget-title > button {
+        background: transparent !important;
+        border: none !important;
+      }
+
+      .notification-content image {
+        border-radius: 50% !important;
       }
 
       /* Hide broken placeholder image when no notifications */

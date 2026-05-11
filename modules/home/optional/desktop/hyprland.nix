@@ -1,6 +1,6 @@
 # Hyprland window manager configuration: keybindings, window rules, animations,
 # and helper scripts for screenshots, screen recording, voice input, etc.
-{ pkgs, config, ... }:
+{ pkgs, lib, config, ... }:
 let
   # Outputs "width height" for half the focused monitor's dimensions (accounting for scale).
   # Used by multiple scripts for consistent centered window sizing.
@@ -19,6 +19,132 @@ let
     ${pkgs.socat}/bin/socat -u "UNIX-CONNECT:$socket" - | while IFS= read -r line; do
       case "$line" in
         workspace\>\>*) walker --close || true ;;
+      esac
+    done
+  '';
+
+  # When a new window opens on a workspace that has a solo floating kitty,
+  # unfloat the kitty so both windows tile. This complements the terminalHere
+  # script which floats kitty on empty workspaces for a centered single-window look.
+  unfloatOnNewWindow = pkgs.writeShellScript "unfloat-on-new-window" ''
+    socket="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
+    ${pkgs.socat}/bin/socat -u "UNIX-CONNECT:$socket" - | while IFS= read -r line; do
+      case "$line" in
+        openwindow\>\>*)
+          # Extract fields from: openwindow>>ADDR,WORKSPACE,CLASS,TITLE
+          IFS=',' read -r addr_field ws class title <<< "''${line#openwindow>>}"
+
+          # Skip waybar-spawned floating terminals (they have specific titles)
+          case "$title" in
+            hyprmon|wifi|bluetooth|audio|battery|webcam) continue ;;
+          esac
+
+          # Find floating kitty windows on that workspace and unfloat them
+          floating=$(hyprctl clients -j | ${pkgs.jq}/bin/jq -r \
+            ".[] | select(.workspace.id == $ws and .floating == true and .class == \"kitty\") | .address")
+          for addr in $floating; do
+            hyprctl dispatch togglefloating "address:$addr"
+          done
+          ;;
+      esac
+    done
+  '';
+
+  # Toggle waybar on/off - includes fix for waybar not appearing after monitor changes
+  toggleWaybar = pkgs.writeShellScript "toggle-waybar" ''
+    notify() {
+      ${pkgs.libnotify}/bin/notify-send -u low -t 2000 "Waybar" "$1"
+    }
+
+    # Check if waybar has a visible layer surface
+    waybar_visible() {
+      hyprctl layers | grep -q "namespace: waybar"
+    }
+
+    # Reset internal display to fix layer-shell state
+    reset_display() {
+      internal=$(hyprctl monitors all -j | ${pkgs.jq}/bin/jq -r '.[] | select(.name | startswith("eDP")) | .name' | head -1)
+      [[ -z "$internal" ]] && return 1
+      hyprctl keyword monitor "$internal,disable"
+      sleep 0.3
+      hyprctl keyword monitor "$internal,preferred,auto,1.25"
+    }
+
+    # If waybar is running but not visible, reset display and restart waybar
+    if systemctl --user is-active waybar &>/dev/null && ! waybar_visible; then
+      reset_display
+      sleep 0.3
+      pkill -9 waybar 2>/dev/null
+      sleep 0.3
+      systemctl --user start waybar
+      hyprctl reload  # fix duplicate cursor
+      notify "Restored"
+    elif systemctl --user is-active waybar &>/dev/null; then
+      systemctl --user stop waybar
+      notify "Stopped"
+    else
+      systemctl --user start waybar
+      notify "Started"
+    fi
+  '';
+
+  # Auto-mirror: when external monitor connects, make laptop (eDP-*) mirror it
+  # External runs at native resolution, laptop shows scaled copy
+  autoMirror = pkgs.writeShellScript "auto-mirror" ''
+    # Kill any other instances (not ourselves)
+    for pid in $(pgrep -f "auto-mirror"); do
+      if [[ "$pid" != "$$" ]]; then
+        kill "$pid" 2>/dev/null || true
+      fi
+    done
+
+    get_internal() {
+      hyprctl monitors all -j | ${pkgs.jq}/bin/jq -r '.[] | select(.name | startswith("eDP")) | .name' | head -1
+    }
+
+    get_external() {
+      hyprctl monitors all -j | ${pkgs.jq}/bin/jq -r '.[] | select(.name | startswith("eDP") | not) | .name' | head -1
+    }
+
+    handle_connect() {
+      local internal=$(get_internal)
+      local external=$(get_external)
+      [[ -z "$internal" || -z "$external" ]] && return
+
+      hyprctl keyword monitor "$internal,preferred,auto,1,mirror,$external"
+    }
+
+    handle_disconnect() {
+      local internal=$(get_internal)
+      [[ -z "$internal" ]] && return
+
+      # Restore internal monitor config
+      hyprctl keyword monitor "$internal,preferred,auto,1.25"
+
+      # Restore wallpaper
+      sleep 1
+      ${pkgs.swww}/bin/swww restore 2>/dev/null || true
+    }
+
+    # Handle current state on startup
+    sleep 1
+    [[ -n "$(get_external)" ]] && handle_connect
+
+    # Listen for monitor events
+    ${pkgs.socat}/bin/socat -U - "UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" | while read -r line; do
+      case "$line" in
+        monitoraddedv2*)
+          sleep 0.5
+          handle_connect
+          ;;
+        monitorremoved*)
+          # Extract monitor name from event: "monitorremoved>>NAME"
+          removed_monitor="''${line#*>>}"
+          # Only handle removal of external monitors, ignore internal (eDP)
+          [[ "$removed_monitor" == eDP* ]] && continue
+          sleep 0.5
+          handle_disconnect
+          ;;
       esac
     done
   '';
@@ -80,7 +206,9 @@ let
   '';
 
   # Opens kitty in the focused terminal's working directory (or home if not a terminal)
-  # If workspace is empty, centers the terminal; otherwise tiles normally
+  # If workspace is empty, centers the terminal; otherwise tiles normally.
+  # A separate IPC listener (unfloatOnNewWindow) handles unfloating when any
+  # new window joins the workspace.
   terminalHere = pkgs.writeShellScript "terminal-here" ''
     pid=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid')
     dir="$HOME"
@@ -117,11 +245,6 @@ let
       read -r width height < <(${halfScreenSize})
       hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact $width $height; dispatch centerwindow"
     else
-      # Unfloat any floating terminals on this workspace before launching
-      floating=$(hyprctl clients -j | ${pkgs.jq}/bin/jq -r ".[] | select(.workspace.id == $workspace and .floating == true and .class == \"kitty\") | .address")
-      for addr in $floating; do
-        hyprctl dispatch togglefloating address:$addr
-      done
       exec kitty --directory "$dir"
     fi
   '';
@@ -288,9 +411,9 @@ let
         ;;
       "Adjust Brightness")
         current=$(${pkgs.brightnessctl}/bin/brightnessctl -m | cut -d, -f4)
-        sub=$(printf "10%%\n25%%\n50%%\n75%%\n100%%" | walker --dmenu -p "Brightness ($current)")
+        sub=$(printf "Minimum\n25%%\n50%%\n75%%\n100%%" | walker --dmenu -p "Brightness ($current)")
         case "$sub" in
-          10%) set_brightness 10% ;;
+          Minimum) set_brightness 1 ;;
           25%) set_brightness 25% ;;
           50%) set_brightness 50% ;;
           75%) set_brightness 75% ;;
@@ -354,7 +477,9 @@ in
         "swayosd-server"                                   # OSD server for volume/brightness popups
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" # auth agent for privilege escalation prompts
         "${closeWalkerOnWorkspaceSwitch}"                  # close walker on workspace switch (layer surfaces ignore normal focus rules)
+        "${unfloatOnNewWindow}"                              # unfloat solo floating kitty when another window joins the workspace
         "wl-clip-persist --clipboard regular"              # keep clipboard alive after source process exits
+        "${autoMirror}"                                    # auto-mirror laptop to external monitor when connected
       ];
 
       env = [
@@ -371,11 +496,15 @@ in
       ];
 
       general = {
-        gaps_in = 5;   # gap between tiled windows
-        gaps_out = 10; # gap between windows and screen edge
+        gaps_in = 0;
+        gaps_out = 0;
         border_size = 1;
+        no_border_on_floating = false;
+        "col.active_border" = lib.mkForce "rgba(${config.lib.stylix.colors.base0D}ff)";
+        "col.inactive_border" = lib.mkForce "rgba(${config.lib.stylix.colors.base0D}ff)";
         layout = "dwindle"; # binary space partitioning layout
       };
+
 
       misc = {
         focus_on_activate = true; # switch to workspace when app requests focus
@@ -386,16 +515,16 @@ in
         # smooth deceleration curve for all animations
         bezier = "easeOutQuart, 0.25, 1, 0.5, 1";
         animation = [
-          "windows, 1, 2, easeOutQuart, slide"
-          "windowsOut, 1, 2, easeOutQuart, slide"
+          "windows, 1, 0.75, easeOutQuart, slide"
+          "windowsOut, 1, 0.75, easeOutQuart, slide"
           "fade, 1, 2, easeOutQuart"
-          "workspaces, 1, 2, easeOutQuart, slide"
+          "workspaces, 1, 0.75, easeOutQuart, slide"
           "layers, 1, 2, easeOutQuart, popin 80%"
         ];
       };
 
       decoration = {
-        rounding = 10; # rounded corners radius (px)
+        rounding = 0;
         blur = {
           enabled = true;
           size = 4;
@@ -412,6 +541,10 @@ in
         sensitivity = 0;    # 0 = no pointer speed adjustment
         repeat_rate = 50;   # keys per second when held (default: 25)
         repeat_delay = 300; # ms before repeat starts (default: 600)
+
+        touchpad = {
+          disable_while_typing = false;
+        };
       };
 
       dwindle = {
@@ -437,8 +570,23 @@ in
         "animation slide top, swaync-control-center"   # notification panel slides down from top
       ];
 
+      # remove borders when only one tiled window on a workspace
+      workspace = [
+        "w[tv1], gapsout:0, gapsin:0"
+        "f[1], gapsout:0, gapsin:0"
+      ];
+
       # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
+        "bordersize 0, floating:0, onworkspace:w[tv1]"
+        "bordersize 0, floating:0, onworkspace:f[1]"
+
+        "workspace 1, class:^(chromium-browser|google-chrome|Chromium)$"
+        "workspace 2, class:^(kitty)$, initialTitle:^(kitty)$"
+        "workspace 3, class:^(code|Code|code-url-handler)$"
+        "workspace 6, class:^(Slack|slack)$"
+        "workspace 7, class:^(obsidian)$"
+        "workspace 8, class:^(spotify|Spotify)$"
 
         "fullscreen, class:^(screensaver)$"
         "noanim,     class:^(screensaver)$"
@@ -470,14 +618,22 @@ in
         "center,     title:^(hyprmon)$"
         "animation slide top, title:^(hyprmon)$"
 
+        "float, class:^(floating-btop)$"
+        "center, class:^(floating-btop)$"
+        "animation slide top, class:^(floating-btop)$"
+        "bordersize 1, class:^(floating-btop)$"
+        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), class:^(floating-btop)$"
+
         "float, title:^(wifi)$"
-        "size 900 600, title:^(wifi)$"
         "center, title:^(wifi)$"
         "animation slide top, title:^(wifi)$"
+        "bordersize 1, title:^(wifi)$"
+        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(wifi)$"
         "float, title:^(bluetooth)$"
-        "size 900 600, title:^(bluetooth)$"
         "center, title:^(bluetooth)$"
         "animation slide top, title:^(bluetooth)$"
+        "bordersize 1, title:^(bluetooth)$"
+        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(bluetooth)$"
 
         "float, title:^(webcam)$"
         "size 320 240, title:^(webcam)$"
@@ -485,13 +641,15 @@ in
         "pin, title:^(webcam)$"
         "noborder, title:^(webcam)$"
         "float, title:^(audio)$"
-        "size 900 600, title:^(audio)$"
         "center, title:^(audio)$"
         "animation slide top, title:^(audio)$"
+        "bordersize 1, title:^(audio)$"
+        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(audio)$"
         "float, title:^(battery)$"
-        "size 600 800, title:^(battery)$"
         "center, title:^(battery)$"
         "animation slide top, title:^(battery)$"
+        "bordersize 1, title:^(battery)$"
+        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(battery)$"
       ];
 
       # standard key bindings with descriptions (bindd = bind with description)
@@ -505,7 +663,7 @@ in
         "$mod, Q,            Close window,          killactive"
 
         "$mod, SPACE,        Launch apps,           exec, $menu"
-        "$mod, B,            Toggle waybar,         exec, pgrep waybar && pkill -SIGUSR1 waybar || systemctl --user restart waybar"
+        "$mod, B,            Toggle waybar,         exec, ${toggleWaybar}"
         "$mod, J,            Toggle split,          togglesplit"
         "$mod, P,            Pseudo window,         pseudo"
         "$mod, O,            Pop window out,        exec, ${popWindow}"

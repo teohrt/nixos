@@ -18,13 +18,14 @@ in
 
     [placeholders]
     "default" = { input = "Search...", list = "No Results" }
+    "calc" = { input = "Search...", list = "boom, quick maths" }
 
     [keybinds]
     quick_activate = []
 
     [providers]
     max_results = 256
-    default = ["desktopapplications"]
+    default = ["desktopapplications", "calc"]
   '';
 
   # Walker 2.x themes are directories containing layout.xml + style.css.
@@ -53,17 +54,17 @@ in
     }
 
     .box-wrapper {
-      background: alpha(@base, ${bgOpacity});
+      background: rgba(13, 15, 20, 0.7);
       padding: 20px;
-      border: 2px solid @accent;
-      border-radius: 10px;
+      border: 1px solid @accent;
+      border-radius: 0;
       min-width: 360px;
       max-width: 360px;
     }
 
     .search-container {
       background: alpha(@surface, ${opacity});
-      border-radius: 6px;
+      border-radius: 0;
       padding: 12px 16px;
     }
 
@@ -80,7 +81,7 @@ in
     child:hover .item-box,
     child:selected .item-box {
       background: alpha(@overlay, ${opacity});
-      border-radius: 4px;
+      border-radius: 0;
     }
 
     child:selected .item-box * {
@@ -105,6 +106,50 @@ in
     .item-image {
       margin-right: 10px;
     }
+
+  '';
+
+  # Calc provider item layout: stripped the GtkImage (which shows a broken icon
+  # since calc results have no app icon) and the unused ItemImageFont label.
+  xdg.configFile."walker/themes/stylix-nixos/item_calc.xml".text = ''
+    <?xml version="1.0" encoding="UTF-8"?>
+    <interface>
+      <requires lib="gtk" version="4.0"></requires>
+      <object class="GtkBox" id="ItemBox">
+        <style><class name="item-box"></class></style>
+        <property name="orientation">horizontal</property>
+        <property name="spacing">10</property>
+        <child>
+          <object class="GtkBox" id="ItemTextBox">
+            <style><class name="item-text-box"></class></style>
+            <property name="orientation">vertical</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">true</property>
+            <property name="vexpand-set">true</property>
+            <property name="spacing">0</property>
+            <child>
+              <object class="GtkLabel" id="ItemText">
+                <style><class name="item-text"></class></style>
+                <property name="wrap">false</property>
+                <property name="vexpand_set">true</property>
+                <property name="vexpand">true</property>
+                <property name="xalign">0</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="ItemSubtext">
+                <style><class name="item-subtext"></class></style>
+                <property name="wrap">true</property>
+                <property name="vexpand_set">true</property>
+                <property name="vexpand">true</property>
+                <property name="xalign">0</property>
+                <property name="yalign">0</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </interface>
   '';
 
   xdg.configFile."walker/themes/stylix-nixos/layout.xml".text = ''
@@ -231,6 +276,11 @@ in
         </child>
       </object>
     </interface>
+  '';
+
+  # Disable calc history so selected results don't persist across sessions.
+  xdg.configFile."elephant/calc.toml".text = ''
+    max_items = 0
   '';
 
   # Systemd services for walker and elephant instead of hyprland exec-once:

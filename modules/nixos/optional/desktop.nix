@@ -83,4 +83,8 @@
 
   # Battery status daemon (used by waybar, hypridle for battery-aware behavior)
   services.upower.enable = true;
+
+  # Power profile switching (power-saver, balanced, performance)
+  # Works with Intel P-state and AMD P-state drivers
+  services.power-profiles-daemon.enable = true;
 }

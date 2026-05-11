@@ -1,76 +1,38 @@
-# Terminal emulator with animated cursor trail. Styled by Stylix, but with fixed dark background.
-{ lib, pkgs, ... }:
+# Terminal emulator with cursor trail and smooth scrolling. Styled by Stylix, but with fixed dark background.
+{ lib, pkgs, pkgs-kitty, config, ... }:
 
 let
-  sessionsDir = "$HOME/.config/kitty/sessions";
-
-  # Save current kitty session - prompts for name via walker
-  saveSession = pkgs.writeShellScript "kitty-save-session" ''
-    mkdir -p ${sessionsDir}
-
-    # Prompt for session name using walker
-    name=$(echo "" | ${pkgs.walker}/bin/walker --dmenu --placeholder "Session name...")
-    [[ -z "$name" ]] && exit 0
-
-    # Sanitize name
-    name=$(echo "$name" | tr ' ' '-' | tr -cd '[:alnum:]-_')
-
-    # Get current state and convert to session format
-    ${pkgs.kitty}/bin/kitty @ --to "$KITTY_LISTEN_ON" ls | ${pkgs.jq}/bin/jq -r '
-      .[] | .tabs[] |
-      "new_tab \(.title // "tab")\nlayout \(.layout)\n" +
-      (.windows | to_entries | map(
-        "cd \(.value.cwd)\nlaunch " + (if .key == 0 then "zsh" else "--location=split zsh" end)
-      ) | join("\n"))
-    ' > "${sessionsDir}/$name.conf"
-
-    ${pkgs.libnotify}/bin/notify-send "Kitty" "Session '$name' saved"
-  '';
-
-  # Open VS Code in the sessions directory
-  openVSCode = pkgs.writeShellScript "kitty-open-vscode" ''
-    mkdir -p ${sessionsDir}
-    code ${sessionsDir} &
-  '';
-
-  # Load a saved session via walker selection (replaces current session)
-  loadSession = pkgs.writeShellScript "kitty-load-session" ''
-    shopt -s nullglob
-    sessions=(${sessionsDir}/*.conf)
-
-    if [[ ''${#sessions[@]} -eq 0 ]]; then
-      ${pkgs.libnotify}/bin/notify-send "Kitty" "No saved sessions"
-      exit 0
+  # Unfloat the active window if it's floating (used before kitty splits)
+  unfloatIfFloating = pkgs.writeShellScript "unfloat-if-floating" ''
+    floating=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.floating')
+    if [[ "$floating" == "true" ]]; then
+      hyprctl dispatch togglefloating
     fi
-
-    # List session names for walker
-    names=$(for f in "''${sessions[@]}"; do basename "$f" .conf; done)
-
-    selected=$(echo "$names" | ${pkgs.walker}/bin/walker --dmenu --placeholder "Load session...")
-    [[ -z "$selected" ]] && exit 0
-
-    # Launch new kitty with session, then close current instance
-    ${pkgs.kitty}/bin/kitty --session "${sessionsDir}/$selected.conf" &
-    sleep 0.5
-    ${pkgs.kitty}/bin/kitty @ --to "$KITTY_LISTEN_ON" close-window --match all
   '';
 in
 {
   programs.kitty = {
     enable = true;
+    package = pkgs-kitty.kitty;
     settings = {
       # Window padding (kitty uses single value for all sides)
       window_padding_width = 12;
+      window_border_width = "0.5pt";
+      draw_minimal_borders = "yes";
 
       # Animated cursor trail (the feature you want)
-      cursor_trail = 3;
-      cursor_trail_decay = "0.1 0.4";
+      cursor_trail = 5;
+      cursor_trail_decay = "0.07 0.27";
       cursor_trail_start_threshold = 0;
 
       # Cursor appearance
       cursor_shape = "beam";
       cursor_beam_thickness = "1.5";
       cursor_blink_interval = "0.5";
+
+      # Smooth scrolling (kitty 0.46+)
+      pixel_scroll = true;
+      momentum_scroll = "0.98";
 
       # Disable confirm on close
       confirm_os_window_close = 0;
@@ -82,9 +44,8 @@ in
       # Tabs and layouts
       enabled_layouts = "splits,stack";
       tab_bar_edge = "bottom";
-      tab_bar_style = "fade";
-      tab_fade = "0.2 0.4 0.6 0.8 1";  # smaller fade area
-      tab_title_template = "{index} - {title}";
+      tab_bar_margin_height = "0 0";
+      startup_session = "~/.config/kitty/startup.conf";
           };
 
     # Keybindings mirroring Hyprland (Ctrl instead of Super)
@@ -107,7 +68,7 @@ in
 
       # Window management
       "ctrl+q" = "close_window";
-      "ctrl+enter" = "launch --location=split --cwd=current";
+      "ctrl+enter" = "combine : launch --type=background ${unfloatIfFloating} : launch --location=split --cwd=current";
       "ctrl+shift+enter" = "new_tab_with_cwd";
       "ctrl+f" = "toggle_layout stack";
       "ctrl+j" = "layout_action rotate";
@@ -127,17 +88,47 @@ in
       "ctrl+shift+t" = "detach_window new-tab";
       "ctrl+t" = "set_tab_title";
 
-      # Session management
-      "ctrl+s" = "launch --type=overlay --copy-env ${saveSession}";
-      "ctrl+shift+s" = "launch --type=background --copy-env ${loadSession}";
-      "ctrl+e" = "launch --type=background --copy-env ${openVSCode}";
+      # Font size
+      "ctrl+equal" = "change_font_size all +1.0";
+      "ctrl+minus" = "change_font_size all -1.0";
+
     };
 
     # Applied AFTER Stylix's base16 include, so this actually overrides the background
     extraConfig = ''
+      font_size 16
+      placement_strategy top-left
       background #0d0f14
-      active_tab_background #4a6fa5
-      active_tab_foreground #ffffff
+      tab_bar_style separator
+      tab_separator ""
+      tab_title_template " {title} "
+      tab_bar_margin_color #${config.lib.stylix.colors.base0D}
+      tab_bar_background #${config.lib.stylix.colors.base0D}
+      inactive_tab_background #${config.lib.stylix.colors.base0D}
+      inactive_tab_foreground #000000
+      active_tab_background #0d0f14
+      active_tab_foreground #${config.lib.stylix.colors.base0D}
+      active_tab_font_style bold
+      active_border_color #${config.lib.stylix.colors.base0D}
+      inactive_border_color #2e3440
     '';
   };
+
+  xdg.configFile."kitty/startup.conf".text = ''
+    new_tab work
+    cd ~/Dev/work
+    launch zsh
+
+    new_tab misc
+    cd ~/Dev
+    launch zsh
+
+    new_tab nixos
+    cd ~/Dev/other/nixos
+    launch zsh
+
+    new_tab dotfiles
+    cd ~/Dev/other/dotfiles
+    launch zsh
+  '';
 }

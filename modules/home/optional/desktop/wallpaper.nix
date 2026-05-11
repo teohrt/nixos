@@ -1,6 +1,6 @@
 # Wallpaper management: static images via swww, video loops via mpvpaper.
 # Wallpaper picker accessible via Super+Shift+W.
-{ pkgs, lib, pkgs-walker, ... }:
+{ pkgs, lib, config, pkgs-walker, ... }:
 
 let
   # Static wallpapers fetched from URLs at build time.
@@ -120,10 +120,19 @@ let
     }
   ];
 
-  defaultWallpaper = builtins.head staticWallpapers;
+  defaultWallpaper = builtins.elemAt staticWallpapers 5; # Blue Squares
 
   # Walker dmenu picker for wallpapers with category submenus
   wallpaperPicker = pkgs.writeShellScriptBin "wallpaper-picker" ''
+    # Stretch image to monitor resolution using ImageMagick
+    stretch_to_screen() {
+      local res
+      res=$(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width)x\(.height)"')
+      local tmp="/tmp/wallpaper-stretched.png"
+      ${pkgs.imagemagick}/bin/magick "$1" -resize "''${res}!" "$tmp"
+      echo "$tmp"
+    }
+
     # Helper to switch to static wallpaper (swww)
     set_static() {
       pkill -f mpvpaper 2>/dev/null
@@ -136,7 +145,9 @@ let
           sleep 0.1
         done
       fi
-      ${pkgs.swww}/bin/swww img "$1" \
+      local img
+      img=$(stretch_to_screen "$1")
+      ${pkgs.swww}/bin/swww img "$img" \
         --transition-type grow \
         --transition-duration 1 \
         --transition-fps 60 \
@@ -149,16 +160,41 @@ let
       ${pkgs.swww}/bin/swww clear 2>/dev/null
       pkill -f swww-daemon 2>/dev/null
       sleep 0.2
-      ${pkgs.mpvpaper}/bin/mpvpaper -o "loop" '*' "$1" &
+      ${pkgs.mpvpaper}/bin/mpvpaper -o "loop --keepaspect=no" '*' "$1" &
+    }
+
+    # Helper to switch to solid color wallpaper
+    set_solid() {
+      pkill -f mpvpaper 2>/dev/null
+      sleep 0.2
+      if ! pgrep -f swww-daemon > /dev/null; then
+        ${pkgs.swww}/bin/swww-daemon &
+        for i in $(seq 1 20); do
+          ${pkgs.swww}/bin/swww query &>/dev/null && break
+          sleep 0.1
+        done
+      fi
+      ${pkgs.swww}/bin/swww clear "$1"
     }
 
     # First menu: choose category
-    CATEGORY=$(printf 'Static\nVideo' \
+    CATEGORY=$(printf 'Static\nVideo\nSolid' \
       | ${pkgs-walker.walker}/bin/walker --dmenu -N -H -p "Wallpaper Type")
 
     [ -z "$CATEGORY" ] && exit 0
 
     case "$CATEGORY" in
+      "Solid")
+        CHOICE=$(printf 'Nord Grey' \
+          | ${pkgs-walker.walker}/bin/walker --dmenu -N -H -p "Solid Color")
+        [ -z "$CHOICE" ] && exit 0
+        case "$CHOICE" in
+          "Nord Grey")
+            set_solid "0d0f14"
+            ${pkgs.libnotify}/bin/notify-send -t 2000 "Wallpaper" "Switched to Nord Grey"
+            ;;
+        esac
+        ;;
       "Static")
         CHOICE=$(printf '${lib.concatStringsSep "\\n" (map (w: w.name) staticWallpapers)}' \
           | ${pkgs-walker.walker}/bin/walker --dmenu -N -H -p "Static Wallpaper")
@@ -202,7 +238,7 @@ in
   wayland.windowManager.hyprland.settings = {
     exec-once = [
       "${pkgs.swww}/bin/swww-daemon"
-      "sleep 0.5 && ${pkgs.swww}/bin/swww img ${defaultWallpaper.path}"
+      "sleep 0.5 && RES=$(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | \"\\(.width)x\\(.height)\"') && ${pkgs.imagemagick}/bin/magick ${defaultWallpaper.path} -resize \"$RES!\" /tmp/wallpaper-stretched.png && ${pkgs.swww}/bin/swww img /tmp/wallpaper-stretched.png"
     ];
     bind = [
       "$mod SHIFT, W, exec, wallpaper-picker"

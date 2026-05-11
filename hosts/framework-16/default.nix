@@ -151,8 +151,11 @@
       ../../modules/home/optional/ssh.nix
     ];
 
-    # Framework 16 specific: 1.25x scale (overrides shared 1.2x)
-    wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1.25";
+    # Framework 16 specific: 1.25x scale for internal display
+    wayland.windowManager.hyprland.settings.monitor = lib.mkForce [
+      "eDP-1,preferred,auto,1.25"
+      ",preferred,auto,1"  # external monitors use native resolution
+    ];
 
     # Framework 16 specific: reduced mouse sensitivity
     wayland.windowManager.hyprland.settings.input = {
