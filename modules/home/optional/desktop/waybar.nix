@@ -248,7 +248,7 @@ in
 
     settings = [{
       layer = "top";
-      position = "top";
+      position = "bottom";
       height = 24;
       margin-top = 0;
       margin-left = 0;
