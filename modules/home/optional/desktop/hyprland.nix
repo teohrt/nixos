@@ -596,7 +596,7 @@ in
         "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
         "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(spotify)$"
         "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(Slack)$"
-        "opacity 0.9 0.9, class:^(code)$"
+
         "opacity 0.9 0.9, class:^(obsidian)$"
         "float,      class:^(org.kde.partitionmanager)$"
         "size 650 450, class:^(org.kde.partitionmanager)$"

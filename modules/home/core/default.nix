@@ -1,4 +1,4 @@
-{ pkgs, pkgs-walker, ... }:
+{ pkgs, lib, pkgs-walker, ... }:
 let
   walker = "${pkgs-walker.walker}/bin/walker";
 
@@ -61,7 +61,7 @@ let
     }
 
     CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nPower Profile\nScreensaver\nToggle Screensaver\nCaffeine\nLog Out" \
-      | ${walker} --dmenu -N -H)
+      | ${walker} --dmenu -N -H -p "Power")
     case "$CHOICE" in
       Shutdown)           systemctl poweroff ;;
       Restart)            systemctl reboot ;;
@@ -102,6 +102,7 @@ in
       control-center-height = 900;
       control-center-positionX = "center";
       control-center-positionY = "center";
+      notification-body-click = "default";
     };
     style = ''
       * {
@@ -188,6 +189,14 @@ in
   };
 
   home.packages = [ powerMenu caffeineMenu ];
+
+  # Register global MCP servers for Claude Code (--scope user).
+  # Available in every Claude Code session regardless of directory.
+  # Uses activation script because ~/.claude.json is actively managed by Claude Code.
+  home.activation.claude-mcp = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run ${pkgs.claude-code}/bin/claude mcp add exa --scope user -- \
+      sh -c 'export EXA_API_KEY=$(sops -d --extract '"'"'["exa_api_key"]'"'"' /home/trace/Dev/other/nixos/secrets/secrets.yaml) && npx -y exa-mcp-server'
+  '';
 
   home.stateVersion = "25.11";
 }

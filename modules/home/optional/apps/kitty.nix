@@ -34,8 +34,8 @@ in
       pixel_scroll = true;
       momentum_scroll = "0.98";
 
-      # Disable confirm on close
-      confirm_os_window_close = 0;
+      # Confirm before closing the OS window if 2+ kitty windows (splits/tabs) are open
+      confirm_os_window_close = 2;
 
       # Enable remote control for session management
       allow_remote_control = "yes";
