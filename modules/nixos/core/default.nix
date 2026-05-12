@@ -62,5 +62,5 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.sessionVariables.EDITOR = "nvim";
-  environment.sessionVariables.SOPS_AGE_KEY_FILE = "/var/lib/sops-nix/key.txt";
+  environment.sessionVariables.SOPS_AGE_KEY_FILE = "/home/trace/.config/sops/age/keys.txt";
 }

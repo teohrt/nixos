@@ -2,7 +2,7 @@
 {
   sops = {
     defaultSopsFile = ../../../secrets/secrets.yaml;
-    age.keyFile = "/var/lib/sops-nix/key.txt";
+    age.keyFile = "/home/trace/.config/sops/age/keys.txt";
 
     secrets."personal_github_ssh_private_key" = {
       owner = "trace";

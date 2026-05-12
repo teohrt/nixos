@@ -5,9 +5,10 @@ This repo uses [sops-nix](https://github.com/Mic92/sops-nix) with age encryption
 ## How It Works
 
 - Secrets are encrypted in `secrets/secrets.yaml` and committed to git
-- Each host has an age key at `/var/lib/sops-nix/key.txt`
+- Each host has an age key at `~/.config/sops/age/keys.txt`
 - On rebuild, sops-nix decrypts secrets and places them at configured paths
 - After a reimage, just restore the age key and rebuild — secrets decrypt automatically
+- `SOPS_AGE_KEY_FILE` is set via `environment.sessionVariables` in the NixOS config, so you never need to export it manually
 
 ## Initial Setup (One-Time)
 
@@ -25,9 +26,9 @@ nix-shell -p age --run "age-keygen -o admin.key"
 Run on each host:
 
 ```bash
-sudo mkdir -p /var/lib/sops-nix
-nix-shell -p age --run "sudo age-keygen -o /var/lib/sops-nix/key.txt"
-sudo chmod 600 /var/lib/sops-nix/key.txt
+mkdir -p ~/.config/sops/age
+nix-shell -p age --run "age-keygen -o ~/.config/sops/age/keys.txt"
+chmod 600 ~/.config/sops/age/keys.txt
 ```
 
 Note the public key printed (starts with `age1...`).
@@ -61,11 +62,7 @@ ssh-keygen -t ed25519 -C "github" -f /tmp/personal_github_ed25519
 ### 5. Create Encrypted Secrets File
 
 ```bash
-# Set SOPS_AGE_KEY_FILE to your admin key (or host key)
-export SOPS_AGE_KEY_FILE=/var/lib/sops-nix/key.txt
-
-# Create and edit secrets file
-nix-shell -p sops --run "sops secrets/secrets.yaml"
+sops secrets/secrets.yaml
 ```
 
 Add your secrets in the editor:
@@ -106,8 +103,7 @@ ssh -T git@github.com
 4. Re-encrypt secrets with the new key:
 
 ```bash
-export SOPS_AGE_KEY_FILE=/var/lib/sops-nix/key.txt
-nix-shell -p sops --run "sops updatekeys secrets/secrets.yaml"
+sops updatekeys secrets/secrets.yaml
 ```
 
 5. Commit and push
@@ -115,8 +111,8 @@ nix-shell -p sops --run "sops updatekeys secrets/secrets.yaml"
 
 ## After a Reimage
 
-1. Restore `/var/lib/sops-nix/key.txt` from backup
-2. Set permissions: `sudo chmod 600 /var/lib/sops-nix/key.txt`
+1. Restore `~/.config/sops/age/keys.txt` from backup
+2. Set permissions: `chmod 600 ~/.config/sops/age/keys.txt`
 3. Clone the repo and rebuild — secrets decrypt automatically
 
 ## Adding New Secrets
@@ -124,8 +120,7 @@ nix-shell -p sops --run "sops updatekeys secrets/secrets.yaml"
 Edit the secrets file:
 
 ```bash
-export SOPS_AGE_KEY_FILE=/var/lib/sops-nix/key.txt
-nix-shell -p sops --run "sops secrets/secrets.yaml"
+sops secrets/secrets.yaml
 ```
 
 Then add corresponding entries in `modules/nixos/optional/sops.nix`:
@@ -152,4 +147,4 @@ Check that the sops.nix module sets correct `owner`, `group`, and `mode`.
 
 ### Key file not found
 
-Ensure `/var/lib/sops-nix/key.txt` exists and has `chmod 600`.
+Ensure `~/.config/sops/age/keys.txt` exists and has `chmod 600`.
