@@ -11,6 +11,7 @@
     nerd-fonts.jetbrains-mono
     home-manager
     satty
+    sops
   ];
 
   xdg.mime.defaultApplications = {
