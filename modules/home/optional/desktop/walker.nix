@@ -17,7 +17,7 @@ in
     hide_action_hints = true
 
     [placeholders]
-    "default" = { input = "Search...", list = "No Results" }
+    "default" = { input = "Launch", list = "No Results" }
     "calc" = { input = "Search...", list = "boom, quick maths" }
 
     [keybinds]

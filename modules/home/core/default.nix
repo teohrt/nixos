@@ -61,7 +61,7 @@ let
     }
 
     CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nPower Profile\nScreensaver\nToggle Screensaver\nCaffeine\nLog Out" \
-      | ${walker} --dmenu -N -H)
+      | ${walker} --dmenu -N -H -p "Power")
     case "$CHOICE" in
       Shutdown)           systemctl poweroff ;;
       Restart)            systemctl reboot ;;
