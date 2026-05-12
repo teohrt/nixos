@@ -19,6 +19,7 @@ in
     # cli utilities
     terminaltexteffects  # tte — terminal text effects (used by screensaver)
     claude-code
+    nodejs
     lazydocker
     ripgrep
     jq
