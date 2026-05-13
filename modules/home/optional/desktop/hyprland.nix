@@ -2,6 +2,8 @@
 # and helper scripts for screenshots, screen recording, voice input, etc.
 { pkgs, lib, config, ... }:
 let
+  defaultScale = "1.25";
+
   # Generates window rules for a centered floating popup with consistent styling.
   # Used by waybar TUI popups, LocalSend, 1Password, etc.
   # `match` is the windowrulev2 selector (e.g. "class:^(1Password)$" or "title:^(wifi)$").
@@ -71,7 +73,7 @@ let
       [[ -z "$internal" ]] && return 1
       hyprctl keyword monitor "$internal,disable"
       sleep 0.3
-      hyprctl keyword monitor "$internal,preferred,auto,1.25"
+      hyprctl keyword monitor "$internal,preferred,auto,${defaultScale}"
     }
 
     # If waybar is running but not visible, reset display and restart waybar
@@ -93,7 +95,7 @@ let
   '';
 
   # Auto-mirror: when external monitor connects, make laptop (eDP-*) mirror it
-  # External runs at native resolution, laptop shows scaled copy
+  # Both displays use defaultScale; on disconnect, internal is restored
   autoMirror = pkgs.writeShellScript "auto-mirror" ''
     # Kill any other instances (not ourselves)
     for pid in $(pgrep -f "auto-mirror"); do
@@ -115,7 +117,9 @@ let
       local external=$(get_external)
       [[ -z "$internal" || -z "$external" ]] && return
 
-      hyprctl keyword monitor "$internal,preferred,auto,1,mirror,$external"
+      # catch-all monitor rule doesn't apply to hotplugged displays; set scale explicitly
+      hyprctl keyword monitor "$external,preferred,auto,${defaultScale}"
+      hyprctl keyword monitor "$internal,preferred,auto,${defaultScale},mirror,$external"
     }
 
     handle_disconnect() {
@@ -123,7 +127,7 @@ let
       [[ -z "$internal" ]] && return
 
       # Restore internal monitor config
-      hyprctl keyword monitor "$internal,preferred,auto,1.25"
+      hyprctl keyword monitor "$internal,preferred,auto,${defaultScale}"
 
       # Restore wallpaper
       sleep 1
@@ -468,8 +472,7 @@ in
     enable = true;
 
     settings = {
-      # use preferred resolution, auto-position, 1.25x scaling
-      monitor = ",preferred,auto,1.25";
+      monitor = ",preferred,auto,${defaultScale}";
 
       "$terminal" = "kitty";
       "$menu" = "walker -N -H";
