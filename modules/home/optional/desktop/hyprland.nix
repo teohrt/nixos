@@ -466,8 +466,8 @@ in
     enable = true;
 
     settings = {
-      # use preferred resolution, auto-position, 1.2x scaling
-      monitor = ",preferred,auto,1.2";
+      # use preferred resolution, auto-position, 1.25x scaling
+      monitor = ",preferred,auto,1.25";
 
       "$terminal" = "kitty";
       "$menu" = "walker -N -H";
