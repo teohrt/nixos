@@ -14,14 +14,6 @@ let
     "bordersize 1, ${match}"
     "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), ${match}"
   ];
-  # Outputs "width height" for half the focused monitor's dimensions (accounting for scale).
-  # Used by multiple scripts for consistent centered window sizing.
-  # Calculated dynamically rather than cached at login so it stays correct when
-  # monitors are connected/disconnected or scaling changes mid-session.
-  halfScreenSize = pkgs.writeShellScript "half-screen-size" ''
-    hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width / .scale / 2 | floor) \(.height / .scale / 2 | floor)"'
-  '';
-
   # Listens on Hyprland's IPC event socket and closes walker popup whenever the
   # active workspace changes. Needed because walker is a layer surface (not a
   # window) so it persists across workspace switches and ignores normal focus-loss
@@ -173,9 +165,8 @@ let
         "dispatch pin address:$addr;" \
         "dispatch togglefloating address:$addr;"
     elif [[ -n $addr ]]; then
-      read -r width height < <(${halfScreenSize})
       hyprctl dispatch togglefloating address:$addr
-      hyprctl dispatch resizeactive exact $width $height
+      hyprctl dispatch resizeactive exact 50% 50%
       hyprctl dispatch centerwindow address:$addr
       hyprctl -q --batch \
         "dispatch pin address:$addr;" \
@@ -254,8 +245,7 @@ let
       # Empty workspace: launch, float, resize to half screen, and center
       kitty --directory "$dir" &
       sleep 0.1
-      read -r width height < <(${halfScreenSize})
-      hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact $width $height; dispatch centerwindow"
+      hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact 50% 50%; dispatch centerwindow"
     else
       exec kitty --directory "$dir"
     fi
