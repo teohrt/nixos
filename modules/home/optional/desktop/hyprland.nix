@@ -610,10 +610,10 @@ in
         "center,     class:^(localsend_app)$"
         "pin,        class:^(localsend_app)$"
 
-        "float,      class:^(1password)$"
-        "size 650 450, class:^(1password)$"
-        "center,     class:^(1password)$"
-        "pin,        class:^(1password)$"
+        "float,      class:^(1Password)$"
+        "size 650 450, class:^(1Password)$"
+        "center,     class:^(1Password)$"
+        "pin,        class:^(1Password)$"
 
         "float,      title:^(hyprmon)$"
         "size 900 600, title:^(hyprmon)$"
