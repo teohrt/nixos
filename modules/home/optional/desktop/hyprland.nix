@@ -2,6 +2,18 @@
 # and helper scripts for screenshots, screen recording, voice input, etc.
 { pkgs, lib, config, ... }:
 let
+  # Generates window rules for a centered floating popup with consistent styling.
+  # Used by waybar TUI popups, LocalSend, 1Password, etc.
+  # `match` is the windowrulev2 selector (e.g. "class:^(1Password)$" or "title:^(wifi)$").
+  # All popups are sized to half the monitor dimensions, matching halfScreenSize behavior.
+  floatingPopupRules = match: [
+    "float, ${match}"
+    "size 50% 50%, ${match}"
+    "center, ${match}"
+    "animation slide bottom, ${match}"
+    "bordersize 1, ${match}"
+    "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), ${match}"
+  ];
   # Outputs "width height" for half the focused monitor's dimensions (accounting for scale).
   # Used by multiple scripts for consistent centered window sizing.
   # Calculated dynamically rather than cached at login so it stays correct when
@@ -600,58 +612,24 @@ in
         "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(Slack)$"
 
         "opacity 0.9 0.9, class:^(obsidian)$"
-        "float,      class:^(org.kde.partitionmanager)$"
-        "size 650 450, class:^(org.kde.partitionmanager)$"
-        "center,     class:^(org.kde.partitionmanager)$"
-        "pin,        class:^(org.kde.partitionmanager)$"
-
-        "float,      class:^(localsend_app)$"
-        "size 650 450, class:^(localsend_app)$"
-        "center,     class:^(localsend_app)$"
-        "pin,        class:^(localsend_app)$"
-
-        "float,      class:^(1Password)$"
-        "size 650 450, class:^(1Password)$"
-        "center,     class:^(1Password)$"
-        "pin,        class:^(1Password)$"
-
-        "float,      title:^(hyprmon)$"
-        "size 900 600, title:^(hyprmon)$"
-        "center,     title:^(hyprmon)$"
-        "animation slide top, title:^(hyprmon)$"
-
-        "float, class:^(floating-btop)$"
-        "center, class:^(floating-btop)$"
-        "animation slide top, class:^(floating-btop)$"
-        "bordersize 1, class:^(floating-btop)$"
-        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), class:^(floating-btop)$"
-
-        "float, title:^(wifi)$"
-        "center, title:^(wifi)$"
-        "animation slide top, title:^(wifi)$"
-        "bordersize 1, title:^(wifi)$"
-        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(wifi)$"
-        "float, title:^(bluetooth)$"
-        "center, title:^(bluetooth)$"
-        "animation slide top, title:^(bluetooth)$"
-        "bordersize 1, title:^(bluetooth)$"
-        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(bluetooth)$"
-
+      ]
+      ++ (floatingPopupRules "class:^(org.kde.partitionmanager)$")
+      ++ (floatingPopupRules "class:^(localsend_app)$")
+      ++ (floatingPopupRules "class:^(1Password)$")
+      ++ (floatingPopupRules "class:^(bruno)$")
+      ++ [ "suppressevent maximize fullscreen, class:^(bruno)$" ] # bruno persists maximized state in ~/.config/bruno/preferences.json
+      ++ (floatingPopupRules "title:^(hyprmon)$")
+      ++ (floatingPopupRules "class:^(floating-btop)$")
+      ++ (floatingPopupRules "title:^(wifi)$")
+      ++ (floatingPopupRules "title:^(bluetooth)$")
+      ++ (floatingPopupRules "title:^(audio)$")
+      ++ (floatingPopupRules "title:^(battery)$")
+      ++ [
         "float, title:^(webcam)$"
         "size 320 240, title:^(webcam)$"
         "move 100%-330 100%-250, title:^(webcam)$"
         "pin, title:^(webcam)$"
         "noborder, title:^(webcam)$"
-        "float, title:^(audio)$"
-        "center, title:^(audio)$"
-        "animation slide top, title:^(audio)$"
-        "bordersize 1, title:^(audio)$"
-        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(audio)$"
-        "float, title:^(battery)$"
-        "center, title:^(battery)$"
-        "animation slide top, title:^(battery)$"
-        "bordersize 1, title:^(battery)$"
-        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(battery)$"
       ];
 
       # standard key bindings with descriptions (bindd = bind with description)
