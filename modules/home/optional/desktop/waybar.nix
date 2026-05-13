@@ -135,7 +135,7 @@ let
   wifiScript = pkgs.writeShellScript "waybar-wifi" ''
     # Check if wifi is blocked by rfkill
     if rfkill list wifi | grep -q "Soft blocked: yes"; then
-      echo '{"text": "<span size=\"200%\" color=\"#${config.lib.stylix.colors.base0E}\">󰤭</span>", "tooltip": "wifi off", "class": "off"}'
+      echo '{"text": "<span size=\"200%\" color=\"#${config.lib.stylix.colors.base0B}\">󰤭</span>", "tooltip": "wifi off", "class": "off"}'
       exit
     fi
 
@@ -144,7 +144,7 @@ let
     done)
 
     if [ -z "$IFACE" ]; then
-      echo '{"text": "<span size=\"200%\" color=\"#${config.lib.stylix.colors.base0E}\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
+      echo '{"text": "<span size=\"200%\" color=\"#${config.lib.stylix.colors.base0B}\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
       exit
     fi
 
@@ -153,7 +153,7 @@ let
     RSSI=$(echo "$INFO" | awk '$1 == "RSSI" {print $2}')
 
     if [ -z "$SSID" ]; then
-      echo '{"text": "<span size=\"200%\" color=\"#${config.lib.stylix.colors.base0E}\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
+      echo '{"text": "<span size=\"200%\" color=\"#${config.lib.stylix.colors.base0B}\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
       exit
     fi
 
@@ -207,7 +207,7 @@ let
     elif [ "''${PCT}" -lt 100 ]; then PCT_PAD=" "
     else                               PCT_PAD=""
     fi
-    TEXT="<span size='200%' color='#${config.lib.stylix.colors.base0E}'>$ICON</span>  <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0E}'>''${PCT}%''${PCT_PAD}</span> <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0E}'>''${RX_FMT}</span>  <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0E}'>''${TX_FMT}</span>"
+    TEXT="<span size='200%' color='#${config.lib.stylix.colors.base0B}'>$ICON</span>  <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0B}'>''${PCT}%''${PCT_PAD}</span> <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0B}'>''${RX_FMT}</span>  <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0B}'>''${TX_FMT}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
@@ -480,6 +480,7 @@ in
 
       #clock {
         padding: 2px 13px 2px 15px;
+        color: #ffffff;
       }
 
       #battery {
