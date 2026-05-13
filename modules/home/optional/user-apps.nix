@@ -28,6 +28,7 @@ in
     tree
     gawk
     cmatrix
+    pkgs-unstable.smassh
 
     # apps
     kdePackages.partitionmanager
