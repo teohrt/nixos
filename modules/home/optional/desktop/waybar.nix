@@ -191,7 +191,7 @@ let
             else break
           }
         }
-        printf "%s%s %s", dir, num, u
+        printf "<b>%s</b>%s %s", dir, num, u
       }'
     }
 
@@ -208,7 +208,7 @@ let
     elif [ "''${PCT}" -lt 100 ]; then PCT_PAD=" "
     else                               PCT_PAD=""
     fi
-    TEXT="<span size='200%' color='#${config.lib.stylix.colors.base0D}'>$ICON</span>  <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0D}'>''${PCT}%''${PCT_PAD}</span>    <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0A}'>''${TX_FMT}</span>    <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0B}'>''${RX_FMT}</span>"
+    TEXT="<span size='200%' color='#${config.lib.stylix.colors.base0D}'>$ICON</span>  <span rise='3500' size='130%' font_family='monospace'><span color='#${config.lib.stylix.colors.base0D}'>''${PCT}%''${PCT_PAD}</span>  <span color='#${config.lib.stylix.colors.base0A}'>''${TX_FMT}</span>  <span color='#${config.lib.stylix.colors.base0B}'>''${RX_FMT}</span></span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
