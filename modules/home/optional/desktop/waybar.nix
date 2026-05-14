@@ -349,8 +349,8 @@ in
         format = "<span size=\"150%\">󰂯</span>";
         format-connected = "<span size=\"150%\">󰂱</span> <span size=\"130%\">{device_alias}</span>";
         format-connected-battery = "<span size=\"150%\">󰂱</span> <span size=\"130%\">{device_alias} {device_battery_percentage}%</span>";
-        format-disabled = "<span size=\"150%\">󰂯</span>";
-        format-off = "<span size=\"150%\">󰂯</span>";
+        format-disabled = "<span size=\"150%\">󰂲</span>";
+        format-off = "<span size=\"150%\">󰂲</span>";
         tooltip-format-connected = "{device_enumerate}";
         tooltip-format-enumerate-connected = "{device_alias} ({device_address})";
         tooltip-format-enumerate-connected-battery = "{device_alias} ({device_address}) {device_battery_percentage}%";
@@ -392,6 +392,10 @@ in
         border-radius: 0;
         padding: 0;
         color: #${config.lib.stylix.colors.base0D};
+      }
+
+      window#waybar * {
+        opacity: 1;
       }
 
 
@@ -493,7 +497,7 @@ in
 
       #custom-wifi.off,
       #custom-wifi.disconnected {
-        opacity: 0.25;
+        color: #${config.lib.stylix.colors.base03};
       }
 
       #custom-temp {
@@ -513,7 +517,7 @@ in
       }
       #pulseaudio.muted {
         padding: 2px 14px;
-        opacity: 0.25;
+        color: #${config.lib.stylix.colors.base03};
       }
 
       #custom-notification {
@@ -522,7 +526,7 @@ in
 
       #custom-notification.dnd-none,
       #custom-notification.dnd-notification {
-        opacity: 0.25;
+        color: #${config.lib.stylix.colors.base03};
       }
 
       #bluetooth {
@@ -532,7 +536,7 @@ in
       #bluetooth.off,
       #bluetooth.disabled {
         padding: 2px 16px;
-        opacity: 0.25;
+        color: #${config.lib.stylix.colors.base03};
       }
 
 

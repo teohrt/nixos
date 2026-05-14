@@ -402,7 +402,7 @@ let
       fi
     }
 
-    choice=$(printf "Take Screenshot\nRecord Screen\nWebcam Preview\nAdjust Brightness" | walker --dmenu -p "Toggle")
+    choice=$(printf "Take Screenshot\nRecord Screen\nWebcam Preview\nBrightness\nVolume" | walker --dmenu -p "Toggle")
     case "$choice" in
       "Take Screenshot")
         sub=$(printf "Region\nWindow\nScreen" | walker --dmenu -p "Screenshot")
@@ -422,7 +422,7 @@ let
       "Webcam Preview")
         toggle_webcam
         ;;
-      "Adjust Brightness")
+      "Brightness")
         current=$(${pkgs.brightnessctl}/bin/brightnessctl -m | cut -d, -f4)
         sub=$(printf "Minimum\n25%%\n50%%\n75%%\n100%%" | walker --dmenu -p "Brightness ($current)")
         case "$sub" in
@@ -431,6 +431,17 @@ let
           50%) set_brightness 50% ;;
           75%) set_brightness 75% ;;
           100%) set_brightness 100% ;;
+        esac
+        ;;
+      "Volume")
+        current=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf "%.0f%%", $2 * 100}')
+        sub=$(printf "0%%\n25%%\n50%%\n75%%\n100%%" | walker --dmenu -p "Volume ($current)")
+        case "$sub" in
+          0%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 0% ;;
+          25%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 25% ;;
+          50%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 50% ;;
+          75%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 75% ;;
+          100%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 100% ;;
         esac
         ;;
     esac
