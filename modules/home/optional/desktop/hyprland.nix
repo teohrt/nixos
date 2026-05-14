@@ -531,7 +531,7 @@ in
           "windowsOut, 1, 0.75, easeOutQuart, slide"
           "fade, 1, 2, easeOutQuart"
           "workspaces, 1, 0.75, easeOutQuart, slide"
-          "layers, 1, 2, easeOutQuart, popin 80%"
+          "layers, 1, 0.75, easeOutQuart, popin 80%"
         ];
       };
 
