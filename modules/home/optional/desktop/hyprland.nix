@@ -153,6 +153,13 @@ let
           sleep 0.5
           handle_disconnect
           ;;
+        configreloaded*)
+          # NixOS rebuilds regenerate hyprland.conf, triggering a config reload.
+          # Reloads clear runtime `hyprctl keyword` overrides, resetting monitor
+          # scaling. Re-apply the external monitor setup to restore defaultScale.
+          sleep 0.5
+          [[ -n "$(get_external)" ]] && handle_connect
+          ;;
       esac
     done
   '';
