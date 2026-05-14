@@ -125,7 +125,8 @@ let
     fi
 
     text="<span size='150%'>$icon</span> <span rise='2000' size='130%'>''${temp_c}°C</span>"
-    printf '{"text": "%s", "tooltip": "CPU: %d°C", "class": "%s"}\n' "$text" "$temp_c" "$class"
+    temp_f=$(( temp_c * 9 / 5 + 32 ))
+    printf '{"text": "%s", "tooltip": "CPU: %d°F", "class": "%s"}\n' "$text" "$temp_f" "$class"
   '';
 
   # Waybar's built-in network module reads signal strength from NetworkManager,
