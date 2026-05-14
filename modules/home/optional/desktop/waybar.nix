@@ -551,6 +551,7 @@ in
         border: none;
         border-radius: 8px;
         color: #${config.lib.stylix.colors.base0D};
+        font-size: 30px;
         padding: 4px 8px;
       }
 
