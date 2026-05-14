@@ -576,10 +576,10 @@ in
         "ignorezero, waybar"
         "blur, walker"
         "ignorezero, walker"
-        "animation slide top, walker"                  # slide down from top when opening
+        "animation slide bottom, walker"               # slide up from bottom when opening
         "blur, swaync-control-center"
         "ignorezero, swaync-control-center"
-        "animation slide top, swaync-control-center"   # notification panel slides down from top
+        "animation slide bottom, swaync-control-center" # notification panel slides up from bottom
       ];
 
       # remove borders when only one tiled window on a workspace
