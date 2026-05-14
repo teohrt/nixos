@@ -577,8 +577,7 @@ in
         "blur, walker"
         "ignorezero, walker"
         "animation slide bottom, walker"               # slide up from bottom when opening
-        "blur, swaync-control-center"
-        "ignorezero, swaync-control-center"
+        "noanim, swaync-notification-window"
         "animation slide bottom, swaync-control-center" # notification panel slides up from bottom
       ];
 

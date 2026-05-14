@@ -120,14 +120,14 @@ in
 
       .control-center {
         border-radius: 0 !important;
-        background-color: rgba(13, 15, 20, 0.7);
-        border-color: #ffffff !important;
+        background-color: rgba(13, 15, 20, 0.9);
+        border: none !important;
       }
 
       .control-center * {
         border-radius: 0 !important;
         background-color: transparent;
-        border-color: #ffffff !important;
+        border: none !important;
       }
 
       .notification,
@@ -153,7 +153,7 @@ in
       .notification-default-action,
       .notification-action {
         background-color: rgba(13, 15, 20, 0.7);
-        border: 1px solid #ffffff !important;
+        border: none !important;
       }
 
       .widget-title > button {
