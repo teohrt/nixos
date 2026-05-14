@@ -91,7 +91,7 @@ let
         num = sprintf(" %.2f%%", pct)
         pad = 8 - length(num); spaces = ""
         for (i = 0; i < pad; i++) spaces = spaces " "
-        printf "{\"text\": \"%s<span size=\\\"200%%\\\" color=\\\"#${config.lib.stylix.colors.base0B}\\\">󰘚</span><span rise=\\\"3500\\\" size=\\\"130%%\\\" color=\\\"#${config.lib.stylix.colors.base0B}\\\">%s</span>\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
+        printf "{\"text\": \"%s<span size=\\\"200%%\\\" color=\\\"#${config.lib.stylix.colors.base0A}\\\">󰘚</span><span rise=\\\"3500\\\" size=\\\"130%%\\\" color=\\\"#${config.lib.stylix.colors.base0A}\\\">%s</span>\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
           spaces, num, pct, used/1024/1024, total/1024/1024, avail/1024/1024
       }
     ' /proc/meminfo
@@ -207,7 +207,7 @@ let
     elif [ "''${PCT}" -lt 100 ]; then PCT_PAD=" "
     else                               PCT_PAD=""
     fi
-    TEXT="<span size='200%' color='#${config.lib.stylix.colors.base0B}'>$ICON</span>  <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0B}'>''${PCT}%''${PCT_PAD}</span> <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0B}'>''${RX_FMT}</span>  <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0B}'>''${TX_FMT}</span>"
+    TEXT="<span size='200%' color='#${config.lib.stylix.colors.base0D}'>$ICON</span>  <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0D}'>''${PCT}%''${PCT_PAD}</span>    <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0A}'>''${TX_FMT}</span>    <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0B}'>''${RX_FMT}</span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
@@ -340,7 +340,7 @@ in
       "custom/wifi" = {
         exec = "${wifiScript}";
         return-type = "json";
-        interval = 2;
+        interval = 1;
         on-click = "${mkToggle "wifi" "rfkill unblock wifi && kitty --title wifi -e impala"}";
         on-click-right = "rfkill toggle wifi";
       };
