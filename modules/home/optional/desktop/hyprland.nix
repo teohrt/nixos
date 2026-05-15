@@ -585,12 +585,8 @@ in
         "noanim, selection"                            # no animation for slurp (screenshot selection)
         "blur, waybar"
         "ignorezero, waybar"
-        "blur, walker"
-        "ignorezero, walker"
         "animation slide bottom, walker"               # slide up from bottom when opening
         "noanim, swaync-notification-window"
-        "blur, swaync-control-center"
-        "ignorezero, swaync-control-center"
         "animation slide bottom, swaync-control-center" # notification panel slides up from bottom
       ];
 

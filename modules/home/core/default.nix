@@ -120,7 +120,7 @@ in
 
       .control-center {
         border-radius: 0 !important;
-        background-color: rgba(13, 15, 20, 0.9);
+        background-color: #000000;
         border: none !important;
       }
 
