@@ -12,7 +12,6 @@ let
     "float, ${match}"
     "size 50% 50%, ${match}"
     "center, ${match}"
-    "animation slide bottom, ${match}"
     "bordersize 1, ${match}"
     "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), ${match}"
   ];
@@ -534,15 +533,15 @@ in
       };
 
       animations = {
-        enabled = true;
+        enabled = false;
         # smooth deceleration curve for all animations
         bezier = "easeOutQuart, 0.25, 1, 0.5, 1";
         animation = [
-          "windows, 1, 0.75, easeOutQuart, slide"
-          "windowsOut, 1, 0.75, easeOutQuart, slide"
+          "windows, 1, 0.25, easeOutQuart, popin 80%"
+          "windowsOut, 1, 0.25, easeOutQuart, popin 80%"
           "fade, 1, 2, easeOutQuart"
-          "workspaces, 1, 0.75, easeOutQuart, slide"
-          "layers, 1, 0.75, easeOutQuart, popin 80%"
+          "workspaces, 1, 0.25, easeOutQuart, fade"
+          "layers, 1, 0.25, easeOutQuart, popin 80%"
         ];
       };
 
@@ -585,9 +584,7 @@ in
         "noanim, selection"                            # no animation for slurp (screenshot selection)
         "blur, waybar"
         "ignorezero, waybar"
-        "animation slide bottom, walker"               # slide up from bottom when opening
         "noanim, swaync-notification-window"
-        "animation slide bottom, swaync-control-center" # notification panel slides up from bottom
       ];
 
       # remove borders when only one tiled window on a workspace
