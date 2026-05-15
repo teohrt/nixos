@@ -96,13 +96,20 @@ in
       border-radius = 0;
       width = 250;
       timeout = 5;
-      timeout-low = 3;
+      timeout-low = 1;
       timeout-critical = 0;
       fit-to-screen = false;
       control-center-height = 900;
       control-center-positionX = "center";
       control-center-positionY = "center";
       notification-body-click = "default";
+      notification-visibility = {
+        claude = {
+          app-name = "Claude Code";
+          state = "transient";
+          override-urgency = "low";
+        };
+      };
     };
     style = ''
       * {
