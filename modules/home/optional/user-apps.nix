@@ -42,6 +42,7 @@ in
     tree
     gawk
     cmatrix
+    go
     pkgs-unstable.smassh
 
     # apps
