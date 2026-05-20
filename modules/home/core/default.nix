@@ -127,7 +127,7 @@ in
 
       .control-center {
         border-radius: 0 !important;
-        background-color: alpha(#${config.lib.stylix.colors.base01}, 0.95);
+        background-color: #${config.lib.stylix.colors.base01};
         border: none !important;
       }
 
@@ -153,13 +153,13 @@ in
       .notification.low,
       .notification.normal,
       .notification.critical {
-        background-color: rgba(13, 15, 20, 0.7);
+        background-color: #${config.lib.stylix.colors.base01};
       }
 
       .notification-content,
       .notification-default-action,
       .notification-action {
-        background-color: rgba(13, 15, 20, 0.7);
+        background-color: #${config.lib.stylix.colors.base01};
         border: none !important;
       }
 
