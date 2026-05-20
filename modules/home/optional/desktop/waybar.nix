@@ -3,15 +3,13 @@
 { pkgs, config, ... }:
 
 let
-  popupBg = config.lib.stylix.colors.base01;
-
   # Creates a toggle script: closes window if open, opens if closed.
   # Used by waybar click handlers for TUI popups (wifi, bluetooth, audio, etc.)
   toggleBtop = pkgs.writeShellScript "toggle-btop" ''
     if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.class == "floating-btop")' > /dev/null 2>&1; then
       hyprctl dispatch closewindow "class:^(floating-btop)$"
     else
-      kitty -o 'background=#${popupBg}' -o background_opacity=1 --class floating-btop -e btop &
+      kitty --class floating-btop -e btop &
       sleep 0.15
       read -r width height < <(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width / .scale / 2 | floor) \(.height / .scale / 2 | floor)"')
       hyprctl dispatch resizeactive exact "$width" "$height"
@@ -317,7 +315,7 @@ in
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 15; low = 25; medium = 50; high = 100; };
         interval = 2;
-        on-click = "${mkToggle "battery" "kitty -o 'background=#${popupBg}' -o background_opacity=1 --title battery -e ${pkgs.batmon}/bin/batmon"}";
+        on-click = "${mkToggle "battery" "kitty --title battery -e ${pkgs.batmon}/bin/batmon"}";
       };
 
       "custom/temp" = {
@@ -344,7 +342,7 @@ in
         exec = "${wifiScript}";
         return-type = "json";
         interval = 1;
-        on-click = "${mkToggle "wifi" "rfkill unblock wifi && kitty -o 'background=#${popupBg}' -o background_opacity=1 --title wifi -e impala"}";
+        on-click = "${mkToggle "wifi" "rfkill unblock wifi && kitty --title wifi -e impala"}";
         on-click-right = "rfkill toggle wifi";
       };
 
@@ -357,7 +355,7 @@ in
         tooltip-format-connected = "{device_enumerate}";
         tooltip-format-enumerate-connected = "{device_alias} ({device_address})";
         tooltip-format-enumerate-connected-battery = "{device_alias} ({device_address}) {device_battery_percentage}%";
-        on-click = "${mkToggle "bluetooth" "rfkill unblock bluetooth && kitty -o 'background=#${popupBg}' -o background_opacity=1 --title bluetooth -e bluetui"}";
+        on-click = "${mkToggle "bluetooth" "rfkill unblock bluetooth && kitty --title bluetooth -e bluetui"}";
         on-click-right = "rfkill toggle bluetooth";
       };
 
@@ -365,7 +363,7 @@ in
         format = "<span size=\"200%\">󰕾</span>";
         format-muted = "<span size=\"200%\">󰖁</span>";
         tooltip-format = "{volume}%";
-        on-click = "${mkToggle "audio" "kitty -o 'background=#${popupBg}' -o background_opacity=1 --title audio -e wiremix"}";
+        on-click = "${mkToggle "audio" "kitty --title audio -e wiremix"}";
         on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
       };
 

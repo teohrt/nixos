@@ -656,7 +656,7 @@ in
         "$mod, K,            Show keybindings,      exec, ${keybindingsMenu}"
         "$mod, T,            Toggle menu,           exec, ${toggleMenu}"
         "$mod, slash,        Voice input,           exec, ${voiceInput}"
-        "$mod, M,            Monitor settings,      exec, kitty -o 'background=#${config.lib.stylix.colors.base01}' -o background_opacity=1 --title hyprmon -e hyprmon"
+        "$mod, M,            Monitor settings,      exec, kitty --title hyprmon -e hyprmon"
 
         # resize active window
         "$mod, minus,        Expand window left,  resizeactive, -100 0"
