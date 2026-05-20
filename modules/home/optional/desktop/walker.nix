@@ -54,7 +54,7 @@ in
     }
 
     .box-wrapper {
-      background: rgba(0, 0, 0, 0.95);
+      background: alpha(@surface, 0.95);
       padding: 20px;
       border: 1px solid @accent;
       border-radius: 0;

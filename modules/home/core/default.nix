@@ -1,4 +1,4 @@
-{ pkgs, lib, pkgs-walker, ... }:
+{ config, pkgs, lib, pkgs-walker, ... }:
 let
   walker = "${pkgs-walker.walker}/bin/walker";
 
@@ -127,7 +127,7 @@ in
 
       .control-center {
         border-radius: 0 !important;
-        background-color: rgba(0, 0, 0, 0.95);
+        background-color: alpha(#${config.lib.stylix.colors.base01}, 0.95);
         border: none !important;
       }
 
