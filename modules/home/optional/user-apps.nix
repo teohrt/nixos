@@ -1,6 +1,20 @@
 # Packages that should be installed to the user profile.
 { pkgs, pkgs-unstable, pkgs-walker, ... }:
 let
+  # Wrap DBeaver to bypass Stylix's GTK theme (Java/SWT apps render incorrectly with it)
+  dbeaver-unwrapped = pkgs.symlinkJoin {
+    name = "dbeaver-unstyled";
+    paths = [ pkgs-unstable.dbeaver-bin ];
+    buildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/dbeaver \
+        --set GTK2_RC_FILES /dev/null \
+        --set SWT_GTK3 0 \
+        --unset GTK_THEME \
+        --unset GTK_ICON_THEME
+    '';
+  };
+
   # Wrap zoom-us to enable Wayland screen sharing via PipeWire
   zoom-wayland = pkgs.symlinkJoin {
     name = "zoom-wayland";
@@ -44,6 +58,7 @@ in
     zoom-wayland         # wrapped for Wayland screen sharing
     pkgs-unstable.bruno  # API client (like Postman) — from unstable for v3.x
     easyeffects          # audio effects for PipeWire
+    dbeaver-unwrapped          # database client (PostgreSQL, MySQL, SQLite, etc.)
 
     mpvpaper                # animated wallpaper via mpv (supports MP4/GIF)
 

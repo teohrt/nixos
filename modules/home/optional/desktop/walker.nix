@@ -321,4 +321,9 @@ in
       WantedBy = [ "graphical-session.target" ];
     };
   };
+
+  # Restart elephant + walker after every rebuild so new apps get indexed
+  home.activation.restartWalker = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    ${pkgs.systemd}/bin/systemctl --user restart elephant.service walker.service 2>/dev/null || true
+  '';
 }

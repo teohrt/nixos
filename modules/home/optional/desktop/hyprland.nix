@@ -602,6 +602,7 @@ in
         "workspace 2, class:^(kitty)$, initialTitle:^(kitty)$"
         "workspace 3, class:^(code|Code|code-url-handler)$"
         "workspace 4, class:^(bruno)$"
+        "workspace 4, class:^(DBeaver)$"
         "workspace 6, class:^(Slack|slack)$"
         "workspace 7, class:^(obsidian)$"
         "workspace 8, class:^(spotify|Spotify)$"
