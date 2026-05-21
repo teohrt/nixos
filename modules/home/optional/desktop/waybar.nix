@@ -367,7 +367,7 @@ in
 
 
       window#waybar {
-        background: rgba(13, 15, 20, 0.7);
+        background: alpha(#${config.lib.stylix.colors.base01}, ${toString config.stylix.opacity.terminal});
         border-radius: 0;
         padding: 0;
         color: #${config.lib.stylix.colors.base0D};
