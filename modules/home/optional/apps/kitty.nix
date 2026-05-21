@@ -102,12 +102,12 @@ in
       tab_bar_style separator
       tab_separator ""
       tab_title_template " {title} "
-      tab_bar_margin_color #${config.lib.stylix.colors.base0D}
-      tab_bar_background #${config.lib.stylix.colors.base0D}
-      inactive_tab_background #${config.lib.stylix.colors.base0D}
-      inactive_tab_foreground #000000
-      active_tab_background #${config.lib.stylix.colors.base01}
-      active_tab_foreground #${config.lib.stylix.colors.base0D}
+      tab_bar_margin_color #${config.lib.stylix.colors.base01}
+      tab_bar_background #${config.lib.stylix.colors.base01}
+      inactive_tab_background #${config.lib.stylix.colors.base01}
+      inactive_tab_foreground #${config.lib.stylix.colors.base0D}
+      active_tab_background #${config.lib.stylix.colors.base0D}
+      active_tab_foreground #000000
       active_tab_font_style bold
       active_border_color #${config.lib.stylix.colors.base0D}
       inactive_border_color #2e3440
