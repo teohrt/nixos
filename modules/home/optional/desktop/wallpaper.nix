@@ -185,13 +185,13 @@ let
 
     case "$CATEGORY" in
       "Solid")
-        CHOICE=$(printf 'Solid Dark' \
+        CHOICE=$(printf 'Nord Grey' \
           | ${pkgs-walker.walker}/bin/walker --dmenu -N -H -p "Solid Color")
         [ -z "$CHOICE" ] && exit 0
         case "$CHOICE" in
-          "Solid Dark")
-            set_solid "${config.lib.stylix.colors.base00}"
-            ${pkgs.libnotify}/bin/notify-send -t 2000 "Wallpaper" "Switched to solid background"
+          "Nord Grey")
+            set_solid "0d0f14"
+            ${pkgs.libnotify}/bin/notify-send -t 2000 "Wallpaper" "Switched to Nord Grey"
             ;;
         esac
         ;;

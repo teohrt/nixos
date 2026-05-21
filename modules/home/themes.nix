@@ -1,4 +1,4 @@
-# Stylix theme configuration (Night Owl)
+# Stylix theme configuration (Nord)
 # Colors come from the base16 scheme, not the image.
 # The image is a required placeholder for stylix.
 { pkgs }:
@@ -15,7 +15,12 @@ in
     enable = true;
     polarity = "dark";
     image = placeholderImage;
-    base16Scheme = ./night-owl.yaml;
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
+
+    # Override comment color (base03) to be more visible
+    override = {
+      base03 = "7B88A1"; # brighter than Nord's default #4C566A
+    };
 
     fonts.monospace = {
       package = pkgs.nerd-fonts.jetbrains-mono;

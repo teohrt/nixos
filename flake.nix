@@ -30,8 +30,8 @@
     pkgs-walker = nixpkgs-walker.legacyPackages.${system};
     pkgs-kitty = nixpkgs-kitty.legacyPackages.${system};
 
-    # Import stylix theme config (Night Owl)
-    themeConfig = import ./modules/home/themes { inherit pkgs; };
+    # Import stylix theme config (nord)
+    themeConfig = import ./modules/home/themes.nix { inherit pkgs; };
 
     # Base home modules shared by all machines
     baseHomeModules = [
