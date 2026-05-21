@@ -556,8 +556,8 @@ in
         rounding = 0;
         blur = {
           enabled = true;
-          size = 4;
-          passes = 3;
+          size = 6;
+          passes = 4;
           vibrancy = 0.2;
           contrast = 1.1;
           noise = 0.02;
@@ -591,6 +591,12 @@ in
         "noanim, selection"                            # no animation for slurp (screenshot selection)
         "blur, waybar"
         "ignorezero, waybar"
+        "blur, walker"
+        "ignorezero, walker"
+        "blur, swaync-notification-window"
+        "blur, swaync-control-center"
+        "ignorezero, swaync-notification-window"
+        "ignorezero, swaync-control-center"
         "noanim, swaync-notification-window"
       ];
 
