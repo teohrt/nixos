@@ -5,7 +5,18 @@
 let
   # Toggle a TUI scratchpad. TUIs are launched at startup and hidden on special
   # workspaces. Clicking waybar just toggles their visibility — no startup delay.
-  toggleScratch = name: "hyprctl dispatch togglespecialworkspace ${name}";
+  # After toggling visible, resize to 50% and center so it adapts to monitor changes.
+  toggleScratch = name: pkgs.writeShellScript "toggle-${name}" ''
+    hyprctl dispatch togglespecialworkspace ${name}
+    sleep 0.15
+    # Re-center if the scratchpad is now visible on any monitor
+    addr=$(hyprctl clients -j | ${pkgs.jq}/bin/jq -r '.[] | select(.workspace.name == "special:${name}") | .address' | head -1)
+    if [[ -n "$addr" ]] && hyprctl monitors -j | ${pkgs.jq}/bin/jq -e '.[] | select(.specialWorkspace.name == "special:${name}")' > /dev/null 2>&1; then
+      hyprctl dispatch focuswindow address:"$addr"
+      hyprctl dispatch resizeactive exact 50% 50%
+      hyprctl dispatch centerwindow
+    fi
+  '';
 
 
   # CPU usage calculation: samples /proc/stat twice (1s apart) to compute
