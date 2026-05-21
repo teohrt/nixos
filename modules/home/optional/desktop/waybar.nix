@@ -3,31 +3,9 @@
 { pkgs, config, ... }:
 
 let
-  # Creates a toggle script: closes window if open, opens if closed.
-  # Used by waybar click handlers for TUI popups (wifi, bluetooth, audio, etc.)
-  toggleBtop = pkgs.writeShellScript "toggle-btop" ''
-    if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.class == "floating-btop")' > /dev/null 2>&1; then
-      hyprctl dispatch closewindow "class:^(floating-btop)$"
-    else
-      kitty --class floating-btop -e btop &
-      sleep 0.15
-      read -r width height < <(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width / .scale / 2 | floor) \(.height / .scale / 2 | floor)"')
-      hyprctl dispatch resizeactive exact "$width" "$height"
-      hyprctl dispatch centerwindow
-    fi
-  '';
-
-  mkToggle = title: openCmd: pkgs.writeShellScript "toggle-${title}" ''
-    if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.title == "${title}")' > /dev/null 2>&1; then
-      hyprctl dispatch closewindow "title:^(${title})$"
-    else
-      ${openCmd} &
-      sleep 0.15
-      read -r width height < <(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width / .scale / 2 | floor) \(.height / .scale / 2 | floor)"')
-      hyprctl dispatch resizeactive exact "$width" "$height"
-      hyprctl dispatch centerwindow
-    fi
-  '';
+  # Toggle a TUI scratchpad. TUIs are launched at startup and hidden on special
+  # workspaces. Clicking waybar just toggles their visibility — no startup delay.
+  toggleScratch = name: "hyprctl dispatch togglespecialworkspace ${name}";
 
 
   # CPU usage calculation: samples /proc/stat twice (1s apart) to compute
@@ -315,7 +293,7 @@ in
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 15; low = 25; medium = 50; high = 100; };
         interval = 2;
-        on-click = "${mkToggle "battery" "kitty --title battery -e ${pkgs.batmon}/bin/batmon"}";
+        on-click = "${toggleScratch "battery"}";
       };
 
       "custom/temp" = {
@@ -328,21 +306,21 @@ in
         exec = "${cpuScript}";
         return-type = "json";
         interval = 2;
-        on-click = "${toggleBtop}";
+        on-click = "${toggleScratch "btop"}";
       };
 
       "custom/mem" = {
         exec = "${memScript}";
         return-type = "json";
         interval = 2;
-        on-click = "${toggleBtop}";
+        on-click = "${toggleScratch "btop"}";
       };
 
       "custom/wifi" = {
         exec = "${wifiScript}";
         return-type = "json";
         interval = 1;
-        on-click = "${mkToggle "wifi" "rfkill unblock wifi && kitty --title wifi -e impala"}";
+        on-click = "${toggleScratch "wifi"}";
         on-click-right = "rfkill toggle wifi";
       };
 
@@ -355,7 +333,7 @@ in
         tooltip-format-connected = "{device_enumerate}";
         tooltip-format-enumerate-connected = "{device_alias} ({device_address})";
         tooltip-format-enumerate-connected-battery = "{device_alias} ({device_address}) {device_battery_percentage}%";
-        on-click = "${mkToggle "bluetooth" "rfkill unblock bluetooth && kitty --title bluetooth -e bluetui"}";
+        on-click = "${toggleScratch "bluetooth"}";
         on-click-right = "rfkill toggle bluetooth";
       };
 
@@ -363,7 +341,7 @@ in
         format = "<span size=\"200%\">󰕾</span>";
         format-muted = "<span size=\"200%\">󰖁</span>";
         tooltip-format = "{volume}%";
-        on-click = "${mkToggle "audio" "kitty --title audio -e wiremix"}";
+        on-click = "${toggleScratch "audio"}";
         on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
       };
 

@@ -502,6 +502,13 @@ in
         "${unfloatOnNewWindow}"                              # unfloat solo floating kitty when another window joins the workspace
         "wl-clip-persist --clipboard regular"              # keep clipboard alive after source process exits
         "${autoMirror}"                                    # auto-mirror laptop to external monitor when connected
+
+        # Pre-launch TUI scratchpads — hidden on special workspaces, toggled by waybar
+        "kitty --session none --class floating-btop -e btop"
+        "kitty --session none --title wifi -e impala"
+        "kitty --session none --title bluetooth -e bluetui"
+        "kitty --session none --title audio -e wiremix"
+        "kitty --session none --title battery -e ${pkgs.batmon}/bin/batmon"
       ];
 
       env = [
@@ -625,11 +632,17 @@ in
       ++ (floatingPopupRules "class:^(bruno)$")
       ++ [ "suppressevent maximize fullscreen, class:^(bruno)$" ] # bruno persists maximized state in ~/.config/bruno/preferences.json
       ++ (floatingPopupRules "title:^(hyprmon)$")
+      # TUI scratchpads: launched at startup, hidden on special workspaces, toggled by waybar
       ++ (floatingPopupRules "class:^(floating-btop)$")
+      ++ [ "workspace special:btop silent, class:^(floating-btop)$" ]
       ++ (floatingPopupRules "title:^(wifi)$")
+      ++ [ "workspace special:wifi silent, title:^(wifi)$" ]
       ++ (floatingPopupRules "title:^(bluetooth)$")
+      ++ [ "workspace special:bluetooth silent, title:^(bluetooth)$" ]
       ++ (floatingPopupRules "title:^(audio)$")
+      ++ [ "workspace special:audio silent, title:^(audio)$" ]
       ++ (floatingPopupRules "title:^(battery)$")
+      ++ [ "workspace special:battery silent, title:^(battery)$" ]
       ++ [
         "float, title:^(webcam)$"
         "size 320 240, title:^(webcam)$"
@@ -656,7 +669,7 @@ in
         "$mod, K,            Show keybindings,      exec, ${keybindingsMenu}"
         "$mod, T,            Toggle menu,           exec, ${toggleMenu}"
         "$mod, slash,        Voice input,           exec, ${voiceInput}"
-        "$mod, M,            Monitor settings,      exec, kitty --title hyprmon -e hyprmon"
+        "$mod, M,            Monitor settings,      exec, kitty --single-instance --instance-group popup --session none --title hyprmon -e hyprmon"
 
         # resize active window
         "$mod, minus,        Expand window left,  resizeactive, -100 0"
