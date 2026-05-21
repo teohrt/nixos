@@ -120,7 +120,7 @@ let
     }
   ];
 
-  defaultWallpaper = builtins.elemAt staticWallpapers 5; # Blue Squares
+  defaultWallpaper = builtins.elemAt staticWallpapers 8; # 4th Dimension
 
   # Walker dmenu picker for wallpapers with category submenus
   wallpaperPicker = pkgs.writeShellScriptBin "wallpaper-picker" ''
