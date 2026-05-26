@@ -2,14 +2,19 @@
 # and helper scripts for screenshots, screen recording, voice input, etc.
 { pkgs, lib, config, ... }:
 let
-  # Outputs "width height" for half the focused monitor's dimensions (accounting for scale).
-  # Used by multiple scripts for consistent centered window sizing.
-  # Calculated dynamically rather than cached at login so it stays correct when
-  # monitors are connected/disconnected or scaling changes mid-session.
-  halfScreenSize = pkgs.writeShellScript "half-screen-size" ''
-    hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width / .scale / 2 | floor) \(.height / .scale / 2 | floor)"'
-  '';
+  defaultScale = "1.25";
 
+  # Generates window rules for a centered floating popup with consistent styling.
+  # Used by waybar TUI popups, LocalSend, 1Password, etc.
+  # `match` is the windowrulev2 selector (e.g. "class:^(1Password)$" or "title:^(wifi)$").
+  # All popups are sized to half the monitor dimensions, matching halfScreenSize behavior.
+  floatingPopupRules = match: [
+    "float, ${match}"
+    "size 50% 50%, ${match}"
+    "center, ${match}"
+    "bordersize 1, ${match}"
+    "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), ${match}"
+  ];
   # Listens on Hyprland's IPC event socket and closes walker popup whenever the
   # active workspace changes. Needed because walker is a layer surface (not a
   # window) so it persists across workspace switches and ignores normal focus-loss
@@ -67,7 +72,7 @@ let
       [[ -z "$internal" ]] && return 1
       hyprctl keyword monitor "$internal,disable"
       sleep 0.3
-      hyprctl keyword monitor "$internal,preferred,auto,1.25"
+      hyprctl keyword monitor "$internal,preferred,auto,${defaultScale}"
     }
 
     # If waybar is running but not visible, reset display and restart waybar
@@ -89,7 +94,7 @@ let
   '';
 
   # Auto-mirror: when external monitor connects, make laptop (eDP-*) mirror it
-  # External runs at native resolution, laptop shows scaled copy
+  # Both displays use defaultScale; on disconnect, internal is restored
   autoMirror = pkgs.writeShellScript "auto-mirror" ''
     # Kill any other instances (not ourselves)
     for pid in $(pgrep -f "auto-mirror"); do
@@ -111,7 +116,9 @@ let
       local external=$(get_external)
       [[ -z "$internal" || -z "$external" ]] && return
 
-      hyprctl keyword monitor "$internal,preferred,auto,1,mirror,$external"
+      # catch-all monitor rule doesn't apply to hotplugged displays; set scale explicitly
+      hyprctl keyword monitor "$external,preferred,auto,${defaultScale}"
+      hyprctl keyword monitor "$internal,preferred,auto,${defaultScale},mirror,$external"
     }
 
     handle_disconnect() {
@@ -119,7 +126,7 @@ let
       [[ -z "$internal" ]] && return
 
       # Restore internal monitor config
-      hyprctl keyword monitor "$internal,preferred,auto,1.25"
+      hyprctl keyword monitor "$internal,preferred,auto,${defaultScale}"
 
       # Restore wallpaper
       sleep 1
@@ -145,6 +152,13 @@ let
           sleep 0.5
           handle_disconnect
           ;;
+        configreloaded*)
+          # NixOS rebuilds regenerate hyprland.conf, triggering a config reload.
+          # Reloads clear runtime `hyprctl keyword` overrides, resetting monitor
+          # scaling. Re-apply the external monitor setup to restore defaultScale.
+          sleep 0.5
+          [[ -n "$(get_external)" ]] && handle_connect
+          ;;
       esac
     done
   '';
@@ -161,9 +175,8 @@ let
         "dispatch pin address:$addr;" \
         "dispatch togglefloating address:$addr;"
     elif [[ -n $addr ]]; then
-      read -r width height < <(${halfScreenSize})
       hyprctl dispatch togglefloating address:$addr
-      hyprctl dispatch resizeactive exact $width $height
+      hyprctl dispatch resizeactive exact 50% 50%
       hyprctl dispatch centerwindow address:$addr
       hyprctl -q --batch \
         "dispatch pin address:$addr;" \
@@ -242,8 +255,7 @@ let
       # Empty workspace: launch, float, resize to half screen, and center
       kitty --directory "$dir" &
       sleep 0.1
-      read -r width height < <(${halfScreenSize})
-      hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact $width $height; dispatch centerwindow"
+      hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact 50% 50%; dispatch centerwindow"
     else
       exec kitty --directory "$dir"
     fi
@@ -389,7 +401,7 @@ let
       fi
     }
 
-    choice=$(printf "Take Screenshot\nRecord Screen\nWebcam Preview\nAdjust Brightness" | walker --dmenu -p "Toggle")
+    choice=$(printf "Take Screenshot\nRecord Screen\nWebcam Preview\nBrightness\nVolume" | walker --dmenu -p "Toggle")
     case "$choice" in
       "Take Screenshot")
         sub=$(printf "Region\nWindow\nScreen" | walker --dmenu -p "Screenshot")
@@ -409,7 +421,7 @@ let
       "Webcam Preview")
         toggle_webcam
         ;;
-      "Adjust Brightness")
+      "Brightness")
         current=$(${pkgs.brightnessctl}/bin/brightnessctl -m | cut -d, -f4)
         sub=$(printf "Minimum\n25%%\n50%%\n75%%\n100%%" | walker --dmenu -p "Brightness ($current)")
         case "$sub" in
@@ -418,6 +430,17 @@ let
           50%) set_brightness 50% ;;
           75%) set_brightness 75% ;;
           100%) set_brightness 100% ;;
+        esac
+        ;;
+      "Volume")
+        current=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf "%.0f%%", $2 * 100}')
+        sub=$(printf "0%%\n25%%\n50%%\n75%%\n100%%" | walker --dmenu -p "Volume ($current)")
+        case "$sub" in
+          0%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 0% ;;
+          25%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 25% ;;
+          50%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 50% ;;
+          75%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 75% ;;
+          100%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 100% ;;
         esac
         ;;
     esac
@@ -466,8 +489,7 @@ in
     enable = true;
 
     settings = {
-      # use preferred resolution, auto-position, 1.2x scaling
-      monitor = ",preferred,auto,1.2";
+      monitor = ",preferred,auto,${defaultScale}";
 
       "$terminal" = "kitty";
       "$menu" = "walker -N -H";
@@ -480,6 +502,13 @@ in
         "${unfloatOnNewWindow}"                              # unfloat solo floating kitty when another window joins the workspace
         "wl-clip-persist --clipboard regular"              # keep clipboard alive after source process exits
         "${autoMirror}"                                    # auto-mirror laptop to external monitor when connected
+
+        # Pre-launch TUI scratchpads — hidden on special workspaces, toggled by waybar
+        "kitty --session none --class floating-btop -e btop"
+        "kitty --session none --title wifi -e impala"
+        "kitty --session none --title bluetooth -e bluetui"
+        "kitty --session none --title audio -e wiremix"
+        "kitty --session none --title battery -e ${pkgs.batmon}/bin/batmon"
       ];
 
       env = [
@@ -511,15 +540,15 @@ in
       };
 
       animations = {
-        enabled = true;
+        enabled = false;
         # smooth deceleration curve for all animations
         bezier = "easeOutQuart, 0.25, 1, 0.5, 1";
         animation = [
-          "windows, 1, 0.75, easeOutQuart, slide"
-          "windowsOut, 1, 0.75, easeOutQuart, slide"
+          "windows, 1, 0.25, easeOutQuart, popin 80%"
+          "windowsOut, 1, 0.25, easeOutQuart, popin 80%"
           "fade, 1, 2, easeOutQuart"
-          "workspaces, 1, 0.75, easeOutQuart, slide"
-          "layers, 1, 2, easeOutQuart, popin 80%"
+          "workspaces, 1, 0.25, easeOutQuart, fade"
+          "layers, 1, 0.25, easeOutQuart, popin 80%"
         ];
       };
 
@@ -527,8 +556,8 @@ in
         rounding = 0;
         blur = {
           enabled = true;
-          size = 4;
-          passes = 3;
+          size = 6;
+          passes = 4;
           vibrancy = 0.2;
           contrast = 1.1;
           noise = 0.02;
@@ -564,10 +593,11 @@ in
         "ignorezero, waybar"
         "blur, walker"
         "ignorezero, walker"
-        "animation slide top, walker"                  # slide down from top when opening
+        "blur, swaync-notification-window"
         "blur, swaync-control-center"
+        "ignorezero, swaync-notification-window"
         "ignorezero, swaync-control-center"
-        "animation slide top, swaync-control-center"   # notification panel slides down from top
+        "noanim, swaync-notification-window"
       ];
 
       # remove borders when only one tiled window on a workspace
@@ -584,9 +614,12 @@ in
         "workspace 1, class:^(chromium-browser|google-chrome|Chromium)$"
         "workspace 2, class:^(kitty)$, initialTitle:^(kitty)$"
         "workspace 3, class:^(code|Code|code-url-handler)$"
+        "workspace 4, class:^(bruno)$"
+        "workspace 4, class:^(DBeaver)$"
         "workspace 6, class:^(Slack|slack)$"
         "workspace 7, class:^(obsidian)$"
         "workspace 8, class:^(spotify|Spotify)$"
+        "workspace 10, class:^(zoom)$"
 
         "fullscreen, class:^(screensaver)$"
         "noanim,     class:^(screensaver)$"
@@ -594,62 +627,34 @@ in
         "noborder,   class:^(screensaver)$"
 
         "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(org.gnome.Nautilus)$"
-        "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(spotify)$"
+        "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(Spotify)$"
         "opacity ${toString config.stylix.opacity.applications} ${toString config.stylix.opacity.applications}, class:^(Slack)$"
 
         "opacity 0.9 0.9, class:^(obsidian)$"
-        "float,      class:^(org.kde.partitionmanager)$"
-        "size 650 450, class:^(org.kde.partitionmanager)$"
-        "center,     class:^(org.kde.partitionmanager)$"
-        "pin,        class:^(org.kde.partitionmanager)$"
-
-        "float,      class:^(localsend_app)$"
-        "size 650 450, class:^(localsend_app)$"
-        "center,     class:^(localsend_app)$"
-        "pin,        class:^(localsend_app)$"
-
-        "float,      class:^(1password)$"
-        "size 650 450, class:^(1password)$"
-        "center,     class:^(1password)$"
-        "pin,        class:^(1password)$"
-
-        "float,      title:^(hyprmon)$"
-        "size 900 600, title:^(hyprmon)$"
-        "center,     title:^(hyprmon)$"
-        "animation slide top, title:^(hyprmon)$"
-
-        "float, class:^(floating-btop)$"
-        "center, class:^(floating-btop)$"
-        "animation slide top, class:^(floating-btop)$"
-        "bordersize 1, class:^(floating-btop)$"
-        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), class:^(floating-btop)$"
-
-        "float, title:^(wifi)$"
-        "center, title:^(wifi)$"
-        "animation slide top, title:^(wifi)$"
-        "bordersize 1, title:^(wifi)$"
-        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(wifi)$"
-        "float, title:^(bluetooth)$"
-        "center, title:^(bluetooth)$"
-        "animation slide top, title:^(bluetooth)$"
-        "bordersize 1, title:^(bluetooth)$"
-        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(bluetooth)$"
-
+      ]
+      ++ (floatingPopupRules "class:^(org.kde.partitionmanager)$")
+      ++ (floatingPopupRules "class:^(localsend_app)$")
+      ++ (floatingPopupRules "class:^(1Password)$")
+      ++ (floatingPopupRules "class:^(bruno)$")
+      ++ [ "suppressevent maximize fullscreen, class:^(bruno)$" ] # bruno persists maximized state in ~/.config/bruno/preferences.json
+      ++ (floatingPopupRules "title:^(hyprmon)$")
+      # TUI scratchpads: launched at startup, hidden on special workspaces, toggled by waybar
+      ++ (floatingPopupRules "class:^(floating-btop)$")
+      ++ [ "workspace special:btop silent, class:^(floating-btop)$" ]
+      ++ (floatingPopupRules "title:^(wifi)$")
+      ++ [ "workspace special:wifi silent, title:^(wifi)$" ]
+      ++ (floatingPopupRules "title:^(bluetooth)$")
+      ++ [ "workspace special:bluetooth silent, title:^(bluetooth)$" ]
+      ++ (floatingPopupRules "title:^(audio)$")
+      ++ [ "workspace special:audio silent, title:^(audio)$" ]
+      ++ (floatingPopupRules "title:^(battery)$")
+      ++ [ "workspace special:battery silent, title:^(battery)$" ]
+      ++ [
         "float, title:^(webcam)$"
         "size 320 240, title:^(webcam)$"
         "move 100%-330 100%-250, title:^(webcam)$"
         "pin, title:^(webcam)$"
         "noborder, title:^(webcam)$"
-        "float, title:^(audio)$"
-        "center, title:^(audio)$"
-        "animation slide top, title:^(audio)$"
-        "bordersize 1, title:^(audio)$"
-        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(audio)$"
-        "float, title:^(battery)$"
-        "center, title:^(battery)$"
-        "animation slide top, title:^(battery)$"
-        "bordersize 1, title:^(battery)$"
-        "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), title:^(battery)$"
       ];
 
       # standard key bindings with descriptions (bindd = bind with description)
@@ -670,7 +675,7 @@ in
         "$mod, K,            Show keybindings,      exec, ${keybindingsMenu}"
         "$mod, T,            Toggle menu,           exec, ${toggleMenu}"
         "$mod, slash,        Voice input,           exec, ${voiceInput}"
-        "$mod, M,            Monitor settings,      exec, kitty --title hyprmon -e hyprmon"
+        "$mod, M,            Monitor settings,      exec, kitty --single-instance --instance-group popup --session none --title hyprmon -e hyprmon"
 
         # resize active window
         "$mod, minus,        Expand window left,  resizeactive, -100 0"

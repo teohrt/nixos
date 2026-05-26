@@ -1,4 +1,4 @@
-{ pkgs, lib, pkgs-walker, ... }:
+{ config, pkgs, lib, pkgs-walker, ... }:
 let
   walker = "${pkgs-walker.walker}/bin/walker";
 
@@ -96,13 +96,20 @@ in
       border-radius = 0;
       width = 250;
       timeout = 5;
-      timeout-low = 3;
+      timeout-low = 1;
       timeout-critical = 0;
       fit-to-screen = false;
       control-center-height = 900;
       control-center-positionX = "center";
       control-center-positionY = "center";
       notification-body-click = "default";
+      notification-visibility = {
+        claude = {
+          app-name = "Claude Code";
+          state = "transient";
+          override-urgency = "low";
+        };
+      };
     };
     style = ''
       * {
@@ -120,14 +127,14 @@ in
 
       .control-center {
         border-radius: 0 !important;
-        background-color: rgba(13, 15, 20, 0.7);
-        border-color: #ffffff !important;
+        background-color: alpha(#${config.lib.stylix.colors.base01}, ${toString config.stylix.opacity.terminal});
+        border: none !important;
       }
 
       .control-center * {
         border-radius: 0 !important;
         background-color: transparent;
-        border-color: #ffffff !important;
+        border: none !important;
       }
 
       .notification,
@@ -146,14 +153,14 @@ in
       .notification.low,
       .notification.normal,
       .notification.critical {
-        background-color: rgba(13, 15, 20, 0.7);
+        background-color: alpha(#${config.lib.stylix.colors.base01}, ${toString config.stylix.opacity.terminal});
       }
 
       .notification-content,
       .notification-default-action,
       .notification-action {
-        background-color: rgba(13, 15, 20, 0.7);
-        border: 1px solid #ffffff !important;
+        background-color: transparent;
+        border: none !important;
       }
 
       .widget-title > button {
@@ -195,7 +202,8 @@ in
   # Uses activation script because ~/.claude.json is actively managed by Claude Code.
   home.activation.claude-mcp = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run ${pkgs.claude-code}/bin/claude mcp add exa --scope user -- \
-      sh -c 'export EXA_API_KEY=$(sops -d --extract '"'"'["exa_api_key"]'"'"' /home/trace/Dev/other/nixos/secrets/secrets.yaml) && npx -y exa-mcp-server'
+      sh -c 'export EXA_API_KEY=$(sops -d --extract '"'"'["exa_api_key"]'"'"' /home/trace/Dev/other/nixos/secrets/secrets.yaml) && npx -y exa-mcp-server' \
+      || true
   '';
 
   home.stateVersion = "25.11";

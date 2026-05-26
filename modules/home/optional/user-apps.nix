@@ -1,6 +1,103 @@
 # Packages that should be installed to the user profile.
 { pkgs, pkgs-unstable, pkgs-walker, ... }:
 let
+  # Wrap DBeaver to bypass Stylix's GTK theme (Java/SWT apps render incorrectly with it)
+  dbeaver-unwrapped = pkgs.symlinkJoin {
+    name = "dbeaver-unstyled";
+    paths = [ pkgs-unstable.dbeaver-bin ];
+    buildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/dbeaver \
+        --set GTK2_RC_FILES /dev/null \
+        --set SWT_GTK3 0 \
+        --unset GTK_THEME \
+        --unset GTK_ICON_THEME
+    '';
+  };
+
+  # Bruno v3 from binary release (nixpkgs only has v2)
+  bruno-v3 = pkgs.stdenv.mkDerivation rec {
+    pname = "bruno";
+    version = "3.3.0";
+
+    src = pkgs.fetchurl {
+      url = "https://github.com/usebruno/bruno/releases/download/v${version}/bruno_${version}_amd64_linux.deb";
+      sha256 = "sha256-0xjCsa2tAM0uQOQlU5H2SwVkzDK0a5jJCchF6X1nYrg=";
+    };
+
+    nativeBuildInputs = with pkgs; [ dpkg autoPatchelfHook makeWrapper wrapGAppsHook3 ];
+
+    buildInputs = with pkgs; [
+      alsa-lib
+      at-spi2-atk
+      cairo
+      cups
+      dbus
+      expat
+      gdk-pixbuf
+      glib
+      gtk3
+      nss
+      nspr
+      xorg.libX11
+      xorg.libxcb
+      xorg.libXcomposite
+      xorg.libXdamage
+      xorg.libXext
+      xorg.libXfixes
+      xorg.libXrandr
+      pango
+      systemd
+      libdrm
+      mesa
+      libxkbcommon
+      libGL
+      vulkan-loader
+      stdenv.cc.cc.lib  # libstdc++.so.6, required by Bruno's native modules
+    ];
+
+    unpackCmd = "dpkg-deb -x $curSrc .";
+    sourceRoot = ".";
+
+    dontConfigure = true;
+    dontBuild = true;
+    dontWrapGApps = true;
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out
+      cp -r opt/Bruno/* $out/
+      cp -r usr/share $out/
+      mkdir -p $out/bin
+
+      # Desktop entry
+      cat > $out/share/applications/bruno.desktop <<EOF
+      [Desktop Entry]
+      Name=Bruno
+      Exec=bruno %U
+      Icon=bruno
+      Type=Application
+      Categories=Development;
+      StartupWMClass=Bruno
+      EOF
+
+      runHook postInstall
+    '';
+
+    preFixup = ''
+      makeWrapper "$out/bruno" "$out/bin/bruno" \
+        "''${gappsWrapperArgs[@]}" \
+        --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath buildInputs}"
+    '';
+
+    meta = with pkgs.lib; {
+      description = "Opensource API Client (lightweight alternative to Postman/Insomnia)";
+      homepage = "https://www.usebruno.com";
+      license = licenses.mit;
+      platforms = [ "x86_64-linux" ];
+    };
+  };
+
   # Wrap zoom-us to enable Wayland screen sharing via PipeWire
   zoom-wayland = pkgs.symlinkJoin {
     name = "zoom-wayland";
@@ -28,6 +125,8 @@ in
     tree
     gawk
     cmatrix
+    go
+    pkgs-unstable.smassh
 
     # apps
     kdePackages.partitionmanager
@@ -41,8 +140,9 @@ in
     vlc        # video player
     slack
     zoom-wayland         # wrapped for Wayland screen sharing
-    pkgs-unstable.bruno  # API client (like Postman) — from unstable for v3.x
+    bruno-v3             # API client (like Postman) — v3 from binary release
     easyeffects          # audio effects for PipeWire
+    dbeaver-unwrapped          # database client (PostgreSQL, MySQL, SQLite, etc.)
 
     mpvpaper                # animated wallpaper via mpv (supports MP4/GIF)
 

@@ -3,10 +3,10 @@
 # (wallpaper picker, keybindings menu, power menu, etc.)
 { config, lib, pkgs, pkgs-walker, ... }:
 let
-  # Full stylix application opacity as a float string for CSS alpha() calls.
-  opacity    = toString config.stylix.opacity.applications;
+  # Match terminal opacity so walker and kitty look consistent.
+  opacity    = toString config.stylix.opacity.terminal;
   # Reduced opacity for the pane background so Hyprland's blur shows through.
-  bgOpacity  = toString (config.stylix.opacity.applications * 0.35);
+  bgOpacity  = toString (config.stylix.opacity.terminal * 0.35);
 in
 {
   xdg.configFile."walker/config.toml".text = ''
@@ -54,7 +54,7 @@ in
     }
 
     .box-wrapper {
-      background: rgba(13, 15, 20, 0.7);
+      background: alpha(@surface, ${opacity});
       padding: 20px;
       border: 1px solid @accent;
       border-radius: 0;
@@ -321,4 +321,9 @@ in
       WantedBy = [ "graphical-session.target" ];
     };
   };
+
+  # Restart elephant + walker after every rebuild so new apps get indexed
+  home.activation.restartWalker = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    ${pkgs.systemd}/bin/systemctl --user restart elephant.service walker.service 2>/dev/null || true
+  '';
 }

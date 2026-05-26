@@ -3,30 +3,32 @@
 { pkgs, config, ... }:
 
 let
-  # Creates a toggle script: closes window if open, opens if closed.
-  # Used by waybar click handlers for TUI popups (wifi, bluetooth, audio, etc.)
-  toggleBtop = pkgs.writeShellScript "toggle-btop" ''
-    if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.class == "floating-btop")' > /dev/null 2>&1; then
-      hyprctl dispatch closewindow "class:^(floating-btop)$"
-    else
-      kitty --class floating-btop -e btop &
-      sleep 0.15
-      read -r width height < <(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width / .scale / 2 | floor) \(.height / .scale / 2 | floor)"')
-      hyprctl dispatch resizeactive exact "$width" "$height"
-      hyprctl dispatch centerwindow
-    fi
-  '';
+  # Toggle a TUI scratchpad. TUIs are launched at startup and hidden on special
+  # workspaces. Clicking waybar just toggles their visibility — no startup delay.
+  # After toggling visible, resize to 50% and center so it adapts to monitor changes.
+  toggleScratch = name: launchCmd: pkgs.writeShellScript "toggle-${name}" ''
+    hyprctl keyword cursor:no_warps true
 
-  mkToggle = title: openCmd: pkgs.writeShellScript "toggle-${title}" ''
-    if hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.title == "${title}")' > /dev/null 2>&1; then
-      hyprctl dispatch closewindow "title:^(${title})$"
-    else
-      ${openCmd} &
-      sleep 0.15
-      read -r width height < <(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0] | "\(.width / .scale / 2 | floor) \(.height / .scale / 2 | floor)"')
-      hyprctl dispatch resizeactive exact "$width" "$height"
+    # Re-launch the TUI if it was killed
+    if ! hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.workspace.name == "special:${name}")' > /dev/null 2>&1; then
+      ${launchCmd} &
+      # Wait for the window to appear on the special workspace
+      for i in $(seq 1 20); do
+        sleep 0.1
+        hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.workspace.name == "special:${name}")' > /dev/null 2>&1 && break
+      done
+    fi
+
+    hyprctl dispatch togglespecialworkspace ${name}
+    sleep 0.15
+    # Re-center if the scratchpad is now visible on any monitor
+    addr=$(hyprctl clients -j | ${pkgs.jq}/bin/jq -r '.[] | select(.workspace.name == "special:${name}") | .address' | head -1)
+    if [[ -n "$addr" ]] && hyprctl monitors -j | ${pkgs.jq}/bin/jq -e '.[] | select(.specialWorkspace.name == "special:${name}")' > /dev/null 2>&1; then
+      hyprctl dispatch focuswindow address:"$addr"
+      hyprctl dispatch resizeactive exact 50% 50%
       hyprctl dispatch centerwindow
     fi
+    hyprctl keyword cursor:no_warps false
   '';
 
 
@@ -91,7 +93,7 @@ let
         num = sprintf(" %.2f%%", pct)
         pad = 8 - length(num); spaces = ""
         for (i = 0; i < pad; i++) spaces = spaces " "
-        printf "{\"text\": \"%s<span size=\\\"200%%\\\" color=\\\"#${config.lib.stylix.colors.base0B}\\\">󰘚</span><span rise=\\\"3500\\\" size=\\\"130%%\\\" color=\\\"#${config.lib.stylix.colors.base0B}\\\">%s</span>\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
+        printf "{\"text\": \"%s<span size=\\\"200%%\\\" color=\\\"#${config.lib.stylix.colors.base0A}\\\">󰘚</span><span rise=\\\"3500\\\" size=\\\"130%%\\\" color=\\\"#${config.lib.stylix.colors.base0A}\\\">%s</span>\", \"tooltip\": \"RAM\\n%.2f%%  %.1fGB / %.1fGB\\nAvail: %.1fGB\"}\n",
           spaces, num, pct, used/1024/1024, total/1024/1024, avail/1024/1024
       }
     ' /proc/meminfo
@@ -125,7 +127,8 @@ let
     fi
 
     text="<span size='150%'>$icon</span> <span rise='2000' size='130%'>''${temp_c}°C</span>"
-    printf '{"text": "%s", "tooltip": "CPU: %d°C", "class": "%s"}\n' "$text" "$temp_c" "$class"
+    temp_f=$(( temp_c * 9 / 5 + 32 ))
+    printf '{"text": "%s", "tooltip": "CPU: %d°F", "class": "%s"}\n' "$text" "$temp_f" "$class"
   '';
 
   # Waybar's built-in network module reads signal strength from NetworkManager,
@@ -135,7 +138,7 @@ let
   wifiScript = pkgs.writeShellScript "waybar-wifi" ''
     # Check if wifi is blocked by rfkill
     if rfkill list wifi | grep -q "Soft blocked: yes"; then
-      echo '{"text": "<span size=\"200%\" color=\"#${config.lib.stylix.colors.base0E}\">󰤭</span>", "tooltip": "wifi off", "class": "off"}'
+      echo '{"text": "<span size=\"200%\" color=\"#${config.lib.stylix.colors.base0B}\">󰤭</span>", "tooltip": "wifi off", "class": "off"}'
       exit
     fi
 
@@ -144,7 +147,7 @@ let
     done)
 
     if [ -z "$IFACE" ]; then
-      echo '{"text": "<span size=\"200%\" color=\"#${config.lib.stylix.colors.base0E}\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
+      echo '{"text": "<span size=\"200%\" color=\"#${config.lib.stylix.colors.base0B}\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
       exit
     fi
 
@@ -153,7 +156,7 @@ let
     RSSI=$(echo "$INFO" | awk '$1 == "RSSI" {print $2}')
 
     if [ -z "$SSID" ]; then
-      echo '{"text": "<span size=\"200%\" color=\"#${config.lib.stylix.colors.base0E}\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
+      echo '{"text": "<span size=\"200%\" color=\"#${config.lib.stylix.colors.base0B}\">󰤭</span>", "tooltip": "disconnected", "class": "disconnected"}'
       exit
     fi
 
@@ -190,7 +193,7 @@ let
             else break
           }
         }
-        printf "%s%s %s", dir, num, u
+        printf "<b>%s</b>%s %s", dir, num, u
       }'
     }
 
@@ -207,7 +210,7 @@ let
     elif [ "''${PCT}" -lt 100 ]; then PCT_PAD=" "
     else                               PCT_PAD=""
     fi
-    TEXT="<span size='200%' color='#${config.lib.stylix.colors.base0E}'>$ICON</span>  <span rise='3500' size='130%' color='#${config.lib.stylix.colors.base0E}'>''${PCT}%''${PCT_PAD}</span> <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0E}'>''${RX_FMT}</span>  <span rise='3500' size='130%' font_family='monospace' color='#${config.lib.stylix.colors.base0E}'>''${TX_FMT}</span>"
+    TEXT="<span size='200%' color='#${config.lib.stylix.colors.base0D}'>$ICON</span>  <span rise='3500' size='130%' font_family='monospace'><span color='#${config.lib.stylix.colors.base0D}'>''${PCT}%''${PCT_PAD}</span>  <span color='#${config.lib.stylix.colors.base0A}'>''${TX_FMT}</span>  <span color='#${config.lib.stylix.colors.base0B}'>''${RX_FMT}</span></span>"
     TOOLTIP="''${SSID}"
 
     printf '{"text": "%s", "tooltip": "%s"}\n' "$TEXT" "$TOOLTIP"
@@ -314,7 +317,7 @@ in
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 15; low = 25; medium = 50; high = 100; };
         interval = 2;
-        on-click = "${mkToggle "battery" "kitty --title battery -e ${pkgs.batmon}/bin/batmon"}";
+        on-click = "${toggleScratch "battery" "kitty --session none --title battery -e ${pkgs.batmon}/bin/batmon"}";
       };
 
       "custom/temp" = {
@@ -327,21 +330,21 @@ in
         exec = "${cpuScript}";
         return-type = "json";
         interval = 2;
-        on-click = "${toggleBtop}";
+        on-click = "${toggleScratch "btop" "kitty --session none --class floating-btop -e btop"}";
       };
 
       "custom/mem" = {
         exec = "${memScript}";
         return-type = "json";
         interval = 2;
-        on-click = "${toggleBtop}";
+        on-click = "${toggleScratch "btop" "kitty --session none --class floating-btop -e btop"}";
       };
 
       "custom/wifi" = {
         exec = "${wifiScript}";
         return-type = "json";
-        interval = 2;
-        on-click = "${mkToggle "wifi" "rfkill unblock wifi && kitty --title wifi -e impala"}";
+        interval = 1;
+        on-click = "${toggleScratch "wifi" "kitty --session none --title wifi -e impala"}";
         on-click-right = "rfkill toggle wifi";
       };
 
@@ -349,12 +352,12 @@ in
         format = "<span size=\"150%\">󰂯</span>";
         format-connected = "<span size=\"150%\">󰂱</span> <span size=\"130%\">{device_alias}</span>";
         format-connected-battery = "<span size=\"150%\">󰂱</span> <span size=\"130%\">{device_alias} {device_battery_percentage}%</span>";
-        format-disabled = "<span size=\"150%\">󰂯</span>";
-        format-off = "<span size=\"150%\">󰂯</span>";
+        format-disabled = "<span size=\"150%\">󰂲</span>";
+        format-off = "<span size=\"150%\">󰂲</span>";
         tooltip-format-connected = "{device_enumerate}";
         tooltip-format-enumerate-connected = "{device_alias} ({device_address})";
         tooltip-format-enumerate-connected-battery = "{device_alias} ({device_address}) {device_battery_percentage}%";
-        on-click = "${mkToggle "bluetooth" "rfkill unblock bluetooth && kitty --title bluetooth -e bluetui"}";
+        on-click = "${toggleScratch "bluetooth" "kitty --session none --title bluetooth -e bluetui"}";
         on-click-right = "rfkill toggle bluetooth";
       };
 
@@ -362,7 +365,7 @@ in
         format = "<span size=\"200%\">󰕾</span>";
         format-muted = "<span size=\"200%\">󰖁</span>";
         tooltip-format = "{volume}%";
-        on-click = "${mkToggle "audio" "kitty --title audio -e wiremix"}";
+        on-click = "${toggleScratch "audio" "kitty --session none --title audio -e wiremix"}";
         on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
       };
 
@@ -388,10 +391,14 @@ in
 
 
       window#waybar {
-        background: rgba(13, 15, 20, 0.7);
+        background: alpha(#${config.lib.stylix.colors.base01}, ${toString config.stylix.opacity.terminal});
         border-radius: 0;
         padding: 0;
         color: #${config.lib.stylix.colors.base0D};
+      }
+
+      window#waybar * {
+        opacity: 1;
       }
 
 
@@ -480,6 +487,7 @@ in
 
       #clock {
         padding: 2px 13px 2px 15px;
+        color: #ffffff;
       }
 
       #battery {
@@ -492,7 +500,7 @@ in
 
       #custom-wifi.off,
       #custom-wifi.disconnected {
-        opacity: 0.25;
+        color: #${config.lib.stylix.colors.base03};
       }
 
       #custom-temp {
@@ -512,7 +520,7 @@ in
       }
       #pulseaudio.muted {
         padding: 2px 14px;
-        opacity: 0.25;
+        color: #${config.lib.stylix.colors.base03};
       }
 
       #custom-notification {
@@ -521,7 +529,7 @@ in
 
       #custom-notification.dnd-none,
       #custom-notification.dnd-notification {
-        opacity: 0.25;
+        color: #${config.lib.stylix.colors.base03};
       }
 
       #bluetooth {
@@ -531,7 +539,7 @@ in
       #bluetooth.off,
       #bluetooth.disabled {
         padding: 2px 16px;
-        opacity: 0.25;
+        color: #${config.lib.stylix.colors.base03};
       }
 
 
@@ -545,6 +553,7 @@ in
         border: none;
         border-radius: 8px;
         color: #${config.lib.stylix.colors.base0D};
+        font-size: 30px;
         padding: 4px 8px;
       }
 
