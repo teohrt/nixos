@@ -6,8 +6,19 @@ let
   # Toggle a TUI scratchpad. TUIs are launched at startup and hidden on special
   # workspaces. Clicking waybar just toggles their visibility — no startup delay.
   # After toggling visible, resize to 50% and center so it adapts to monitor changes.
-  toggleScratch = name: pkgs.writeShellScript "toggle-${name}" ''
+  toggleScratch = name: launchCmd: pkgs.writeShellScript "toggle-${name}" ''
     hyprctl keyword cursor:no_warps true
+
+    # Re-launch the TUI if it was killed
+    if ! hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.workspace.name == "special:${name}")' > /dev/null 2>&1; then
+      ${launchCmd} &
+      # Wait for the window to appear on the special workspace
+      for i in $(seq 1 20); do
+        sleep 0.1
+        hyprctl clients -j | ${pkgs.jq}/bin/jq -e '.[] | select(.workspace.name == "special:${name}")' > /dev/null 2>&1 && break
+      done
+    fi
+
     hyprctl dispatch togglespecialworkspace ${name}
     sleep 0.15
     # Re-center if the scratchpad is now visible on any monitor
@@ -306,7 +317,7 @@ in
         format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         states = { critical = 15; low = 25; medium = 50; high = 100; };
         interval = 2;
-        on-click = "${toggleScratch "battery"}";
+        on-click = "${toggleScratch "battery" "kitty --session none --title battery -e ${pkgs.batmon}/bin/batmon"}";
       };
 
       "custom/temp" = {
@@ -319,21 +330,21 @@ in
         exec = "${cpuScript}";
         return-type = "json";
         interval = 2;
-        on-click = "${toggleScratch "btop"}";
+        on-click = "${toggleScratch "btop" "kitty --session none --class floating-btop -e btop"}";
       };
 
       "custom/mem" = {
         exec = "${memScript}";
         return-type = "json";
         interval = 2;
-        on-click = "${toggleScratch "btop"}";
+        on-click = "${toggleScratch "btop" "kitty --session none --class floating-btop -e btop"}";
       };
 
       "custom/wifi" = {
         exec = "${wifiScript}";
         return-type = "json";
         interval = 1;
-        on-click = "${toggleScratch "wifi"}";
+        on-click = "${toggleScratch "wifi" "kitty --session none --title wifi -e impala"}";
         on-click-right = "rfkill toggle wifi";
       };
 
@@ -346,7 +357,7 @@ in
         tooltip-format-connected = "{device_enumerate}";
         tooltip-format-enumerate-connected = "{device_alias} ({device_address})";
         tooltip-format-enumerate-connected-battery = "{device_alias} ({device_address}) {device_battery_percentage}%";
-        on-click = "${toggleScratch "bluetooth"}";
+        on-click = "${toggleScratch "bluetooth" "kitty --session none --title bluetooth -e bluetui"}";
         on-click-right = "rfkill toggle bluetooth";
       };
 
@@ -354,7 +365,7 @@ in
         format = "<span size=\"200%\">󰕾</span>";
         format-muted = "<span size=\"200%\">󰖁</span>";
         tooltip-format = "{volume}%";
-        on-click = "${toggleScratch "audio"}";
+        on-click = "${toggleScratch "audio" "kitty --session none --title audio -e wiremix"}";
         on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
       };
 
