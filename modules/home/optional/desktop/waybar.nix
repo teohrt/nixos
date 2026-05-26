@@ -7,6 +7,7 @@ let
   # workspaces. Clicking waybar just toggles their visibility — no startup delay.
   # After toggling visible, resize to 50% and center so it adapts to monitor changes.
   toggleScratch = name: pkgs.writeShellScript "toggle-${name}" ''
+    hyprctl keyword cursor:no_warps true
     hyprctl dispatch togglespecialworkspace ${name}
     sleep 0.15
     # Re-center if the scratchpad is now visible on any monitor
@@ -16,6 +17,7 @@ let
       hyprctl dispatch resizeactive exact 50% 50%
       hyprctl dispatch centerwindow
     fi
+    hyprctl keyword cursor:no_warps false
   '';
 
 
