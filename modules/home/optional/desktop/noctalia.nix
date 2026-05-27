@@ -51,6 +51,7 @@
     };
   };
 
-  # Noctalia provides its own wallpaper management; disable Stylix's hyprpaper target
+  # Let Noctalia use its own theming; disable Stylix's noctalia-shell and hyprpaper targets
+  stylix.targets.noctalia-shell.enable = false;
   stylix.targets.hyprpaper.enable = lib.mkForce false;
 }
