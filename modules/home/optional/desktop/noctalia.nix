@@ -41,6 +41,7 @@
         boxRadiusRatio = 0;
         iRadiusRatio = 0;
         screenRadiusRatio = 0;
+        dimmerOpacity = 0.7;
         showChangelogOnStartup = false;
         telemetryEnabled = false;
       };
@@ -50,6 +51,8 @@
         predefinedScheme = "Nord";
         darkMode = true;
       };
+
+      sessionMenu.showKeybinds = false;
 
       dock.enabled = false;
       desktopWidgets.enabled = true;
