@@ -15,6 +15,7 @@
         density = "comfortable";
         showCapsule = false;
         showOutline = false;
+        widgetSpacing = 6;
         widgets = {
           left = [
             { id = "Workspace"; }
