@@ -29,6 +29,7 @@
             { id = "SystemMonitor"; }
             { id = "Bluetooth"; }
             { id = "Volume"; }
+            { id = "ControlCenter"; }
           ];
         };
       };
