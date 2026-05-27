@@ -42,7 +42,7 @@
         boxRadiusRatio = 0;
         iRadiusRatio = 0;
         screenRadiusRatio = 0;
-        dimmerOpacity = 0.7;
+        dimmerOpacity = 0;
         showChangelogOnStartup = false;
         telemetryEnabled = false;
       };
