@@ -41,7 +41,7 @@
   users.users.trace = {
     isNormalUser = true;
     description = "trace";
-    extraGroups = [ "wheel" "video" "docker" ]; # video group allows brightnessctl without sudo; docker allows running docker without sudo
+    extraGroups = [ "wheel" "video" "docker" "networkmanager" ]; # video: brightnessctl; docker: rootless docker; networkmanager: NM control
     packages = [];
     shell = pkgs.zsh;
   };

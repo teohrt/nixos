@@ -17,6 +17,9 @@
     Settings.AutoConnect = true;
   };
 
+  # Explicitly disable networkd — it conflicts with NetworkManager
+  networking.useNetworkd = false;
+
   # DNS resolution
   services.resolved.enable = true;
 
