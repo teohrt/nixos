@@ -8,21 +8,6 @@
     wifi.backend = "iwd";  # use iwd instead of wpa_supplicant
   };
 
-  # iwd — used by NetworkManager as wifi backend
-  networking.wireless.iwd.enable = true;
-  networking.wireless.iwd.settings = {
-    General = {
-      EnableNetworkConfiguration = false;  # NetworkManager handles DHCP, not iwd
-    };
-    Settings.AutoConnect = true;
-  };
-
-  # Explicitly disable networkd — it conflicts with NetworkManager
-  networking.useNetworkd = false;
-
   # DNS resolution
   services.resolved.enable = true;
-
-  # NetworkManager handles wait-online itself
-  systemd.network.wait-online.enable = false;
 }
