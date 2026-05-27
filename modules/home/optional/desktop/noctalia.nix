@@ -12,9 +12,9 @@
       bar = {
         barType = "simple";
         position = "bottom";
-        density = "compact";
+        density = "comfortable";
         showCapsule = true;
-        showOutline = true;
+        showOutline = false;
         widgets = {
           left = [
             { id = "Workspace"; }
