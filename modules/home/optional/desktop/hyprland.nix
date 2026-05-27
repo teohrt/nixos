@@ -313,7 +313,7 @@ let
       fi
     }
 
-    choice=$(printf "Take Screenshot\nRecord Screen\nWebcam Preview\nBrightness\nVolume" | ${walker} --dmenu -p "Toggle")
+    choice=$(printf "Take Screenshot\nRecord Screen\nWebcam Preview\nScreensaver\nBrightness\nVolume" | ${walker} --dmenu -p "Toggle")
     case "$choice" in
       "Take Screenshot")
         sub=$(printf "Region\nWindow\nScreen" | ${walker} --dmenu -p "Screenshot")
@@ -332,6 +332,9 @@ let
         ;;
       "Webcam Preview")
         toggle_webcam
+        ;;
+      "Screensaver")
+        launch-screensaver
         ;;
       "Brightness")
         current=$(${pkgs.brightnessctl}/bin/brightnessctl -m | cut -d, -f4)
