@@ -451,19 +451,17 @@ in
       animations = {
         enabled = true;
         bezier = [
-          "easeOutQuart, 0.25, 1, 0.5, 1"
-          "easeOutExpo, 0.16, 1, 0.3, 1"
-          "softSnap, 0.2, 1, 0.35, 1"
+          "linear, 0, 0, 1, 1"
         ];
         animation = [
-          "windowsIn, 1, 3, easeOutExpo, popin 85%"     # new windows scale in gently
-          "windowsOut, 1, 2, easeOutQuart, popin 85%"    # closing windows shrink out quickly
-          "windowsMove, 1, 3, softSnap"                  # tiling rearrangements
-          "fade, 1, 3, easeOutQuart"                     # opacity transitions
-          "workspaces, 1, 3, easeOutExpo, slide"         # workspace switch slides
-          "layers, 1, 2, easeOutExpo, popin 90%"         # layer popups (walker, noctalia panels)
-          "layersIn, 1, 2, easeOutExpo, popin 90%"
-          "layersOut, 1, 1, easeOutQuart, popin 90%"
+          "windowsIn, 1, 1.2, linear, popin 85%"
+          "windowsOut, 1, 1.2, linear, popin 85%"
+          "windowsMove, 1, 1.2, linear"
+          "fade, 1, 1.2, linear"
+          "workspaces, 1, 1.2, linear, slide"
+          "layers, 1, 1.2, linear, popin 90%"
+          "layersIn, 1, 1.2, linear, popin 90%"
+          "layersOut, 1, 1.2, linear, popin 90%"
         ];
       };
 
