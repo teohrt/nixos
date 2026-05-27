@@ -14,6 +14,7 @@
         position = "bottom";
         density = "comfortable";
         showCapsule = false;
+        backgroundOpacity = 1.0;
         showOutline = false;
         widgetSpacing = 6;
         fontScale = 1.2;
