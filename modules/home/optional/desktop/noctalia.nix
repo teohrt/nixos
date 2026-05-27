@@ -43,6 +43,12 @@
         telemetryEnabled = false;
       };
 
+      colorSchemes = {
+        useWallpaperColors = false;
+        predefinedScheme = "Nord";
+        darkMode = true;
+      };
+
       dock.enabled = false;
       desktopWidgets.enabled = true;
 
