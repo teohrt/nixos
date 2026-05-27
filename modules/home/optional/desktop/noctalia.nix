@@ -38,7 +38,7 @@
       };
 
       general = {
-        radiusRatio = 0;
+        radiusRatio = 1;
         boxRadiusRatio = 0;
         iRadiusRatio = 0;
         screenRadiusRatio = 0;
