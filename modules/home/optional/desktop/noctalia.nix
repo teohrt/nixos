@@ -42,7 +42,7 @@
         telemetryEnabled = false;
       };
 
-      dock.enabled = true;
+      dock.enabled = false;
       desktopWidgets.enabled = true;
 
       # Hypridle handles idle/lock/screensaver — disable Noctalia's built-in idle management
