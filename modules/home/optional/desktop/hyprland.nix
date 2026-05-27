@@ -551,6 +551,7 @@ in
         "$mod, O,            Pop window out,        exec, ${popWindow}"
         "$mod, T,            Toggle menu,           exec, ${toggleMenu}"
         "$mod, slash,        Voice input,           exec, ${voiceInput}"
+        "$mod SHIFT, W,      Wallpaper picker,      exec, $noctalia wallpaper toggle"
         "$mod, M,            Monitor settings,      exec, kitty --single-instance --instance-group popup --session none --title hyprmon -e hyprmon"
 
         # resize active window
