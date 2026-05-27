@@ -1,6 +1,6 @@
 # Hyprland window manager configuration: keybindings, window rules, animations,
 # and helper scripts for screenshots, screen recording, voice input, etc.
-{ pkgs, lib, config, ... }:
+{ pkgs, lib, config, pkgs-walker, ... }:
 let
   defaultScale = "1.25";
 
@@ -207,6 +207,147 @@ let
     fi
   '';
 
+  # Toggle menu - quick actions via walker dmenu
+  # Screen option has 1s delay to avoid capturing the menu itself
+  walker = "${pkgs-walker.walker}/bin/walker";
+  toggleMenu = pkgs.writeShellScript "toggle-menu" ''
+    take_screenshot() {
+      file=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
+
+      case "$1" in
+        region)
+          # Select region first (cursor visible), then hide cursor and capture
+          region=$(${pkgs.slurp}/bin/slurp) || return 1
+          cursorpos=$(hyprctl cursorpos)
+          hyprctl dispatch movecursor 99999 99999
+          ${pkgs.grim}/bin/grim -g "$region" "$file"
+          result=$?
+          hyprctl dispatch movecursor ''${cursorpos// / }
+          ${pkgs.wl-clipboard}/bin/wl-copy < "$file"
+          ;;
+        window|screen)
+          # Hide cursor, capture, restore
+          cursorpos=$(hyprctl cursorpos)
+          hyprctl dispatch movecursor 99999 99999
+          if [[ "$1" == "window" ]]; then
+            ${pkgs.grimblast}/bin/grimblast copysave active "$file"
+          else
+            ${pkgs.grimblast}/bin/grimblast copysave screen "$file"
+          fi
+          result=$?
+          hyprctl dispatch movecursor ''${cursorpos// / }
+          ;;
+      esac
+
+      [[ $result -ne 0 ]] && return 1
+      (
+        action=$(${pkgs.libnotify}/bin/notify-send -u low -a "Screenshot" -i "$file" \
+          "Screenshot saved" "Copied to clipboard. $file" \
+          --action="default=Open" \
+          --action="edit=Edit")
+        case "$action" in
+          default) xdg-open "$file" ;;
+          edit) ${pkgs.satty}/bin/satty --filename "$file" ;;
+        esac
+      ) &
+    }
+
+    start_recording() {
+      mkdir -p ~/Videos/Recordings
+      file=~/Videos/Recordings/$(date +%Y-%m-%d_%H-%M-%S).mp4
+      echo "$file" > /tmp/current-recording
+      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 3..."
+      sleep 1
+      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 2..."
+      sleep 1
+      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 1..."
+      sleep 1
+      if [[ "$1" == "audio" ]]; then
+        ${pkgs.wf-recorder}/bin/wf-recorder -a -f "$file" &
+      else
+        ${pkgs.wf-recorder}/bin/wf-recorder -f "$file" &
+      fi
+      ${pkgs.libnotify}/bin/notify-send -u low "Recording started"
+    }
+
+    set_brightness() {
+      ${pkgs.brightnessctl}/bin/brightnessctl set "$1" -q
+      current=$(${pkgs.brightnessctl}/bin/brightnessctl -m | cut -d, -f4)
+      ${pkgs.libnotify}/bin/notify-send -u low -t 1000 "Brightness" "$current"
+    }
+
+    # Toggle webcam preview window for screen recordings with face cam
+    toggle_webcam() {
+      if pgrep -f "mpv.*title=webcam" > /dev/null; then
+        pkill -f "mpv.*title=webcam"
+      else
+        # Build camera list from sysfs - only include even-numbered devices (capture, not metadata)
+        cameras=""
+        for dev in /dev/video*; do
+          num=$(basename "$dev" | tr -dc '0-9')
+          if [[ $((num % 2)) -eq 0 ]]; then
+            name=$(cat "/sys/class/video4linux/$(basename $dev)/name" 2>/dev/null | sed 's/:$//')
+            [[ -n "$name" ]] && cameras+="$name ($dev)\n"
+          fi
+        done
+
+        choice=$(printf "$cameras" | ${walker} --dmenu -p "Camera")
+        [[ -z "$choice" ]] && return
+
+        # Extract device path from selection
+        device=$(echo "$choice" | grep -oP '/dev/video\d+')
+
+        ${pkgs.mpv}/bin/mpv --no-osc --geometry=320x240-10-10 --ontop --no-border \
+          --title=webcam --profile=low-latency --untimed --no-cache \
+          av://v4l2:"$device" &
+      fi
+    }
+
+    choice=$(printf "Take Screenshot\nRecord Screen\nWebcam Preview\nBrightness\nVolume" | ${walker} --dmenu -p "Toggle")
+    case "$choice" in
+      "Take Screenshot")
+        sub=$(printf "Region\nWindow\nScreen" | ${walker} --dmenu -p "Screenshot")
+        case "$sub" in
+          Region) take_screenshot region ;;
+          Window) take_screenshot window ;;
+          Screen) take_screenshot screen ;;
+        esac
+        ;;
+      "Record Screen")
+        sub=$(printf "With Audio\nNo Audio" | ${walker} --dmenu -p "Record")
+        case "$sub" in
+          "With Audio") start_recording audio ;;
+          "No Audio") start_recording ;;
+        esac
+        ;;
+      "Webcam Preview")
+        toggle_webcam
+        ;;
+      "Brightness")
+        current=$(${pkgs.brightnessctl}/bin/brightnessctl -m | cut -d, -f4)
+        sub=$(printf "Minimum\n25%%\n50%%\n75%%\n100%%" | ${walker} --dmenu -p "Brightness ($current)")
+        case "$sub" in
+          Minimum) set_brightness 1 ;;
+          25%) set_brightness 25% ;;
+          50%) set_brightness 50% ;;
+          75%) set_brightness 75% ;;
+          100%) set_brightness 100% ;;
+        esac
+        ;;
+      "Volume")
+        current=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf "%.0f%%", $2 * 100}')
+        sub=$(printf "0%%\n25%%\n50%%\n75%%\n100%%" | ${walker} --dmenu -p "Volume ($current)")
+        case "$sub" in
+          0%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 0% ;;
+          25%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 25% ;;
+          50%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 50% ;;
+          75%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 75% ;;
+          100%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 100% ;;
+        esac
+        ;;
+    esac
+  '';
+
   # Voice-to-text using whisper-cpp
   # First press starts recording, second press stops and transcribes
   voiceInput = pkgs.writeShellScript "voice-input" ''
@@ -408,7 +549,7 @@ in
         "$mod, J,            Toggle split,          togglesplit"
         "$mod, P,            Pseudo window,         pseudo"
         "$mod, O,            Pop window out,        exec, ${popWindow}"
-        "$mod, T,            Control center,        exec, $noctalia controlCenter toggle"
+        "$mod, T,            Toggle menu,           exec, ${toggleMenu}"
         "$mod, slash,        Voice input,           exec, ${voiceInput}"
         "$mod, M,            Monitor settings,      exec, kitty --single-instance --instance-group popup --session none --title hyprmon -e hyprmon"
 
