@@ -13,7 +13,7 @@
         barType = "simple";
         position = "bottom";
         density = "comfortable";
-        showCapsule = true;
+        showCapsule = false;
         showOutline = false;
         widgets = {
           left = [
