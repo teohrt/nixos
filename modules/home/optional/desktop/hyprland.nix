@@ -61,6 +61,14 @@ let
       hyprctl monitors all -j | ${pkgs.jq}/bin/jq -r '.[] | select(.name | startswith("eDP") | not) | .name' | head -1
     }
 
+    # Toggle bar off/on to force Noctalia to recalculate geometry after monitor changes
+    refresh_bar() {
+      sleep 0.3
+      noctalia-shell ipc call bar hideBar
+      sleep 0.2
+      noctalia-shell ipc call bar showBar
+    }
+
     handle_connect() {
       local internal=$(get_internal)
       local external=$(get_external)
@@ -69,6 +77,7 @@ let
       # catch-all monitor rule doesn't apply to hotplugged displays; set scale explicitly
       hyprctl keyword monitor "$external,preferred,auto,${defaultScale}"
       hyprctl keyword monitor "$internal,preferred,auto,${defaultScale},mirror,$external"
+      refresh_bar
     }
 
     handle_disconnect() {
@@ -77,6 +86,7 @@ let
 
       # Restore internal monitor config
       hyprctl keyword monitor "$internal,preferred,auto,${defaultScale}"
+      refresh_bar
     }
 
     # Handle current state on startup
