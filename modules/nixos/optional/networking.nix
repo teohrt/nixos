@@ -1,26 +1,25 @@
-# Network stack: iwd for WiFi, systemd-networkd for wired, systemd-resolved for DNS.
-# Uses iwd instead of NetworkManager for compatibility with impala WiFi TUI.
+# Network stack: NetworkManager with iwd backend, systemd-resolved for DNS.
+# NM provides D-Bus interface for Noctalia Shell's Network widget.
+# iwd backend preserves compatibility with impala WiFi TUI (talks to iwd over D-Bus).
 { ... }:
 {
-  # iwd manages wifi (required by impala TUI — talks directly to iwd over D-Bus)
+  networking.networkmanager = {
+    enable = true;
+    wifi.backend = "iwd";  # use iwd instead of wpa_supplicant
+  };
+
+  # iwd — used by NetworkManager as wifi backend
   networking.wireless.iwd.enable = true;
   networking.wireless.iwd.settings = {
     General = {
-      EnableNetworkConfiguration = true;  # iwd handles DHCP for wifi
+      EnableNetworkConfiguration = false;  # NetworkManager handles DHCP, not iwd
     };
     Settings.AutoConnect = true;
   };
 
-  # systemd-networkd handles wired ethernet, systemd-resolved handles DNS
-  networking.useNetworkd = true;
-  networking.useDHCP = false;
+  # DNS resolution
   services.resolved.enable = true;
-  systemd.network.networks."10-wired" = {
-    matchConfig.Name = "en*";
-    networkConfig.DHCP = "yes";
-  };
 
-  # Disable wait-online — iwd manages wifi outside of networkd so no
-  # interface ever reports online to networkd during boot
+  # NetworkManager handles wait-online itself
   systemd.network.wait-online.enable = false;
 }
