@@ -53,8 +53,9 @@
     nssmdns4 = true; # enables network printer discovery on the local network
   };
 
-  # PAM integration for hyprlock (allows unlocking with user password)
+  # PAM integration for lock screens (allows unlocking with user password)
   security.pam.services.hyprlock = {};
+  security.pam.services.noctalia-shell = {};
 
   # Required for Nautilus: trash, removable media, MTP, network shares
   services.gvfs.enable = true;
@@ -81,7 +82,7 @@
     ];
   };
 
-  # Battery status daemon (used by waybar, hypridle for battery-aware behavior)
+  # Battery status daemon (used by noctalia-shell bar, hypridle for battery-aware behavior)
   services.upower.enable = true;
 
   # Power profile switching (power-saver, balanced, performance)

@@ -63,8 +63,6 @@ let
     [ -f "$HOME/.local/state/screensaver-off" ] && exit 0
     hyprctl clients -j | ${pkgs.jq}/bin/jq -e 'any(.[]; .class == "screensaver")' >/dev/null 2>&1 && exit 0
 
-    walker -q 2>/dev/null || true
-
     focused=$(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[] | select(.focused == true).name')
 
     for m in $(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[] | .name'); do
@@ -82,7 +80,7 @@ in
     enable = true;
     settings = {
       general = {
-        lock_cmd        = "hyprlock";
+        lock_cmd        = "noctalia-shell ipc call lockScreen lock";
         before_sleep_cmd = "loginctl lock-session";
         after_sleep_cmd  = "sleep 1 && hyprctl dispatch dpms on";
         inhibit_sleep   = 3;
@@ -91,7 +89,7 @@ in
       listener = [
         {
           timeout    = 150;  # 2.5 min — launch screensaver (skipped if already locked)
-          on-timeout = "pidof hyprlock || ${launchScreensaver}/bin/launch-screensaver";
+          on-timeout = "noctalia-shell ipc call lockScreen isLocked 2>/dev/null && true || ${launchScreensaver}/bin/launch-screensaver";
         }
         {
           timeout    = 151;  # immediately after screensaver — lock screen

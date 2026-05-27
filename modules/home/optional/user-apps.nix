@@ -1,5 +1,5 @@
 # Packages that should be installed to the user profile.
-{ pkgs, pkgs-unstable, pkgs-walker, ... }:
+{ pkgs, pkgs-unstable, ... }:
 let
   # Wrap DBeaver to bypass Stylix's GTK theme (Java/SWT apps render incorrectly with it)
   dbeaver-unwrapped = pkgs.symlinkJoin {
@@ -144,16 +144,11 @@ in
     easyeffects          # audio effects for PipeWire
     dbeaver-unwrapped          # database client (PostgreSQL, MySQL, SQLite, etc.)
 
-    mpvpaper                # animated wallpaper via mpv (supports MP4/GIF)
-
     # wayland / hyprland ecosystem
-    pkgs-walker.walker          # app launcher / dmenu replacement
-    pkgs-walker.elephant        # data provider service that indexes apps for walker
     impala                      # wifi TUI
     bluetui                     # bluetooth TUI
     wiremix                     # audio TUI
     grimblast                   # screenshot tool for Hyprland
-    swayosd                     # OSD popup for volume/brightness
     brightnessctl               # brightness control (requires video group)
     wl-clipboard                # clipboard utilities (wl-copy / wl-paste)
     wl-clip-persist             # keeps clipboard alive after source process exits

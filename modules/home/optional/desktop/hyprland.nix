@@ -5,9 +5,9 @@ let
   defaultScale = "1.25";
 
   # Generates window rules for a centered floating popup with consistent styling.
-  # Used by waybar TUI popups, LocalSend, 1Password, etc.
-  # `match` is the windowrulev2 selector (e.g. "class:^(1Password)$" or "title:^(wifi)$").
-  # All popups are sized to half the monitor dimensions, matching halfScreenSize behavior.
+  # Used by LocalSend, 1Password, etc.
+  # `match` is the windowrulev2 selector (e.g. "class:^(1Password)$").
+  # All popups are sized to half the monitor dimensions.
   floatingPopupRules = match: [
     "float, ${match}"
     "size 50% 50%, ${match}"
@@ -15,18 +15,6 @@ let
     "bordersize 1, ${match}"
     "bordercolor rgba(${config.lib.stylix.colors.base0D}ff), ${match}"
   ];
-  # Listens on Hyprland's IPC event socket and closes walker popup whenever the
-  # active workspace changes. Needed because walker is a layer surface (not a
-  # window) so it persists across workspace switches and ignores normal focus-loss
-  # rules. Uses `walker --close` instead of pkill to preserve the background service.
-  closeWalkerOnWorkspaceSwitch = pkgs.writeShellScript "close-walker-on-workspace-switch" ''
-    socket="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
-    ${pkgs.socat}/bin/socat -u "UNIX-CONNECT:$socket" - | while IFS= read -r line; do
-      case "$line" in
-        workspace\>\>*) walker --close || true ;;
-      esac
-    done
-  '';
 
   # When a new window opens on a workspace that has a solo floating kitty,
   # unfloat the kitty so both windows tile. This complements the terminalHere
@@ -39,9 +27,9 @@ let
           # Extract fields from: openwindow>>ADDR,WORKSPACE,CLASS,TITLE
           IFS=',' read -r addr_field ws class title <<< "''${line#openwindow>>}"
 
-          # Skip waybar-spawned floating terminals (they have specific titles)
+          # Skip floating terminals with specific titles
           case "$title" in
-            hyprmon|wifi|bluetooth|audio|battery|webcam) continue ;;
+            hyprmon|webcam) continue ;;
           esac
 
           # Find floating kitty windows on that workspace and unfloat them
@@ -53,44 +41,6 @@ let
           ;;
       esac
     done
-  '';
-
-  # Toggle waybar on/off - includes fix for waybar not appearing after monitor changes
-  toggleWaybar = pkgs.writeShellScript "toggle-waybar" ''
-    notify() {
-      ${pkgs.libnotify}/bin/notify-send -u low -t 2000 "Waybar" "$1"
-    }
-
-    # Check if waybar has a visible layer surface
-    waybar_visible() {
-      hyprctl layers | grep -q "namespace: waybar"
-    }
-
-    # Reset internal display to fix layer-shell state
-    reset_display() {
-      internal=$(hyprctl monitors all -j | ${pkgs.jq}/bin/jq -r '.[] | select(.name | startswith("eDP")) | .name' | head -1)
-      [[ -z "$internal" ]] && return 1
-      hyprctl keyword monitor "$internal,disable"
-      sleep 0.3
-      hyprctl keyword monitor "$internal,preferred,auto,${defaultScale}"
-    }
-
-    # If waybar is running but not visible, reset display and restart waybar
-    if systemctl --user is-active waybar &>/dev/null && ! waybar_visible; then
-      reset_display
-      sleep 0.3
-      pkill -9 waybar 2>/dev/null
-      sleep 0.3
-      systemctl --user start waybar
-      hyprctl reload  # fix duplicate cursor
-      notify "Restored"
-    elif systemctl --user is-active waybar &>/dev/null; then
-      systemctl --user stop waybar
-      notify "Stopped"
-    else
-      systemctl --user start waybar
-      notify "Started"
-    fi
   '';
 
   # Auto-mirror: when external monitor connects, make laptop (eDP-*) mirror it
@@ -127,10 +77,6 @@ let
 
       # Restore internal monitor config
       hyprctl keyword monitor "$internal,preferred,auto,${defaultScale}"
-
-      # Restore wallpaper
-      sleep 1
-      ${pkgs.swww}/bin/swww restore 2>/dev/null || true
     }
 
     # Handle current state on startup
@@ -286,12 +232,6 @@ let
         | grep -v '^[[:space:]]*$' \
         | tr '\n' ' ' \
         | sed 's/  */ /g; s/^ *//; s/ *$//')
-      # Pipeline explanation:
-      #   whisper-cli: transcribe audio, -np disables progress output
-      #   sed: strip timestamps like [00:00:00.000 --> 00:00:02.000] from line starts
-      #   grep -v: remove blank lines between sentences
-      #   tr: join all lines into one with spaces
-      #   sed: normalize multiple spaces to single, trim leading/trailing
       rm -f "$RECORDING"
       if [[ -n "$text" ]]; then
         ${pkgs.wtype}/bin/wtype "$text"
@@ -301,180 +241,6 @@ let
       ${pkgs.libnotify}/bin/notify-send -u low "Recording... Press Super+/ to stop"
       ${pkgs.pipewire}/bin/pw-record --target=@DEFAULT_SOURCE@ "$RECORDING" &
     fi
-  '';
-
-  # Toggle menu - quick actions via walker dmenu
-  # Screen option has 1s delay to avoid capturing the menu itself
-  toggleMenu = pkgs.writeShellScript "toggle-menu" ''
-    take_screenshot() {
-      file=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
-
-      case "$1" in
-        region)
-          # Select region first (cursor visible), then hide cursor and capture
-          region=$(${pkgs.slurp}/bin/slurp) || return 1
-          cursorpos=$(hyprctl cursorpos)
-          hyprctl dispatch movecursor 99999 99999
-          ${pkgs.grim}/bin/grim -g "$region" "$file"
-          result=$?
-          hyprctl dispatch movecursor ''${cursorpos// / }
-          ${pkgs.wl-clipboard}/bin/wl-copy < "$file"
-          ;;
-        window|screen)
-          # Hide cursor, capture, restore
-          cursorpos=$(hyprctl cursorpos)
-          hyprctl dispatch movecursor 99999 99999
-          if [[ "$1" == "window" ]]; then
-            ${pkgs.grimblast}/bin/grimblast copysave active "$file"
-          else
-            ${pkgs.grimblast}/bin/grimblast copysave screen "$file"
-          fi
-          result=$?
-          hyprctl dispatch movecursor ''${cursorpos// / }
-          ;;
-      esac
-
-      [[ $result -ne 0 ]] && return 1
-      (
-        action=$(${pkgs.libnotify}/bin/notify-send -u low -a "Screenshot" -i "$file" \
-          "Screenshot saved" "Copied to clipboard. $file" \
-          --action="default=Open" \
-          --action="edit=Edit")
-        case "$action" in
-          default) xdg-open "$file" ;;
-          edit) ${pkgs.satty}/bin/satty --filename "$file" ;;
-        esac
-      ) &
-    }
-
-    start_recording() {
-      mkdir -p ~/Videos/Recordings
-      file=~/Videos/Recordings/$(date +%Y-%m-%d_%H-%M-%S).mp4
-      echo "$file" > /tmp/current-recording
-      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 3..."
-      sleep 1
-      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 2..."
-      sleep 1
-      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 1..."
-      sleep 1
-      if [[ "$1" == "audio" ]]; then
-        ${pkgs.wf-recorder}/bin/wf-recorder -a -f "$file" &
-      else
-        ${pkgs.wf-recorder}/bin/wf-recorder -f "$file" &
-      fi
-      pkill -RTMIN+8 waybar
-      ${pkgs.libnotify}/bin/notify-send -u low "Recording started"
-    }
-
-    set_brightness() {
-      ${pkgs.brightnessctl}/bin/brightnessctl set "$1" -q
-      current=$(${pkgs.brightnessctl}/bin/brightnessctl -m | cut -d, -f4)
-      ${pkgs.libnotify}/bin/notify-send -u low -t 1000 "Brightness" "$current"
-    }
-
-    # Toggle webcam preview window for screen recordings with face cam
-    # Uses low-latency mpv settings to minimize delay
-    # When webcam is on: turns it off. When off: shows camera selection menu.
-    toggle_webcam() {
-      if pgrep -f "mpv.*title=webcam" > /dev/null; then
-        pkill -f "mpv.*title=webcam"
-      else
-        # Build camera list from sysfs - only include even-numbered devices (capture, not metadata)
-        cameras=""
-        for dev in /dev/video*; do
-          num=$(basename "$dev" | tr -dc '0-9')
-          if [[ $((num % 2)) -eq 0 ]]; then
-            name=$(cat "/sys/class/video4linux/$(basename $dev)/name" 2>/dev/null | sed 's/:$//')
-            [[ -n "$name" ]] && cameras+="$name ($dev)\n"
-          fi
-        done
-
-        choice=$(printf "$cameras" | walker --dmenu -p "Camera")
-        [[ -z "$choice" ]] && return
-
-        # Extract device path from selection
-        device=$(echo "$choice" | grep -oP '/dev/video\d+')
-
-        ${pkgs.mpv}/bin/mpv --no-osc --geometry=320x240-10-10 --ontop --no-border \
-          --title=webcam --profile=low-latency --untimed --no-cache \
-          av://v4l2:"$device" &
-      fi
-    }
-
-    choice=$(printf "Take Screenshot\nRecord Screen\nWebcam Preview\nBrightness\nVolume" | walker --dmenu -p "Toggle")
-    case "$choice" in
-      "Take Screenshot")
-        sub=$(printf "Region\nWindow\nScreen" | walker --dmenu -p "Screenshot")
-        case "$sub" in
-          Region) take_screenshot region ;;
-          Window) take_screenshot window ;;
-          Screen) take_screenshot screen ;;
-        esac
-        ;;
-      "Record Screen")
-        sub=$(printf "With Audio\nNo Audio" | walker --dmenu -p "Record")
-        case "$sub" in
-          "With Audio") start_recording audio ;;
-          "No Audio") start_recording ;;
-        esac
-        ;;
-      "Webcam Preview")
-        toggle_webcam
-        ;;
-      "Brightness")
-        current=$(${pkgs.brightnessctl}/bin/brightnessctl -m | cut -d, -f4)
-        sub=$(printf "Minimum\n25%%\n50%%\n75%%\n100%%" | walker --dmenu -p "Brightness ($current)")
-        case "$sub" in
-          Minimum) set_brightness 1 ;;
-          25%) set_brightness 25% ;;
-          50%) set_brightness 50% ;;
-          75%) set_brightness 75% ;;
-          100%) set_brightness 100% ;;
-        esac
-        ;;
-      "Volume")
-        current=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf "%.0f%%", $2 * 100}')
-        sub=$(printf "0%%\n25%%\n50%%\n75%%\n100%%" | walker --dmenu -p "Volume ($current)")
-        case "$sub" in
-          0%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 0% ;;
-          25%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 25% ;;
-          50%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 50% ;;
-          75%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 75% ;;
-          100%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 100% ;;
-        esac
-        ;;
-    esac
-  '';
-
-  # Reads all bindd-described bindings from Hyprland and shows them in a
-  # searchable walker dmenu. Only bindings with descriptions appear.
-  keybindingsMenu = pkgs.writeShellScript "keybindings-menu" ''
-    hyprctl -j binds | \
-      ${pkgs.jq}/bin/jq -r '
-        .[] |
-        select(.description != null and .description != "") |
-        {
-          mod: (
-            if .modmask == 0 then ""
-            elif .modmask == 1  then "SHIFT"
-            elif .modmask == 4  then "CTRL"
-            elif .modmask == 8  then "ALT"
-            elif .modmask == 64 then "SUPER"
-            elif .modmask == 65 then "SUPER SHIFT"
-            elif .modmask == 68 then "SUPER CTRL"
-            elif .modmask == 69 then "SUPER SHIFT CTRL"
-            elif .modmask == 72 then "SUPER ALT"
-            elif .modmask == 76 then "SUPER CTRL ALT"
-            else (.modmask | tostring) end
-          ),
-          key: (.key | ascii_upcase),
-          desc: .description
-        } |
-        if .mod == "" then "\(.key)  →  \(.desc)"
-        else "\(.mod) + \(.key)  →  \(.desc)"
-        end
-      ' | \
-      walker --dmenu -p "Keybindings" --width 700 --height 500
   '';
 in
 
@@ -492,23 +258,14 @@ in
       monitor = ",preferred,auto,${defaultScale}";
 
       "$terminal" = "kitty";
-      "$menu" = "walker -N -H";
+      "$noctalia" = "noctalia-shell ipc call";
       "$mod" = "SUPER";
 
       exec-once = [
-        "swayosd-server"                                   # OSD server for volume/brightness popups
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" # auth agent for privilege escalation prompts
-        "${closeWalkerOnWorkspaceSwitch}"                  # close walker on workspace switch (layer surfaces ignore normal focus rules)
         "${unfloatOnNewWindow}"                              # unfloat solo floating kitty when another window joins the workspace
         "wl-clip-persist --clipboard regular"              # keep clipboard alive after source process exits
         "${autoMirror}"                                    # auto-mirror laptop to external monitor when connected
-
-        # Pre-launch TUI scratchpads — hidden on special workspaces, toggled by waybar
-        "kitty --session none --class floating-btop -e btop"
-        "kitty --session none --title wifi -e impala"
-        "kitty --session none --title bluetooth -e bluetui"
-        "kitty --session none --title audio -e wiremix"
-        "kitty --session none --title battery -e ${pkgs.batmon}/bin/batmon"
       ];
 
       env = [
@@ -589,15 +346,6 @@ in
 
       layerrule = [
         "noanim, selection"                            # no animation for slurp (screenshot selection)
-        "blur, waybar"
-        "ignorezero, waybar"
-        "blur, walker"
-        "ignorezero, walker"
-        "blur, swaync-notification-window"
-        "blur, swaync-control-center"
-        "ignorezero, swaync-notification-window"
-        "ignorezero, swaync-control-center"
-        "noanim, swaync-notification-window"
       ];
 
       # remove borders when only one tiled window on a workspace
@@ -606,7 +354,6 @@ in
         "f[1], gapsout:0, gapsin:0"
       ];
 
-      # floating window rules for TUI apps launched in titled windows
       windowrulev2 = [
         "bordersize 0, floating:0, onworkspace:w[tv1]"
         "bordersize 0, floating:0, onworkspace:f[1]"
@@ -638,17 +385,6 @@ in
       ++ (floatingPopupRules "class:^(bruno)$")
       ++ [ "suppressevent maximize fullscreen, class:^(bruno)$" ] # bruno persists maximized state in ~/.config/bruno/preferences.json
       ++ (floatingPopupRules "title:^(hyprmon)$")
-      # TUI scratchpads: launched at startup, hidden on special workspaces, toggled by waybar
-      ++ (floatingPopupRules "class:^(floating-btop)$")
-      ++ [ "workspace special:btop silent, class:^(floating-btop)$" ]
-      ++ (floatingPopupRules "title:^(wifi)$")
-      ++ [ "workspace special:wifi silent, title:^(wifi)$" ]
-      ++ (floatingPopupRules "title:^(bluetooth)$")
-      ++ [ "workspace special:bluetooth silent, title:^(bluetooth)$" ]
-      ++ (floatingPopupRules "title:^(audio)$")
-      ++ [ "workspace special:audio silent, title:^(audio)$" ]
-      ++ (floatingPopupRules "title:^(battery)$")
-      ++ [ "workspace special:battery silent, title:^(battery)$" ]
       ++ [
         "float, title:^(webcam)$"
         "size 320 240, title:^(webcam)$"
@@ -658,22 +394,20 @@ in
       ];
 
       # standard key bindings with descriptions (bindd = bind with description)
-      # descriptions appear in the SUPER+K keybindings menu
       bindd = [
         "$mod, Return,       Terminal,              exec, ${terminalHere}"
-        "$mod, Escape,       Power menu,            exec, power-menu"
+        "$mod, Escape,       Power panel,           exec, $noctalia powerPanel toggle"
         "$mod SHIFT, Return, Browser,               exec, google-chrome-stable"
         "$mod, F,            Fullscreen,            fullscreen"
         "$mod SHIFT, F,      File manager,          exec, nautilus --new-window"
         "$mod, Q,            Close window,          killactive"
 
-        "$mod, SPACE,        Launch apps,           exec, $menu"
-        "$mod, B,            Toggle waybar,         exec, ${toggleWaybar}"
+        "$mod, SPACE,        Launch apps,           exec, $noctalia launcher toggle"
+        "$mod, B,            Toggle bar,            exec, $noctalia bar toggle"
         "$mod, J,            Toggle split,          togglesplit"
         "$mod, P,            Pseudo window,         pseudo"
         "$mod, O,            Pop window out,        exec, ${popWindow}"
-        "$mod, K,            Show keybindings,      exec, ${keybindingsMenu}"
-        "$mod, T,            Toggle menu,           exec, ${toggleMenu}"
+        "$mod, T,            Control center,        exec, $noctalia sidePanel toggle"
         "$mod, slash,        Voice input,           exec, ${voiceInput}"
         "$mod, M,            Monitor settings,      exec, kitty --single-instance --instance-group popup --session none --title hyprmon -e hyprmon"
 
@@ -720,8 +454,8 @@ in
         "$mod SHIFT, 0, Move to workspace 10, movetoworkspace, 10"
 
         # mute toggles
-        ", XF86AudioMute,    Mute audio, exec, swayosd-client --output-volume mute-toggle"
-        ", XF86AudioMicMute, Mute mic,   exec, swayosd-client --input-volume mute-toggle"
+        ", XF86AudioMute,    Mute audio, exec, $noctalia audio muteOutput"
+        ", XF86AudioMicMute, Mute mic,   exec, $noctalia audio muteInput"
 
         # screenshots — saves to ~/Pictures, copies to clipboard, click notification to edit
         "$mod, S,            Screenshot region,  exec, ${screenshot}"
@@ -729,10 +463,10 @@ in
 
       # repeatable bindings — fire continuously while key is held
       bindel = [
-        ", XF86AudioRaiseVolume,  exec, swayosd-client --output-volume raise"
-        ", XF86AudioLowerVolume,  exec, swayosd-client --output-volume lower"
-        ", XF86MonBrightnessUp,   exec, swayosd-client --brightness raise"
-        ", XF86MonBrightnessDown, exec, swayosd-client --brightness lower"
+        ", XF86AudioRaiseVolume,  exec, $noctalia audio increase"
+        ", XF86AudioLowerVolume,  exec, $noctalia audio decrease"
+        ", XF86MonBrightnessUp,   exec, $noctalia brightness increase"
+        ", XF86MonBrightnessDown, exec, $noctalia brightness decrease"
       ];
 
       # mouse bindings (held modifier + mouse button)

@@ -138,10 +138,7 @@
       ../../modules/home/core
       ../../modules/home/optional/user-apps.nix
       ../../modules/home/optional/desktop/hyprland.nix
-      ../../modules/home/optional/desktop/waybar.nix
-      ../../modules/home/optional/desktop/walker.nix
-      ../../modules/home/optional/desktop/wallpaper.nix
-      ../../modules/home/optional/desktop/hyprlock.nix
+      ../../modules/home/optional/desktop/noctalia.nix
       ../../modules/home/optional/desktop/hypridle.nix
       ../../modules/home/optional/apps/kitty.nix
       ../../modules/home/optional/apps/firefox.nix
