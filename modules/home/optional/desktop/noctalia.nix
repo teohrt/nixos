@@ -7,25 +7,46 @@
 
   programs.noctalia-shell = {
     enable = true;
-    systemd.enable = true;
 
     settings = {
       bar = {
+        barType = "simple";
         position = "bottom";
-        style = "compact";
-        borderRadius = 0;
+        density = "compact";
+        showCapsule = true;
+        showOutline = true;
         widgets = {
-          left = [ "workspaces" ];
-          center = [ "battery" "clock" "notifications" ];
-          right = [ "network" "temperature" "cpu" "memory" "bluetooth" "audio" ];
+          left = [
+            { id = "Workspace"; }
+          ];
+          center = [
+            { id = "Battery"; }
+            { id = "Clock"; }
+            { id = "NotificationHistory"; }
+          ];
+          right = [
+            { id = "Network"; }
+            { id = "SystemMonitor"; }
+            { id = "Bluetooth"; }
+            { id = "Volume"; }
+          ];
         };
       };
 
-      dock.enable = false;
-      desktop.enable = false;
+      general = {
+        radiusRatio = 0;
+        boxRadiusRatio = 0;
+        iRadiusRatio = 0;
+        screenRadiusRatio = 0;
+        showChangelogOnStartup = false;
+        telemetryEnabled = false;
+      };
+
+      dock.enabled = true;
+      desktopWidgets.enabled = true;
 
       # Hypridle handles idle/lock/screensaver — disable Noctalia's built-in idle management
-      idle.enable = false;
+      idle.enabled = false;
     };
   };
 

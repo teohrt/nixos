@@ -262,6 +262,7 @@ in
       "$mod" = "SUPER";
 
       exec-once = [
+        "noctalia-shell"                                   # desktop shell (bar, launcher, notifications, OSD, lock screen)
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" # auth agent for privilege escalation prompts
         "${unfloatOnNewWindow}"                              # unfloat solo floating kitty when another window joins the workspace
         "wl-clip-persist --clipboard regular"              # keep clipboard alive after source process exits
@@ -396,7 +397,7 @@ in
       # standard key bindings with descriptions (bindd = bind with description)
       bindd = [
         "$mod, Return,       Terminal,              exec, ${terminalHere}"
-        "$mod, Escape,       Power panel,           exec, $noctalia powerPanel toggle"
+        "$mod, Escape,       Session menu,          exec, $noctalia sessionMenu toggle"
         "$mod SHIFT, Return, Browser,               exec, google-chrome-stable"
         "$mod, F,            Fullscreen,            fullscreen"
         "$mod SHIFT, F,      File manager,          exec, nautilus --new-window"
@@ -407,7 +408,7 @@ in
         "$mod, J,            Toggle split,          togglesplit"
         "$mod, P,            Pseudo window,         pseudo"
         "$mod, O,            Pop window out,        exec, ${popWindow}"
-        "$mod, T,            Control center,        exec, $noctalia sidePanel toggle"
+        "$mod, T,            Control center,        exec, $noctalia controlCenter toggle"
         "$mod, slash,        Voice input,           exec, ${voiceInput}"
         "$mod, M,            Monitor settings,      exec, kitty --single-instance --instance-group popup --session none --title hyprmon -e hyprmon"
 
@@ -454,8 +455,8 @@ in
         "$mod SHIFT, 0, Move to workspace 10, movetoworkspace, 10"
 
         # mute toggles
-        ", XF86AudioMute,    Mute audio, exec, $noctalia audio muteOutput"
-        ", XF86AudioMicMute, Mute mic,   exec, $noctalia audio muteInput"
+        ", XF86AudioMute,    Mute audio, exec, $noctalia volume muteOutput"
+        ", XF86AudioMicMute, Mute mic,   exec, $noctalia volume muteInput"
 
         # screenshots — saves to ~/Pictures, copies to clipboard, click notification to edit
         "$mod, S,            Screenshot region,  exec, ${screenshot}"
@@ -463,8 +464,8 @@ in
 
       # repeatable bindings — fire continuously while key is held
       bindel = [
-        ", XF86AudioRaiseVolume,  exec, $noctalia audio increase"
-        ", XF86AudioLowerVolume,  exec, $noctalia audio decrease"
+        ", XF86AudioRaiseVolume,  exec, $noctalia volume increase"
+        ", XF86AudioLowerVolume,  exec, $noctalia volume decrease"
         ", XF86MonBrightnessUp,   exec, $noctalia brightness increase"
         ", XF86MonBrightnessDown, exec, $noctalia brightness decrease"
       ];
