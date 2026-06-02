@@ -52,14 +52,14 @@ in
       background: @surface;
       padding: 20px;
       border: 1px solid @accent;
-      border-radius: 0;
+      border-radius: 12px;
       min-width: 360px;
       max-width: 360px;
     }
 
     .search-container {
       background: @surface;
-      border-radius: 0;
+      border-radius: 12px;
       padding: 12px 16px;
     }
 
@@ -76,7 +76,7 @@ in
     child:hover .item-box,
     child:selected .item-box {
       background: @overlay;
-      border-radius: 0;
+      border-radius: 12px;
     }
 
     child:selected .item-box * {
