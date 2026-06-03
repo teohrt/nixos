@@ -16,6 +16,7 @@
         showCapsule = false;
         backgroundOpacity = 1.0;
         showOutline = false;
+        outerCorners = false;
         widgetSpacing = 6;
         fontScale = 1.2;
         widgets = {
