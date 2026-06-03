@@ -48,6 +48,8 @@
         telemetryEnabled = false;
       };
 
+      ui.panelBackgroundOpacity = 1.0;
+
       colorSchemes = {
         useWallpaperColors = false;
         predefinedScheme = "Nord";
