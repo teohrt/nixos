@@ -56,6 +56,8 @@
         darkMode = true;
       };
 
+      location.name = "New York, US";
+
       sessionMenu.showKeybinds = false;
 
       dock.enabled = false;
