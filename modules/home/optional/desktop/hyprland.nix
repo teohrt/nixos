@@ -313,7 +313,13 @@ let
       fi
     }
 
-    choice=$(printf "Take Screenshot\nRecord Screen\nWebcam Preview\nScreensaver\nBrightness\nVolume" | ${walker} --dmenu -p "Toggle")
+    if pgrep -x wf-recorder > /dev/null; then
+      record_option="Stop Recording"
+    else
+      record_option="Record Screen"
+    fi
+
+    choice=$(printf "Take Screenshot\n$record_option\nWebcam Preview\nScreensaver\nBrightness\nVolume" | ${walker} --dmenu -p "Toggle")
     case "$choice" in
       "Take Screenshot")
         sub=$(printf "Region\nWindow\nScreen" | ${walker} --dmenu -p "Screenshot")
@@ -322,6 +328,12 @@ let
           Window) take_screenshot window ;;
           Screen) take_screenshot screen ;;
         esac
+        ;;
+      "Stop Recording")
+        pkill -x wf-recorder
+        file=$(cat /tmp/current-recording 2>/dev/null)
+        rm -f /tmp/current-recording
+        ${pkgs.libnotify}/bin/notify-send -u low "Recording saved" "$file"
         ;;
       "Record Screen")
         sub=$(printf "With Audio\nNo Audio" | ${walker} --dmenu -p "Record")
