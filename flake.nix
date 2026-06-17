@@ -24,9 +24,10 @@
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     sops-nix.url = "github:Mic92/sops-nix";
+    claude-desktop.url = "github:patrickjaja/claude-desktop-bin";
   };
 
-  outputs = inputs@{ nixpkgs, nixpkgs-unstable, nixpkgs-walker, nixpkgs-kitty, home-manager, stylix, spicetify-nix, nixos-hardware, sops-nix, noctalia, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-unstable, nixpkgs-walker, nixpkgs-kitty, home-manager, stylix, spicetify-nix, nixos-hardware, sops-nix, noctalia, claude-desktop, ... }:
   let
     system = "x86_64-linux";
     pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
@@ -80,6 +81,7 @@
           { inherit (themeConfig) stylix; }
           home-manager.nixosModules.home-manager
           hmNixosModule
+          { environment.systemPackages = [ claude-desktop.packages.${system}.default ]; }
         ];
       };
       framework-16 = nixpkgs.lib.nixosSystem {
@@ -93,6 +95,7 @@
           { inherit (themeConfig) stylix; }
           home-manager.nixosModules.home-manager
           hmNixosModule
+          { environment.systemPackages = [ claude-desktop.packages.${system}.default ]; }
         ];
       };
     };

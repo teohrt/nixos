@@ -139,6 +139,7 @@ in
     evince     # PDF viewer
     vlc        # video player
     slack
+    bubblewrap              # sandbox for Claude Desktop Cowork mode
     zoom-wayland         # wrapped for Wayland screen sharing
     bruno-v3             # API client (like Postman) — v3 from binary release
     easyeffects          # audio effects for PipeWire
