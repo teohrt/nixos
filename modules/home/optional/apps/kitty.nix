@@ -114,21 +114,23 @@ in
     '';
   };
 
+  # -i loads aliases, -c runs the command, exec zsh replaces the process with an interactive shell so the tab stays open
+  # "l" is my ls alias to give customized directory contents visibility for each tab
   xdg.configFile."kitty/startup.conf".text = ''
     new_tab work
-    cd ~/Dev/work
-    launch zsh
+    cd ~/Dev/work/hudsonts
+    launch zsh -i -c "l; exec zsh"
 
     new_tab misc
     cd ~/Dev
-    launch zsh
+    launch zsh -i -c "l; exec zsh"
 
     new_tab nixos
     cd ~/Dev/other/nixos
-    launch zsh
+    launch zsh -i -c "l; exec zsh"
 
     new_tab dotfiles
     cd ~/Dev/other/dotfiles
-    launch zsh
+    launch zsh -i -c "l; exec zsh"
   '';
 }
