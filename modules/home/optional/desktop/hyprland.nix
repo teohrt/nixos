@@ -569,7 +569,7 @@ in
         "$mod, Return,       Terminal,              exec, ${terminalHere}"
         "$mod, Escape,       Session menu,          exec, $noctalia sessionMenu toggle"
         "$mod SHIFT, Return, Browser,               exec, google-chrome-stable"
-        "$mod, F,            Fullscreen,            fullscreen"
+        "$mod, F,            Fullscreen,            fullscreen, 1"
         "$mod SHIFT, F,      File manager,          exec, nautilus --new-window"
         "$mod, Q,            Close window,          killactive"
 
