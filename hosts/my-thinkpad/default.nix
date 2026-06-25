@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, username, ... }:
 {
   imports = [
     ./hardware.nix
@@ -13,31 +13,15 @@
 
   networking.hostName = "my-thinkpad";
 
-  # Disable WiFi 6 (802.11ax) parsing in the iwlwifi driver — iwd fails to
-  # parse HE capabilities on this adapter (Intel 8265/8275), causing connect-failed
+  # Intel 8265 WiFi adapter advertises WiFi 6 (802.11ax) HE capabilities but
+  # can't parse them correctly, causing connection failures. Disabling 11ax
+  # forces a fallback to WiFi 5 (802.11ac). Framework 16 doesn't need this.
   boot.extraModprobeConfig = "options iwlwifi disable_11ax=1";
 
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
 
-  home-manager.users.trace = {
-    imports = [
-      ../../modules/home/core
-      ../../modules/home/optional/user-apps.nix
-      ../../modules/home/optional/desktop/hyprland.nix
-      ../../modules/home/optional/desktop/waybar.nix
-      ../../modules/home/optional/desktop/walker.nix
-      ../../modules/home/optional/desktop/wallpaper.nix
-      ../../modules/home/optional/desktop/hyprlock.nix
-      ../../modules/home/optional/desktop/hypridle.nix
-      ../../modules/home/optional/apps/kitty.nix
-      ../../modules/home/optional/apps/firefox.nix
-      ../../modules/home/optional/apps/vscode.nix
-      ../../modules/home/optional/apps/obsidian.nix
-      ../../modules/home/optional/apps/spicetify.nix
-      ../../modules/home/optional/ssh.nix
-    ];
-
+  home-manager.users.${username} = {
     wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1";
   };
 

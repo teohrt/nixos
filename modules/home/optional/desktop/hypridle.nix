@@ -63,8 +63,6 @@ let
     [ -f "$HOME/.local/state/screensaver-off" ] && exit 0
     hyprctl clients -j | ${pkgs.jq}/bin/jq -e 'any(.[]; .class == "screensaver")' >/dev/null 2>&1 && exit 0
 
-    walker -q 2>/dev/null || true
-
     focused=$(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[] | select(.focused == true).name')
 
     for m in $(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[] | .name'); do
@@ -76,39 +74,43 @@ let
   '';
 in
 {
-  home.packages = [ screensaverCmd launchScreensaver toggleScreensaver ];
+  home.packages = [
+    screensaverCmd
+    launchScreensaver
+    toggleScreensaver
+  ];
 
   services.hypridle = {
     enable = true;
     settings = {
       general = {
-        lock_cmd        = "hyprlock";
+        lock_cmd = "noctalia-shell ipc call lockScreen lock";
         before_sleep_cmd = "loginctl lock-session";
-        after_sleep_cmd  = "sleep 1 && hyprctl dispatch dpms on";
-        inhibit_sleep   = 3;
+        after_sleep_cmd = "sleep 1 && hyprctl dispatch dpms on";
+        inhibit_sleep = 3;
       };
 
       listener = [
         {
-          timeout    = 150;  # 2.5 min — launch screensaver (skipped if already locked)
-          on-timeout = "pidof hyprlock || ${launchScreensaver}/bin/launch-screensaver";
+          timeout = 150; # 2.5 min — launch screensaver (skipped if already locked)
+          on-timeout = "noctalia-shell ipc call lockScreen isLocked 2>/dev/null && true || ${launchScreensaver}/bin/launch-screensaver";
         }
         {
-          timeout    = 151;  # immediately after screensaver — lock screen
+          timeout = 151; # immediately after screensaver — lock screen
           on-timeout = "loginctl lock-session";
         }
         {
-          timeout    = 330;  # 5.5 min — keyboard backlight off
+          timeout = 330; # 5.5 min — keyboard backlight off
           on-timeout = "brightnessctl -sd '*::kbd_backlight' set 0";
-          on-resume  = "brightnessctl -rd '*::kbd_backlight'";
+          on-resume = "brightnessctl -rd '*::kbd_backlight'";
         }
         {
-          timeout    = 330;  # 5.5 min — screen off
+          timeout = 330; # 5.5 min — screen off
           on-timeout = "hyprctl dispatch dpms off";
-          on-resume  = "hyprctl dispatch dpms on && brightnessctl -r";
+          on-resume = "hyprctl dispatch dpms on && brightnessctl -r";
         }
         {
-          timeout    = 600;  # 10 min — suspend
+          timeout = 600; # 10 min — suspend
           on-timeout = "systemctl suspend";
         }
       ];

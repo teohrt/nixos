@@ -1,185 +1,30 @@
-{ config, pkgs, lib, pkgs-walker, ... }:
-let
-  walker = "${pkgs-walker.walker}/bin/walker";
-
-  # Caffeine menu — disable sleep/lock for a set duration or indefinitely.
-  # Uses systemd-inhibit to block idle; state file tracks active inhibit PID.
-  caffeineMenu = pkgs.writeShellScriptBin "caffeine-menu" ''
-    STATE="$HOME/.local/state/caffeine-pid"
-
-    # Check if caffeine is currently active
-    if [ -f "$STATE" ]; then
-      pid=$(cat "$STATE")
-      if kill -0 "$pid" 2>/dev/null; then
-        CHOICE=$(printf "Turn Off Caffeine\n30 minutes\n1 hour\n2 hours\nIndefinitely" \
-          | ${walker} --dmenu -N -H)
-        if [ "$CHOICE" = "Turn Off Caffeine" ]; then
-          kill "$pid" 2>/dev/null
-          rm -f "$STATE"
-          ${pkgs.libnotify}/bin/notify-send -u low "Caffeine" "Sleep timer restored"
-          exit 0
-        fi
-      else
-        rm -f "$STATE"
-      fi
-    fi
-
-    [ -z "$CHOICE" ] && CHOICE=$(printf "30 minutes\n1 hour\n2 hours\nIndefinitely" \
-      | ${walker} --dmenu -N -H)
-
-    case "$CHOICE" in
-      "30 minutes") duration=1800 ;;
-      "1 hour")     duration=3600 ;;
-      "2 hours")    duration=7200 ;;
-      "Indefinitely") duration="" ;;
-      *) exit 0 ;;
-    esac
-
-    # Kill any existing caffeine
-    [ -f "$STATE" ] && kill "$(cat "$STATE")" 2>/dev/null
-
-    mkdir -p "$(dirname "$STATE")"
-
-    if [ -n "$duration" ]; then
-      (systemd-inhibit --what=idle --who=Caffeine --why="User requested" \
-        sleep "$duration" && rm -f "$STATE" && \
-        ${pkgs.libnotify}/bin/notify-send -u low "Caffeine" "Sleep timer restored") &
-      echo $! > "$STATE"
-      ${pkgs.libnotify}/bin/notify-send -u low "Caffeine" "Staying awake for $CHOICE"
-    else
-      (systemd-inhibit --what=idle --who=Caffeine --why="User requested" \
-        sleep infinity) &
-      echo $! > "$STATE"
-      ${pkgs.libnotify}/bin/notify-send -u low "Caffeine" "Staying awake indefinitely"
-    fi
-  '';
-
-  powerMenu = pkgs.writeShellScriptBin "power-menu" ''
-    set_power_profile() {
-      powerprofilesctl set "$1"
-      ${pkgs.libnotify}/bin/notify-send -u low -t 1500 "Power Profile" "$(powerprofilesctl get)"
-    }
-
-    CHOICE=$(printf "Shutdown\nRestart\nLock\nSuspend\nPower Profile\nScreensaver\nToggle Screensaver\nCaffeine\nLog Out" \
-      | ${walker} --dmenu -N -H -p "Power")
-    case "$CHOICE" in
-      Shutdown)           systemctl poweroff ;;
-      Restart)            systemctl reboot ;;
-      Lock)               hyprlock ;;
-      Suspend)            systemctl suspend ;;
-      "Power Profile")
-        current=$(powerprofilesctl get)
-        sub=$(printf "Power Saver\nBalanced\nPerformance" | ${walker} --dmenu -N -H -p "Profile ($current)")
-        case "$sub" in
-          "Power Saver") set_power_profile power-saver ;;
-          Balanced)      set_power_profile balanced ;;
-          Performance)   set_power_profile performance ;;
-        esac
-        ;;
-      Screensaver)        launch-screensaver ;;
-      "Toggle Screensaver") toggle-screensaver ;;
-      Caffeine)           caffeine-menu ;;
-      "Log Out")          hyprctl dispatch exit ;;
-    esac
-  '';
-in
 {
-  home.username = "trace";
-  home.homeDirectory = "/home/trace";
+  config,
+  pkgs,
+  lib,
+  username,
+  ...
+}:
+{
+  home = {
+    inherit username;
+    homeDirectory = "/home/${username}";
+
+    # Register global MCP servers for Claude Code (--scope user).
+    # Available in every Claude Code session regardless of directory.
+    # Uses activation script because ~/.claude.json is actively managed by Claude Code.
+    activation.claude-mcp = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      run ${pkgs.claude-code}/bin/claude mcp add exa --scope user -- \
+        sh -c 'export EXA_API_KEY=$(sops -d --extract '"'"'["exa_api_key"]'"'"' /home/${username}/Dev/other/nixos/secrets/secrets.yaml) && npx -y exa-mcp-server' \
+        || true
+    '';
+
+    stateVersion = "25.11";
+  };
 
   programs.btop.enable = true;
   # Disabled - .zshrc managed via dotfiles repo stow
   programs.zsh.enable = false;
-  services.swaync = {
-    enable = true;
-    settings = {
-      border-radius = 0;
-      width = 250;
-      timeout = 5;
-      timeout-low = 1;
-      timeout-critical = 0;
-      fit-to-screen = false;
-      control-center-height = 900;
-      control-center-positionX = "center";
-      control-center-positionY = "center";
-      notification-body-click = "default";
-      notification-visibility = {
-        claude = {
-          app-name = "Claude Code";
-          state = "transient";
-          override-urgency = "low";
-        };
-      };
-    };
-    style = ''
-      * {
-        --border-radius: 0;
-        border-radius: 0 !important;
-      }
-
-      .floating-notifications {
-        margin: 20px 10px 10px 10px;
-      }
-
-      .notification-content {
-        padding: 1em 1em;
-      }
-
-      .control-center {
-        border-radius: 0 !important;
-        background-color: alpha(#${config.lib.stylix.colors.base01}, ${toString config.stylix.opacity.terminal});
-        border: none !important;
-      }
-
-      .control-center * {
-        border-radius: 0 !important;
-        background-color: transparent;
-        border: none !important;
-      }
-
-      .notification,
-      .notification.low,
-      .notification.normal,
-      .notification.critical,
-      .notification-row,
-      .notification-background {
-        border-radius: 0 !important;
-        border: none !important;
-        outline: none !important;
-        background-color: transparent;
-      }
-
-      .notification,
-      .notification.low,
-      .notification.normal,
-      .notification.critical {
-        background-color: alpha(#${config.lib.stylix.colors.base01}, ${toString config.stylix.opacity.terminal});
-      }
-
-      .notification-content,
-      .notification-default-action,
-      .notification-action {
-        background-color: transparent;
-        border: none !important;
-      }
-
-      .widget-title > button {
-        background: transparent !important;
-        border: none !important;
-      }
-
-      .notification-content image {
-        border-radius: 50% !important;
-      }
-
-      /* Hide broken placeholder image when no notifications */
-      .control-center-list-placeholder image {
-        opacity: 0;
-        min-height: 0;
-        min-width: 0;
-      }
-    '';
-  };
 
   # Darken Nautilus background so text stays readable across light and dark themes.
   # shade() is a GTK CSS function: values < 1 darken, > 1 lighten.
@@ -194,17 +39,4 @@ in
       default-folder-viewer = "list-view";
     };
   };
-
-  home.packages = [ powerMenu caffeineMenu ];
-
-  # Register global MCP servers for Claude Code (--scope user).
-  # Available in every Claude Code session regardless of directory.
-  # Uses activation script because ~/.claude.json is actively managed by Claude Code.
-  home.activation.claude-mcp = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    run ${pkgs.claude-code}/bin/claude mcp add exa --scope user -- \
-      sh -c 'export EXA_API_KEY=$(sops -d --extract '"'"'["exa_api_key"]'"'"' /home/trace/Dev/other/nixos/secrets/secrets.yaml) && npx -y exa-mcp-server' \
-      || true
-  '';
-
-  home.stateVersion = "25.11";
 }
