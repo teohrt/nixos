@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 {
   nix.settings = {
     experimental-features = [
@@ -24,7 +24,7 @@
     # nh - modern nix CLI helper with better UX
     nh = {
       enable = true;
-      flake = "/home/trace/Dev/other/nixos";
+      flake = "/home/${username}/Dev/other/nixos";
       clean = {
         enable = true;
         extraArgs = "--keep-since 7d";
@@ -66,9 +66,9 @@
     extraModprobeConfig = "blacklist iTCO_wdt";
   };
 
-  users.users.trace = {
+  users.users.${username} = {
     isNormalUser = true;
-    description = "trace";
+    description = username;
     extraGroups = [
       "wheel"
       "video"
@@ -83,6 +83,6 @@
 
   environment.sessionVariables = {
     EDITOR = "nvim";
-    SOPS_AGE_KEY_FILE = "/home/trace/.config/sops/age/keys.txt";
+    SOPS_AGE_KEY_FILE = "/home/${username}/.config/sops/age/keys.txt";
   };
 }

@@ -1,4 +1,10 @@
-{ pkgs, lib, ... }:
+{
+  pkgs,
+  lib,
+  username,
+  baseHomeModules,
+  ...
+}:
 {
   # Zoom runs on XWayland — wrap it to self-scale so clicks align with force_zero_scaling
   nixpkgs.overlays = [
@@ -143,21 +149,8 @@
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
 
-  home-manager.users.trace = {
-    imports = [
-      ../../modules/home/core
-      ../../modules/home/optional/user-apps.nix
-      ../../modules/home/optional/desktop/hyprland.nix
-      ../../modules/home/optional/desktop/noctalia.nix
-      ../../modules/home/optional/desktop/walker.nix
-      ../../modules/home/optional/desktop/hypridle.nix
-      ../../modules/home/optional/apps/kitty.nix
-      ../../modules/home/optional/apps/firefox.nix
-      ../../modules/home/optional/apps/vscode.nix
-      ../../modules/home/optional/apps/obsidian.nix
-      ../../modules/home/optional/apps/spicetify.nix
-      ../../modules/home/optional/ssh.nix
-    ];
+  home-manager.users.${username} = {
+    imports = baseHomeModules;
 
     # Framework 16 specific Hyprland overrides
     wayland.windowManager.hyprland.settings = {
@@ -174,11 +167,11 @@
       };
 
       # Lid switch handling: disable laptop display and backlight when closed.
-      # Hardware-specific: uses amdgpu_bl1 backlight device and 1.2x scale for Framework 16.
+      # Hardware-specific: uses amdgpu_bl1 backlight device and 1.25x scale for Framework 16.
       # Other laptops would need different backlight device (e.g. intel_backlight) and scale.
       bindl = [
         ", switch:on:Lid Switch, exec, hyprctl keyword monitor 'eDP-1,disable' && brightnessctl -d amdgpu_bl1 set 0"
-        ", switch:off:Lid Switch, exec, hyprctl keyword monitor 'eDP-1,preferred,auto,1.2' && brightnessctl -d amdgpu_bl1 set 100%"
+        ", switch:off:Lid Switch, exec, hyprctl keyword monitor 'eDP-1,preferred,auto,1.25' && brightnessctl -d amdgpu_bl1 set 100%"
       ];
     };
 

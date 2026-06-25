@@ -1,5 +1,5 @@
 # Desktop environment: Hyprland compositor, SDDM login, PipeWire audio, Bluetooth, printing.
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 {
   # Hyprland Wayland compositor
   programs.hyprland = {
@@ -20,7 +20,7 @@
     };
     autoLogin = {
       enable = true;
-      user = "trace";
+      user = username;
     };
   };
   environment.systemPackages = [ pkgs.sddm-astronaut ];

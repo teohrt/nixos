@@ -1,4 +1,9 @@
-{ lib, ... }:
+{
+  lib,
+  username,
+  baseHomeModules,
+  ...
+}:
 {
   imports = [
     ./hardware.nix
@@ -20,21 +25,8 @@
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
 
-  home-manager.users.trace = {
-    imports = [
-      ../../modules/home/core
-      ../../modules/home/optional/user-apps.nix
-      ../../modules/home/optional/desktop/hyprland.nix
-      ../../modules/home/optional/desktop/noctalia.nix
-      ../../modules/home/optional/desktop/walker.nix
-      ../../modules/home/optional/desktop/hypridle.nix
-      ../../modules/home/optional/apps/kitty.nix
-      ../../modules/home/optional/apps/firefox.nix
-      ../../modules/home/optional/apps/vscode.nix
-      ../../modules/home/optional/apps/obsidian.nix
-      ../../modules/home/optional/apps/spicetify.nix
-      ../../modules/home/optional/ssh.nix
-    ];
+  home-manager.users.${username} = {
+    imports = baseHomeModules;
 
     wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1";
   };

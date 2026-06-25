@@ -49,6 +49,7 @@
     }:
     let
       system = "x86_64-linux";
+      username = "trace";
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
@@ -76,17 +77,8 @@
         ./modules/home/optional/apps/vscode.nix
         ./modules/home/optional/apps/obsidian.nix
         ./modules/home/optional/apps/spicetify.nix
+        ./modules/home/optional/ssh.nix
       ];
-
-      # Per-machine overrides
-      machineOverrides = {
-        framework-16 =
-          { lib, ... }:
-          {
-            wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1.25";
-          };
-        thinkpad = { };
-      };
 
       # Shared home-manager NixOS module config
       hmNixosModule = {
@@ -101,6 +93,7 @@
               pkgs-kitty
               spicetify-nix
               noctalia
+              username
               ;
           };
         };
@@ -110,7 +103,7 @@
       nixosConfigurations = {
         my-thinkpad = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { };
+          specialArgs = { inherit username baseHomeModules; };
           modules = [
             ./hosts/my-thinkpad
             sops-nix.nixosModules.sops
@@ -123,7 +116,7 @@
         };
         framework-16 = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { };
+          specialArgs = { inherit username baseHomeModules; };
           modules = [
             ./hosts/framework-16
             nixos-hardware.nixosModules.framework-16-7040-amd
