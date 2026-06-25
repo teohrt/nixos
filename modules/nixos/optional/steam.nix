@@ -1,6 +1,7 @@
 # Steam gaming platform. Requires system-level config for 32-bit libraries and
 # FHS compatibility (Filesystem Hierarchy Standard - Steam expects /usr, /lib, etc.).
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   programs.steam = {
     enable = true;
     # Open ports for Steam Remote Play and local network game transfers

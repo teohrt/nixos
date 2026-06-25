@@ -21,11 +21,21 @@
         fontScale = 1.2;
         widgets = {
           left = [
-            { id = "Workspace"; focusedColor = "none"; occupiedColor = "none"; emptyColor = "none"; pillSize = 0.8; fontWeight = "bold"; }
+            {
+              id = "Workspace";
+              focusedColor = "none";
+              occupiedColor = "none";
+              emptyColor = "none";
+              pillSize = 0.8;
+              fontWeight = "bold";
+            }
           ];
           center = [
             { id = "Battery"; }
-            { id = "Clock"; formatHorizontal = "h:mm AP  ddd, MMM dd"; }
+            {
+              id = "Clock";
+              formatHorizontal = "h:mm AP  ddd, MMM dd";
+            }
             { id = "NotificationHistory"; }
           ];
           right = [

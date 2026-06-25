@@ -1,6 +1,12 @@
 # Hyprland window manager configuration: keybindings, window rules, animations,
 # and helper scripts for screenshots, screen recording, voice input, etc.
-{ pkgs, lib, config, pkgs-walker, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  pkgs-walker,
+  ...
+}:
 let
   defaultScale = "1.25";
 
@@ -411,7 +417,12 @@ let
 in
 
 {
-  home.packages = [ pkgs.hyprmon pkgs.wf-recorder pkgs.whisper-cpp pkgs.wtype ];
+  home.packages = [
+    pkgs.hyprmon
+    pkgs.wf-recorder
+    pkgs.whisper-cpp
+    pkgs.wtype
+  ];
 
   systemd.user.tmpfiles.rules = [
     "d %h/Pictures/Screenshots 0755 - - -"
@@ -428,11 +439,11 @@ in
       "$mod" = "SUPER";
 
       exec-once = [
-        "noctalia-shell"                                   # desktop shell (bar, launcher, notifications, OSD, lock screen)
+        "noctalia-shell" # desktop shell (bar, launcher, notifications, OSD, lock screen)
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" # auth agent for privilege escalation prompts
-        "${unfloatOnNewWindow}"                              # unfloat solo floating kitty when another window joins the workspace
-        "wl-clip-persist --clipboard regular"              # keep clipboard alive after source process exits
-        "${autoMirror}"                                    # auto-mirror laptop to external monitor when connected
+        "${unfloatOnNewWindow}" # unfloat solo floating kitty when another window joins the workspace
+        "wl-clip-persist --clipboard regular" # keep clipboard alive after source process exits
+        "${autoMirror}" # auto-mirror laptop to external monitor when connected
       ];
 
       env = [
@@ -457,7 +468,6 @@ in
         "col.inactive_border" = lib.mkForce "rgba(${config.lib.stylix.colors.base0D}ff)";
         layout = "dwindle"; # binary space partitioning layout
       };
-
 
       misc = {
         focus_on_activate = true; # switch to workspace when app requests focus
@@ -494,9 +504,9 @@ in
 
       input = {
         kb_layout = "us";
-        follow_mouse = 1;   # focus follows mouse
-        sensitivity = 0;    # 0 = no pointer speed adjustment
-        repeat_rate = 50;   # keys per second when held (default: 25)
+        follow_mouse = 1; # focus follows mouse
+        sensitivity = 0; # 0 = no pointer speed adjustment
+        repeat_rate = 50; # keys per second when held (default: 25)
         repeat_delay = 300; # ms before repeat starts (default: 600)
 
         touchpad = {
@@ -505,7 +515,7 @@ in
       };
 
       dwindle = {
-        pseudotile = true;     # allow manual resizing of tiled windows
+        pseudotile = true; # allow manual resizing of tiled windows
         preserve_split = true; # keep split direction when moving windows
       };
 
@@ -516,7 +526,7 @@ in
       };
 
       layerrule = [
-        "noanim, selection"                            # no animation for slurp (screenshot selection)
+        "noanim, selection" # no animation for slurp (screenshot selection)
       ];
 
       # remove borders when only one tiled window on a workspace
@@ -643,7 +653,7 @@ in
 
       # mouse bindings (held modifier + mouse button)
       bindm = [
-        "$mod, mouse:272, movewindow"   # left click drag — move window
+        "$mod, mouse:272, movewindow" # left click drag — move window
         "$mod, mouse:273, resizewindow" # right click drag — resize window
       ];
     };

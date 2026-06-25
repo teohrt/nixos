@@ -1,5 +1,11 @@
 # Terminal emulator with cursor trail and smooth scrolling. Styled by Stylix, but with fixed dark background.
-{ lib, pkgs, pkgs-kitty, config, ... }:
+{
+  lib,
+  pkgs,
+  pkgs-kitty,
+  config,
+  ...
+}:
 
 let
   # Unfloat the active window if it's floating (used before kitty splits)
@@ -46,7 +52,7 @@ in
       tab_bar_edge = "bottom";
       tab_bar_margin_height = "0 0";
       startup_session = "~/.config/kitty/startup.conf";
-          };
+    };
 
     # Keybindings mirroring Hyprland (Ctrl instead of Super)
     keybindings = {
@@ -68,7 +74,8 @@ in
 
       # Window management
       "ctrl+q" = "close_window";
-      "ctrl+enter" = "combine : launch --type=background ${unfloatIfFloating} : launch --location=split --cwd=current";
+      "ctrl+enter" =
+        "combine : launch --type=background ${unfloatIfFloating} : launch --location=split --cwd=current";
       "ctrl+shift+enter" = "new_tab_with_cwd";
       "ctrl+f" = "toggle_layout stack";
       "ctrl+j" = "layout_action rotate";
