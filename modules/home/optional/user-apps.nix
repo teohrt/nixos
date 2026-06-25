@@ -25,7 +25,12 @@ let
       sha256 = "sha256-0xjCsa2tAM0uQOQlU5H2SwVkzDK0a5jJCchF6X1nYrg=";
     };
 
-    nativeBuildInputs = with pkgs; [ dpkg autoPatchelfHook makeWrapper wrapGAppsHook3 ];
+    nativeBuildInputs = with pkgs; [
+      dpkg
+      autoPatchelfHook
+      makeWrapper
+      wrapGAppsHook3
+    ];
 
     buildInputs = with pkgs; [
       alsa-lib
@@ -53,7 +58,7 @@ let
       libxkbcommon
       libGL
       vulkan-loader
-      stdenv.cc.cc.lib  # libstdc++.so.6, required by Bruno's native modules
+      stdenv.cc.cc.lib # libstdc++.so.6, required by Bruno's native modules
     ];
 
     unpackCmd = "dpkg-deb -x $curSrc .";
@@ -114,7 +119,7 @@ in
 {
   home.packages = with pkgs; [
     # cli utilities
-    terminaltexteffects  # tte — terminal text effects (used by screensaver)
+    terminaltexteffects # tte — terminal text effects (used by screensaver)
     claude-code
     nodejs
     lazydocker
@@ -136,31 +141,28 @@ in
     localsend
     slack
     discord
-    bubblewrap                    # sandbox for Claude Desktop Cowork mode
-    zoom-wayland                  # wrapped for Wayland screen sharing
-    bruno-v3                      # API client (like Postman) — v3 from binary release
-    easyeffects                   # audio effects for PipeWire
-    dbeaver-unwrapped             # database client (PostgreSQL, MySQL, SQLite, etc.)
-    bolt-launcher                 # Jagex Launcher alternative (RuneLite, HDOS, RS3)
+    bubblewrap # sandbox for Claude Desktop Cowork mode
+    zoom-wayland # wrapped for Wayland screen sharing
+    bruno-v3 # API client (like Postman) — v3 from binary release
+    easyeffects # audio effects for PipeWire
+    dbeaver-unwrapped # database client (PostgreSQL, MySQL, SQLite, etc.)
+    bolt-launcher # Jagex Launcher alternative (RuneLite, HDOS, RS3)
 
     # wayland / hyprland ecosystem
     kdePackages.partitionmanager
-    imv                           # image viewer
-    system-config-printer         # printer management GUI
-    evince                        # PDF viewer
-    vlc                           # video player
-    impala                        # wifi TUI
-    bluetui                       # bluetooth TUI
-    wiremix                       # audio TUI
-    grimblast                     # screenshot tool for Hyprland
-    brightnessctl                 # brightness control (requires video group)
-    wl-clipboard                  # clipboard utilities (wl-copy / wl-paste)
-    wl-clip-persist               # keeps clipboard alive after source process exits
-    nautilus                      # file manager
-    nautilus-python               # enables right-click extensions (e.g. open in terminal)
-    file-roller                   # right-click archive extract/compress
-    ffmpegthumbnailer             # video thumbnails in nautilus
-    gvfs                          # trash, MTP devices, network shares
+    imv # image viewer
+    system-config-printer # printer management GUI
+    evince # PDF viewer
+    vlc # video player
+    grimblast # screenshot tool for Hyprland
+    brightnessctl # brightness control (requires video group)
+    wl-clipboard # clipboard utilities (wl-copy / wl-paste)
+    wl-clip-persist # keeps clipboard alive after source process exits
+    nautilus # file manager
+    nautilus-python # enables right-click extensions (e.g. open in terminal)
+    file-roller # right-click archive extract/compress
+    ffmpegthumbnailer # video thumbnails in nautilus
+    gvfs # trash, MTP devices, network shares
 
     # fonts
     nerd-fonts.jetbrains-mono
@@ -168,6 +170,6 @@ in
 
   programs.direnv = {
     enable = true;
-    nix-direnv.enable = true;  # faster nix shell integration via cached devShells
+    nix-direnv.enable = true; # faster nix shell integration via cached devShells
   };
 }
