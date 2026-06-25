@@ -80,28 +80,29 @@
 
       # Per-machine overrides
       machineOverrides = {
-        framework-16 = (
+        framework-16 =
           { lib, ... }:
           {
             wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1.25";
-          }
-        );
+          };
         thinkpad = { };
       };
 
       # Shared home-manager NixOS module config
       hmNixosModule = {
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
-        home-manager.backupFileExtension = "nixos-hm-backup";
-        home-manager.extraSpecialArgs = {
-          inherit
-            pkgs-unstable
-            pkgs-walker
-            pkgs-kitty
-            spicetify-nix
-            noctalia
-            ;
+        home-manager = {
+          useGlobalPkgs = true;
+          useUserPackages = true;
+          backupFileExtension = "nixos-hm-backup";
+          extraSpecialArgs = {
+            inherit
+              pkgs-unstable
+              pkgs-walker
+              pkgs-kitty
+              spicetify-nix
+              noctalia
+              ;
+          };
         };
       };
     in

@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 # Firefox renders its own UI (tabs, toolbar, address bar) using its internal CSS
 # engine rather than GTK widgets, so it does not automatically inherit the stylix

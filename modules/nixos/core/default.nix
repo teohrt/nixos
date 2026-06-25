@@ -1,7 +1,10 @@
 { pkgs, ... }:
 {
   nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
     # Build using all available cores
     max-jobs = "auto";
     # Pull pre-built binaries from nix-community cache (home-manager, stylix, etc.)
@@ -17,50 +20,69 @@
     auto-optimise-store = true;
   };
 
-  # nh - modern nix CLI helper with better UX
-  programs.nh = {
-    enable = true;
-    flake = "/home/trace/Dev/other/nixos";
-    clean = {
+  programs = {
+    # nh - modern nix CLI helper with better UX
+    nh = {
       enable = true;
-      extraArgs = "--keep-since 7d";
+      flake = "/home/trace/Dev/other/nixos";
+      clean = {
+        enable = true;
+        extraArgs = "--keep-since 7d";
+      };
     };
-  };
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.timeout = 1;
+    git.prompt.enable = true;
 
-  # Quiet boot + faster kernel init
-  boot.kernelParams = [ "quiet" "loglevel=3" "systemd.show_status=auto" "rd.udev.log_level=3" "nowatchdog" ];
-  boot.consoleLogLevel = 0;
-  boot.extraModprobeConfig = "blacklist iTCO_wdt";
-
-  programs.git.prompt.enable = true;
-
-  users.users.trace = {
-    isNormalUser = true;
-    description = "trace";
-    extraGroups = [ "wheel" "video" "docker" "networkmanager" ]; # video: brightnessctl; docker: rootless docker; networkmanager: NM control
-    packages = [];
-    shell = pkgs.zsh;
-  };
-
-  programs.zsh = {
-    enable = true;
-    autosuggestions.enable = true;
-    autosuggestions.highlightStyle = "fg=#888888";
-    syntaxHighlighting = {
+    zsh = {
       enable = true;
-      styles = {
-        "path" = "underline";
-        "path_prefix" = "underline";
+      autosuggestions.enable = true;
+      autosuggestions.highlightStyle = "fg=#888888";
+      syntaxHighlighting = {
+        enable = true;
+        styles = {
+          "path" = "underline";
+          "path_prefix" = "underline";
+        };
       };
     };
   };
 
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+      timeout = 1;
+    };
+
+    # Quiet boot + faster kernel init
+    kernelParams = [
+      "quiet"
+      "loglevel=3"
+      "systemd.show_status=auto"
+      "rd.udev.log_level=3"
+      "nowatchdog"
+    ];
+    consoleLogLevel = 0;
+    extraModprobeConfig = "blacklist iTCO_wdt";
+  };
+
+  users.users.trace = {
+    isNormalUser = true;
+    description = "trace";
+    extraGroups = [
+      "wheel"
+      "video"
+      "docker"
+      "networkmanager"
+    ]; # video: brightnessctl; docker: rootless docker; networkmanager: NM control
+    packages = [ ];
+    shell = pkgs.zsh;
+  };
+
   nixpkgs.config.allowUnfree = true;
 
-  environment.sessionVariables.EDITOR = "nvim";
-  environment.sessionVariables.SOPS_AGE_KEY_FILE = "/home/trace/.config/sops/age/keys.txt";
+  environment.sessionVariables = {
+    EDITOR = "nvim";
+    SOPS_AGE_KEY_FILE = "/home/trace/.config/sops/age/keys.txt";
+  };
 }

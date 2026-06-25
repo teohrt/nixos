@@ -15,59 +15,70 @@
   # - WirePlumber auto-selects the wrong profile (Headphones instead of Speaker)
   # - Requires explicit profile forcing and a fallback systemd service
   # ThinkPads with mature Intel audio don't need any of this.
-  environment.systemPackages = [ pkgs.alsa-utils pkgs.pulseaudio ];
+  environment.systemPackages = [
+    pkgs.alsa-utils
+    pkgs.pulseaudio
+  ];
   hardware.firmware = [ pkgs.sof-firmware ];
-  services.pipewire.audio.enable = true;
+  services.pipewire = {
+    audio.enable = true;
 
-  # Force Speaker profile (WirePlumber defaults to Headphones otherwise)
-  services.pipewire.wireplumber.extraConfig."50-framework-speaker" = {
-    "monitor.alsa.rules" = [
-      {
-        matches = [
-          { "device.name" = "alsa_card.pci-0000_c2_00.6"; }
-        ];
-        actions = {
-          update-props = {
-            "api.acp.auto-profile" = false;
-            "device.profile" = "HiFi (Mic1, Mic2, Speaker)";
+    # Force Speaker profile (WirePlumber defaults to Headphones otherwise)
+    wireplumber.extraConfig."50-framework-speaker" = {
+      "monitor.alsa.rules" = [
+        {
+          matches = [
+            { "device.name" = "alsa_card.pci-0000_c2_00.6"; }
+          ];
+          actions = {
+            update-props = {
+              "api.acp.auto-profile" = false;
+              "device.profile" = "HiFi (Mic1, Mic2, Speaker)";
+            };
           };
-        };
-      }
-    ];
-  };
+        }
+      ];
+    };
 
-  # Auto-switch to Bluetooth headphones when connected
-  services.pipewire.wireplumber.extraConfig."51-bluetooth-priority" = {
-    "monitor.bluez.rules" = [
-      {
-        matches = [
-          { "device.name" = "~bluez_card.*"; }
-        ];
-        actions = {
-          update-props = {
-            "bluez5.auto-connect" = [ "a2dp_sink" "hfp_hf" ];
+    # Auto-switch to Bluetooth headphones when connected
+    wireplumber.extraConfig."51-bluetooth-priority" = {
+      "monitor.bluez.rules" = [
+        {
+          matches = [
+            { "device.name" = "~bluez_card.*"; }
+          ];
+          actions = {
+            update-props = {
+              "bluez5.auto-connect" = [
+                "a2dp_sink"
+                "hfp_hf"
+              ];
+            };
           };
-        };
-      }
-      {
-        matches = [
-          { "node.name" = "~bluez_output.*"; }
-        ];
-        actions = {
-          update-props = {
-            "priority.driver" = 3000;
-            "priority.session" = 3000;
+        }
+        {
+          matches = [
+            { "node.name" = "~bluez_output.*"; }
+          ];
+          actions = {
+            update-props = {
+              "priority.driver" = 3000;
+              "priority.session" = 3000;
+            };
           };
-        };
-      }
-    ];
+        }
+      ];
+    };
   };
 
   # Auto-switch to Bluetooth audio when device connects
   systemd.user.services.bluetooth-autoswitch = {
     description = "Switch audio to Bluetooth when connected";
     wantedBy = [ "pipewire.service" ];
-    after = [ "pipewire.service" "wireplumber.service" ];
+    after = [
+      "pipewire.service"
+      "wireplumber.service"
+    ];
     serviceConfig = {
       Type = "simple";
       Restart = "always";
@@ -129,7 +140,6 @@
   # Firmware for audio, wifi, etc.
   hardware.enableRedistributableFirmware = true;
 
-
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
 
@@ -149,25 +159,28 @@
       ../../modules/home/optional/ssh.nix
     ];
 
-    # Framework 16 specific: 1.25x scale for internal display
-    wayland.windowManager.hyprland.settings.monitor = lib.mkForce [
-      "eDP-1,preferred,auto,1.25"
-      ",preferred,auto,1"  # external monitors use native resolution
-    ];
+    # Framework 16 specific Hyprland overrides
+    wayland.windowManager.hyprland.settings = {
+      # 1.25x scale for internal display
+      monitor = lib.mkForce [
+        "eDP-1,preferred,auto,1.25"
+        ",preferred,auto,1" # external monitors use native resolution
+      ];
 
-    # Framework 16 specific: reduced mouse sensitivity
-    wayland.windowManager.hyprland.settings.input = {
-      sensitivity = lib.mkForce (-0.25); # range -1.0 to 1.0, negative = slower
-      # accel_profile defaults to "adaptive" (acceleration enabled)
+      # Reduced mouse sensitivity
+      input = {
+        sensitivity = lib.mkForce (-0.25); # range -1.0 to 1.0, negative = slower
+        # accel_profile defaults to "adaptive" (acceleration enabled)
+      };
+
+      # Lid switch handling: disable laptop display and backlight when closed.
+      # Hardware-specific: uses amdgpu_bl1 backlight device and 1.2x scale for Framework 16.
+      # Other laptops would need different backlight device (e.g. intel_backlight) and scale.
+      bindl = [
+        ", switch:on:Lid Switch, exec, hyprctl keyword monitor 'eDP-1,disable' && brightnessctl -d amdgpu_bl1 set 0"
+        ", switch:off:Lid Switch, exec, hyprctl keyword monitor 'eDP-1,preferred,auto,1.2' && brightnessctl -d amdgpu_bl1 set 100%"
+      ];
     };
-
-    # Lid switch handling: disable laptop display and backlight when closed.
-    # Hardware-specific: uses amdgpu_bl1 backlight device and 1.2x scale for Framework 16.
-    # Other laptops would need different backlight device (e.g. intel_backlight) and scale.
-    wayland.windowManager.hyprland.settings.bindl = [
-      ", switch:on:Lid Switch, exec, hyprctl keyword monitor 'eDP-1,disable' && brightnessctl -d amdgpu_bl1 set 0"
-      ", switch:off:Lid Switch, exec, hyprctl keyword monitor 'eDP-1,preferred,auto,1.2' && brightnessctl -d amdgpu_bl1 set 100%"
-    ];
 
   };
 
