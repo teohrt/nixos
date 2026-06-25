@@ -126,6 +126,7 @@ in
     gawk
     cmatrix
     go
+    croc
     pkgs-unstable.smassh
 
     # apps
