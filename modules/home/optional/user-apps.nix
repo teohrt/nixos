@@ -130,35 +130,37 @@ in
     pkgs-unstable.smassh
 
     # apps
-    kdePackages.partitionmanager
     google-chrome
     _1password-gui
     obsidian
     localsend
-    imv                    # image viewer
-    system-config-printer  # printer management GUI
-    evince     # PDF viewer
-    vlc        # video player
     slack
-    bubblewrap              # sandbox for Claude Desktop Cowork mode
-    zoom-wayland         # wrapped for Wayland screen sharing
-    bruno-v3             # API client (like Postman) — v3 from binary release
-    easyeffects          # audio effects for PipeWire
-    dbeaver-unwrapped          # database client (PostgreSQL, MySQL, SQLite, etc.)
+    discord
+    bubblewrap                    # sandbox for Claude Desktop Cowork mode
+    zoom-wayland                  # wrapped for Wayland screen sharing
+    bruno-v3                      # API client (like Postman) — v3 from binary release
+    easyeffects                   # audio effects for PipeWire
+    dbeaver-unwrapped             # database client (PostgreSQL, MySQL, SQLite, etc.)
+    bolt-launcher                 # Jagex Launcher alternative (RuneLite, HDOS, RS3)
 
     # wayland / hyprland ecosystem
-    impala                      # wifi TUI
-    bluetui                     # bluetooth TUI
-    wiremix                     # audio TUI
-    grimblast                   # screenshot tool for Hyprland
-    brightnessctl               # brightness control (requires video group)
-    wl-clipboard                # clipboard utilities (wl-copy / wl-paste)
-    wl-clip-persist             # keeps clipboard alive after source process exits
-    nautilus                    # file manager
-    nautilus-python             # enables right-click extensions (e.g. open in terminal)
-    file-roller                 # right-click archive extract/compress
-    ffmpegthumbnailer           # video thumbnails in nautilus
-    gvfs                        # trash, MTP devices, network shares
+    kdePackages.partitionmanager
+    imv                           # image viewer
+    system-config-printer         # printer management GUI
+    evince                        # PDF viewer
+    vlc                           # video player
+    impala                        # wifi TUI
+    bluetui                       # bluetooth TUI
+    wiremix                       # audio TUI
+    grimblast                     # screenshot tool for Hyprland
+    brightnessctl                 # brightness control (requires video group)
+    wl-clipboard                  # clipboard utilities (wl-copy / wl-paste)
+    wl-clip-persist               # keeps clipboard alive after source process exits
+    nautilus                      # file manager
+    nautilus-python               # enables right-click extensions (e.g. open in terminal)
+    file-roller                   # right-click archive extract/compress
+    ffmpegthumbnailer             # video thumbnails in nautilus
+    gvfs                          # trash, MTP devices, network shares
 
     # fonts
     nerd-fonts.jetbrains-mono
