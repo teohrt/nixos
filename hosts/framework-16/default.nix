@@ -2,7 +2,6 @@
   pkgs,
   lib,
   username,
-  baseHomeModules,
   ...
 }:
 {
@@ -150,8 +149,6 @@
   i18n.defaultLocale = "en_US.UTF-8";
 
   home-manager.users.${username} = {
-    imports = baseHomeModules;
-
     # Framework 16 specific Hyprland overrides
     wayland.windowManager.hyprland.settings = {
       # 1.25x scale for internal display

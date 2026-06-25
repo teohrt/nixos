@@ -64,28 +64,26 @@
       # Import stylix theme config (nord)
       themeConfig = import ./modules/home/themes.nix { inherit pkgs; };
 
-      # Base home modules shared by all machines
-      baseHomeModules = [
-        ./modules/home/core
-        ./modules/home/optional/user-apps.nix
-        ./modules/home/optional/desktop/hyprland.nix
-        ./modules/home/optional/desktop/noctalia.nix
-        ./modules/home/optional/desktop/walker.nix
-        ./modules/home/optional/desktop/hypridle.nix
-        ./modules/home/optional/apps/kitty.nix
-        ./modules/home/optional/apps/firefox.nix
-        ./modules/home/optional/apps/vscode.nix
-        ./modules/home/optional/apps/obsidian.nix
-        ./modules/home/optional/apps/spicetify.nix
-        ./modules/home/optional/ssh.nix
-      ];
-
       # Shared home-manager NixOS module config
       hmNixosModule = {
         home-manager = {
           useGlobalPkgs = true;
           useUserPackages = true;
           backupFileExtension = "nixos-hm-backup";
+          users.${username}.imports = [
+            ./modules/home/core
+            ./modules/home/optional/user-apps.nix
+            ./modules/home/optional/desktop/hyprland.nix
+            ./modules/home/optional/desktop/noctalia.nix
+            ./modules/home/optional/desktop/walker.nix
+            ./modules/home/optional/desktop/hypridle.nix
+            ./modules/home/optional/apps/kitty.nix
+            ./modules/home/optional/apps/firefox.nix
+            ./modules/home/optional/apps/vscode.nix
+            ./modules/home/optional/apps/obsidian.nix
+            ./modules/home/optional/apps/spicetify.nix
+            ./modules/home/optional/ssh.nix
+          ];
           extraSpecialArgs = {
             inherit
               pkgs-unstable
@@ -98,36 +96,31 @@
           };
         };
       };
+
+      # Build a NixOS system config from a host path + optional extra modules
+      mkHost =
+        hostPath: extraModules:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit username; };
+          modules = [
+            hostPath
+            sops-nix.nixosModules.sops
+            stylix.nixosModules.stylix
+            { inherit (themeConfig) stylix; }
+            home-manager.nixosModules.home-manager
+            hmNixosModule
+            { environment.systemPackages = [ claude-desktop.packages.${system}.default ]; }
+          ]
+          ++ extraModules;
+        };
     in
     {
       nixosConfigurations = {
-        my-thinkpad = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { inherit username baseHomeModules; };
-          modules = [
-            ./hosts/my-thinkpad
-            sops-nix.nixosModules.sops
-            stylix.nixosModules.stylix
-            { inherit (themeConfig) stylix; }
-            home-manager.nixosModules.home-manager
-            hmNixosModule
-            { environment.systemPackages = [ claude-desktop.packages.${system}.default ]; }
-          ];
-        };
-        framework-16 = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { inherit username baseHomeModules; };
-          modules = [
-            ./hosts/framework-16
-            nixos-hardware.nixosModules.framework-16-7040-amd
-            sops-nix.nixosModules.sops
-            stylix.nixosModules.stylix
-            { inherit (themeConfig) stylix; }
-            home-manager.nixosModules.home-manager
-            hmNixosModule
-            { environment.systemPackages = [ claude-desktop.packages.${system}.default ]; }
-          ];
-        };
+        my-thinkpad = mkHost ./hosts/my-thinkpad [ ];
+        framework-16 = mkHost ./hosts/framework-16 [
+          nixos-hardware.nixosModules.framework-16-7040-amd # AMD-specific kernel, firmware, and power tuning
+        ];
       };
 
       checks.${system} = {

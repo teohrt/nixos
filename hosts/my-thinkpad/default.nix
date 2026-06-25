@@ -1,9 +1,4 @@
-{
-  lib,
-  username,
-  baseHomeModules,
-  ...
-}:
+{ lib, username, ... }:
 {
   imports = [
     ./hardware.nix
@@ -26,8 +21,6 @@
   i18n.defaultLocale = "en_US.UTF-8";
 
   home-manager.users.${username} = {
-    imports = baseHomeModules;
-
     wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1";
   };
 
