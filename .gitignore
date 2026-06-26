@@ -1,2 +1,9 @@
+# Claude Code session files (settings, context, todos)
 .claude*
+
+# nix-direnv cache — cached devShell environment so re-eval is fast
 .direnv/
+
+# Generated symlink to /nix/store by git-hooks.nix shellHook — hook config is defined in flake.nix
+.pre-commit-config.yaml
+
