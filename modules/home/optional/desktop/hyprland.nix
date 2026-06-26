@@ -479,14 +479,14 @@ in
           "linear, 0, 0, 1, 1"
         ];
         animation = [
-          "windowsIn, 1, 1.2, linear, popin 85%"
-          "windowsOut, 1, 1.2, linear, popin 85%"
+          "windowsIn, 1, 1.2, linear"
+          "windowsOut, 1, 1.2, linear"
           "windowsMove, 1, 1.2, linear"
           "fade, 1, 1.2, linear"
-          "workspaces, 1, 1.2, linear, slide"
-          "layers, 1, 1.2, linear, popin 90%"
-          "layersIn, 1, 1.2, linear, popin 90%"
-          "layersOut, 1, 1.2, linear, popin 90%"
+          "workspaces, 1, 1.2, linear, fade"
+          "layers, 1, 1.2, linear, fade"
+          "layersIn, 1, 1.2, linear, fade"
+          "layersOut, 1, 1.2, linear, fade"
         ];
       };
 
