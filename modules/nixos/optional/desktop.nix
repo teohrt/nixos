@@ -1,18 +1,17 @@
 # Desktop environment: Hyprland compositor, SDDM login, PipeWire audio, Bluetooth, printing.
 {
   pkgs,
-  inputs,
+  pkgs-hyprland,
   username,
   ...
 }:
 {
-  # Hyprland Wayland compositor
+  # Hyprland Wayland compositor (pinned nixpkgs for 0.55.4 with Lua config support)
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
-    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-    portalPackage =
-      inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+    package = pkgs-hyprland.hyprland;
+    portalPackage = pkgs-hyprland.xdg-desktop-portal-hyprland;
   };
 
   # Login manager

@@ -6,6 +6,7 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-walker.url = "github:nixos/nixpkgs/46db2e09e1d3f113a13c0d7b81e2f221c63b8ce9";
     nixpkgs-kitty.url = "github:nixos/nixpkgs/54b9582d13af461680f6d6fdae4ee138dfd60d23"; # kitty 0.46.2
+    nixpkgs-hyprland.url = "github:nixos/nixpkgs/e73de5be04e0eff4190a1432b946d469c794e7b4"; # hyprland 0.55.4
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -25,7 +26,6 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     sops-nix.url = "github:Mic92/sops-nix";
     claude-desktop.url = "github:patrickjaja/claude-desktop-bin";
-    hyprland.url = "github:hyprwm/Hyprland";
     git-hooks = {
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -38,6 +38,7 @@
       nixpkgs-unstable,
       nixpkgs-walker,
       nixpkgs-kitty,
+      nixpkgs-hyprland,
       home-manager,
       stylix,
       spicetify-nix,
@@ -45,7 +46,6 @@
       sops-nix,
       noctalia,
       claude-desktop,
-      hyprland,
       git-hooks,
       ...
     }:
@@ -62,6 +62,7 @@
       };
       pkgs-walker = nixpkgs-walker.legacyPackages.${system};
       pkgs-kitty = nixpkgs-kitty.legacyPackages.${system};
+      pkgs-hyprland = nixpkgs-hyprland.legacyPackages.${system};
 
       # Import stylix theme config (nord)
       themeConfig = import ./modules/home/themes.nix { inherit pkgs; };
@@ -104,10 +105,16 @@
         hostPath: extraModules:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit inputs username; };
+          specialArgs = {
+            inherit
+              inputs
+              pkgs-unstable
+              pkgs-hyprland
+              username
+              ;
+          };
           modules = [
             hostPath
-            hyprland.nixosModules.default
             sops-nix.nixosModules.sops
             stylix.nixosModules.stylix
             { inherit (themeConfig) stylix; }
@@ -150,7 +157,7 @@
           {
             "runtime": { "version": "Lua 5.4" },
             "workspace": {
-              "library": ["${hyprland.packages.${system}.hyprland}/share/hypr/stubs"],
+              "library": ["${pkgs-hyprland.hyprland}/share/hypr/stubs"],
               "checkThirdParty": false
             },
             "diagnostics": {
