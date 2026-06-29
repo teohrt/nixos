@@ -24,8 +24,11 @@ hl.bind(mod .. " + O", function()
         hl.dispatch(hl.dsp.window.pin())
         hl.dispatch(hl.dsp.window.float({ action = "unset" }))
     else
+        local mon = w.monitor
+        local width = math.floor(mon.width / mon.scale / 2)
+        local height = math.floor(mon.height / mon.scale / 2)
         hl.dispatch(hl.dsp.window.float({ action = "set" }))
-        hl.dispatch(hl.dsp.window.resize({ x = "50%", y = "50%", relative = true }))
+        hl.dispatch(hl.dsp.window.resize({ x = width, y = height }))
         hl.dispatch(hl.dsp.window.center())
         hl.dispatch(hl.dsp.window.pin())
         hl.dispatch(hl.dsp.window.alter_zorder({ mode = "top" }))
