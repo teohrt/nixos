@@ -1,12 +1,22 @@
 local ctx = require("context")
 
+-- Check physical lid state from ACPI
+local function is_lid_closed()
+    local f = io.open("/proc/acpi/button/lid/LID0/state", "r")
+    if not f then return false end
+    local state = f:read("*l")
+    f:close()
+    return state and state:match("closed") ~= nil
+end
+
 if ctx.hostname == "framework-16" then
-    -- Internal display at 1.25x scale
+    -- Internal display at 1.25x scale (disabled if lid is closed)
     hl.monitor({
         output = "eDP-1",
         mode = "preferred",
         position = "auto",
         scale = 1.25,
+        disabled = is_lid_closed(),
     })
     -- External monitors at native resolution
     hl.monitor({
