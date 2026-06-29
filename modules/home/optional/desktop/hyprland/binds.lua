@@ -4,7 +4,7 @@ local mod = "SUPER"
 hl.bind(mod .. " + Return",       hl.dsp.exec_cmd("terminal-here"), { description = "Terminal" })
 hl.bind(mod .. " + Escape",       hl.dsp.exec_cmd("noctalia-shell ipc call sessionMenu toggle"), { description = "Session menu" })
 hl.bind(mod .. " + SHIFT + Return", hl.dsp.exec_cmd("google-chrome-stable"), { description = "Browser" })
-hl.bind(mod .. " + F",            hl.dsp.window.fullscreen(1), { description = "Fullscreen" })
+hl.bind(mod .. " + F",            hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "Maximize" })
 hl.bind(mod .. " + SHIFT + F",    hl.dsp.exec_cmd("nautilus --new-window"), { description = "File manager" })
 hl.bind(mod .. " + Q",            hl.dsp.window.close(), { description = "Close window" })
 
