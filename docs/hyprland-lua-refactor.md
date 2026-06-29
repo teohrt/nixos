@@ -8,6 +8,56 @@ working desktop — no phase depends on a later one.
 
 ---
 
+## Getting Hyprland 0.55+ running
+
+Lua config requires Hyprland >= 0.55. Getting the right version to actually
+run turned out to be the first major hurdle. Here's what we tried and why each
+approach failed or succeeded.
+
+### Attempt 1: Hyprland flake (failed — GPU driver mismatch)
+
+Used the official `hyprland` flake input (`github:hyprwm/Hyprland`). The flake
+builds Hyprland against its own mesa/GPU drivers from a separate nixpkgs pin.
+At runtime, NixOS uses `/run/opengl-driver` from the *system* mesa. The mismatch
+caused the `start-hyprland` wrapper to crash immediately on startup. SDDM saw
+the session exit and looped back to the login screen.
+
+**Removed:** flake input, 59 transitive inputs, cachix, NixOS module overlay.
+
+### Attempt 2: nixpkgs-unstable (failed — wrong version in PATH)
+
+Switched `programs.hyprland.package` in `desktop.nix` to `pkgs-unstable.hyprland`.
+This put 0.55.x in the *system* PATH, but home-manager's
+`wayland.windowManager.hyprland.enable = true` also installs a Hyprland binary
+into the *user profile* (`/etc/profiles/per-user/trace/bin/`). Since user
+profile takes priority over system PATH, the home-manager default
+`pkgs.hyprland` (stable nixpkgs, 0.52.1) shadowed the 0.55 system binary.
+
+**Result:** Hyprland ran but was 0.52.1, which doesn't support Lua config.
+It silently fell back to the generated `.conf` file.
+
+### Attempt 3: pinned nixpkgs-hyprland (failed — same shadowing issue)
+
+Added `nixpkgs-hyprland` input pinned to a specific commit with Hyprland 0.55.4.
+Set `programs.hyprland.package = pkgs-hyprland.hyprland` in `desktop.nix` and
+passed `pkgs-hyprland` to NixOS modules via `specialArgs`. Same problem as
+attempt 2 — only fixed the NixOS system-level package, not home-manager.
+
+### Attempt 4: pass pkgs-hyprland to home-manager (current)
+
+The fix requires **both** levels to use the pinned package:
+
+1. `flake.nix`: added `pkgs-hyprland` to home-manager's `extraSpecialArgs`
+2. `hyprland.nix`: set `wayland.windowManager.hyprland.package = pkgs-hyprland.hyprland`
+
+This ensures the user-profile binary is also 0.55.4, so Lua config loads.
+
+**Lesson:** When using home-manager with `wayland.windowManager.hyprland`,
+the HM module installs its own binary that shadows the NixOS system package.
+Both must be set explicitly when pinning to a non-default version.
+
+---
+
 ## Phase 0: Foundation (do first — everything else depends on this)
 
 Decide how Nix and Lua coexist. This is the only design decision that blocks

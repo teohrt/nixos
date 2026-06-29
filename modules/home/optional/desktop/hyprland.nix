@@ -5,6 +5,7 @@
   pkgs,
   config,
   pkgs-walker,
+  pkgs-hyprland,
   ...
 }:
 let
@@ -385,6 +386,7 @@ in
 
   wayland.windowManager.hyprland = {
     enable = true;
+    package = pkgs-hyprland.hyprland;
     # Empty settings — Lua config takes priority via hyprland.lua
     settings = { };
   };

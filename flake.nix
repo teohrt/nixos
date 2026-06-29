@@ -92,6 +92,7 @@
               pkgs-unstable
               pkgs-walker
               pkgs-kitty
+              pkgs-hyprland
               spicetify-nix
               noctalia
               username
