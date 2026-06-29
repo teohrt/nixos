@@ -7,3 +7,6 @@
 # Generated symlink to /nix/store by git-hooks.nix shellHook — hook config is defined in flake.nix
 .pre-commit-config.yaml
 
+# Symlink to /nix/store created by nixos-rebuild build / nix build
+result
+
