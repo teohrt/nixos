@@ -1,5 +1,3 @@
-local ctx = require("context")
-
 local mod = "SUPER"
 
 ---- Window management ----

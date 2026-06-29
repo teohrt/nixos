@@ -137,7 +137,7 @@ local function schedule_apply()
     apply_timer:set_enabled(true)
 end
 
-hl.on("monitor.added", function(monitor)
+hl.on("monitor.added", function(_monitor)
     schedule_apply()
 end)
 

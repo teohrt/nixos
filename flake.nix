@@ -131,13 +131,33 @@
           hooks = {
             nixfmt-rfc-style.enable = true;
             statix.enable = true;
+            selene.enable = true;
           };
         };
       };
 
       devShells.${system}.default = pkgs.mkShell {
-        inherit (inputs.self.checks.${system}.pre-commit-check) shellHook;
-        buildInputs = inputs.self.checks.${system}.pre-commit-check.enabledPackages;
+        buildInputs = inputs.self.checks.${system}.pre-commit-check.enabledPackages ++ [
+          pkgs.lua-language-server
+          pkgs.selene
+        ];
+        shellHook = ''
+          ${inputs.self.checks.${system}.pre-commit-check.shellHook}
+
+          # Generate .luarc.json with Hyprland Lua stubs for LSP type-checking
+          cat > modules/home/optional/desktop/hyprland/.luarc.json <<'LUARC'
+          {
+            "runtime": { "version": "Lua 5.4" },
+            "workspace": {
+              "library": ["${hyprland.packages.${system}.hyprland}/share/hypr/stubs"],
+              "checkThirdParty": false
+            },
+            "diagnostics": {
+              "globals": ["hl"]
+            }
+          }
+          LUARC
+        '';
       };
     };
 }
