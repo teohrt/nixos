@@ -28,32 +28,12 @@ hl.on("window.open", function(new_window)
 end)
 
 ------------------------------------------------------------
--- Auto-mirror laptop display to external monitor
+-- Restore internal display when external monitor is removed
 ------------------------------------------------------------
--- When an external monitor connects, mirror the laptop (eDP-*) to it.
--- When it disconnects, restore the internal display.
-
-local function get_internal_name()
-    local monitors = hl.get_monitors()
-    if monitors == nil then return nil end
-    for _, m in ipairs(monitors) do
-        if m.name:sub(1, 3) == "eDP" then
-            return m.name
-        end
-    end
-    return nil
-end
-
-local function get_external_name()
-    local monitors = hl.get_monitors()
-    if monitors == nil then return nil end
-    for _, m in ipairs(monitors) do
-        if m.name:sub(1, 3) ~= "eDP" then
-            return m.name
-        end
-    end
-    return nil
-end
+-- The catch-all rule in monitors.lua handles extending to external
+-- monitors automatically. This handler only needs to recover from
+-- the case where the lid is closed (eDP-1 disabled) and the external
+-- monitor is unplugged — leaving no active displays.
 
 local function refresh_bar()
     hl.timer(function()
@@ -64,100 +44,18 @@ local function refresh_bar()
     end, { timeout = 300, type = "oneshot" })
 end
 
--- Dedup key to prevent hl.monitor() calls from re-triggering monitor.added in a loop
-local last_applied_key = ""
-
-local function get_monitor_key()
-    local monitors = hl.get_monitors()
-    if monitors == nil then return "" end
-    local names = {}
-    for _, m in ipairs(monitors) do
-        names[#names + 1] = m.name
-    end
-    table.sort(names)
-    return table.concat(names, ",")
-end
-
-local function handle_connect()
-    local key = get_monitor_key()
-    if key == last_applied_key then return end
-
-    local internal = get_internal_name()
-    local external = get_external_name()
-    if internal == nil or external == nil then return end
-
-    last_applied_key = key
-
-    hl.monitor({
-        output = external,
-        mode = "preferred",
-        position = "auto",
-        scale = ctx.default_scale,
-    })
-    hl.monitor({
-        output = internal,
-        mode = "preferred",
-        position = "auto",
-        scale = ctx.default_scale,
-        mirror = external,
-    })
-    refresh_bar()
-end
-
-local function handle_disconnect()
-    local key = get_monitor_key()
-    if key == last_applied_key then return end
-    last_applied_key = key
-
-    local internal = get_internal_name()
-    if internal == nil then return end
-
-    hl.monitor({
-        output = internal,
-        mode = "preferred",
-        position = "auto",
-        scale = ctx.default_scale,
-    })
-    refresh_bar()
-end
-
--- Use a single debounce timer to avoid rapid re-triggers
-local apply_timer = hl.timer(function()
-    local external = get_external_name()
-    if external ~= nil then
-        handle_connect()
-    else
-        handle_disconnect()
-    end
-end, { timeout = 500, type = "oneshot" })
-apply_timer:set_enabled(false)
-
-local function schedule_apply()
-    apply_timer:set_enabled(false)
-    apply_timer:set_enabled(true)
-end
-
-hl.on("monitor.added", function(_monitor)
-    schedule_apply()
-end)
-
 hl.on("monitor.removed", function(monitor)
-    -- Only handle removal of external monitors
+    -- Ignore removal of internal display (lid close)
     if monitor.name:sub(1, 3) == "eDP" then return end
-    schedule_apply()
-end)
 
--- Re-apply on config reload (NixOS rebuilds regenerate config, clearing runtime state)
-hl.on("config.reloaded", function()
-    last_applied_key = "" -- force re-evaluation
-    schedule_apply()
-end)
-
--- Handle current state on startup
-hl.on("hyprland.start", function()
+    -- Re-enable eDP-1 unconditionally — it may be disabled from lid close
     hl.timer(function()
-        if get_external_name() ~= nil then
-            handle_connect()
-        end
-    end, { timeout = 1000, type = "oneshot" })
+        hl.monitor({
+            output = "eDP-1",
+            mode = "preferred",
+            position = "auto",
+            scale = ctx.default_scale,
+        })
+        refresh_bar()
+    end, { timeout = 500, type = "oneshot" })
 end)
