@@ -30,7 +30,7 @@ if ctx.hostname == "framework-16" then
     end, { locked = true })
 
     hl.bind("switch:off:Lid Switch", function()
-        hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = 1.25 })
+        hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = 1.25, disabled = false })
         hl.exec_cmd("brightnessctl -d amdgpu_bl1 set 100%")
     end, { locked = true })
 
