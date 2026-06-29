@@ -97,6 +97,31 @@ local function matches_popup(window)
 end
 
 hl.on("window.open", function(w)
+    -- Float kitty at half-screen centered if it's alone on workspace 2
+    if w.class == "kitty" and w.title == "kitty" then
+        local alone = true
+        local ws2_windows = hl.get_workspace_windows(2)
+        if ws2_windows then
+            for _, existing in ipairs(ws2_windows) do
+                if existing.address ~= w.address then
+                    alone = false
+                    break
+                end
+            end
+        end
+        if alone then
+            local mon = w.monitor
+            if mon then
+                local width = math.floor(mon.width / mon.scale / 2)
+                local height = math.floor(mon.height / mon.scale / 2)
+                hl.dispatch(hl.dsp.window.float({ action = "set", window = "address:" .. w.address }))
+                hl.dispatch(hl.dsp.window.resize({ x = width, y = height, window = "address:" .. w.address }))
+                hl.dispatch(hl.dsp.window.center({ window = "address:" .. w.address }))
+            end
+        end
+    end
+
+    -- Force popup apps to half-screen centered
     if not matches_popup(w) then return end
     local mon = w.monitor
     if mon == nil then return end
