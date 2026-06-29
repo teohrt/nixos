@@ -1,4 +1,4 @@
-{ lib, username, ... }:
+{ ... }:
 {
   imports = [
     ./hardware.nix
@@ -20,10 +20,6 @@
 
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
-
-  home-manager.users.${username} = {
-    wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1";
-  };
 
   system.stateVersion = "25.11";
 }
