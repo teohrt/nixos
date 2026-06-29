@@ -5,7 +5,6 @@ hl.config({
         gaps_in = 0,
         gaps_out = 0,
         border_size = 1,
-        no_border_on_floating = false,
         col = {
             active_border = "rgba(" .. ctx.colors.base0D:sub(2) .. "ff)",
             inactive_border = "rgba(" .. ctx.colors.base0D:sub(2) .. "ff)",
@@ -45,7 +44,6 @@ hl.config({
     },
 
     dwindle = {
-        pseudotile = true,
         preserve_split = true,
     },
 
