@@ -21,9 +21,9 @@ hl.window_rule({ match = { float = false, workspace = "f[1]" }, border_size = 0 
 
 -- Default workspace assignments
 local workspace_assignments = {
-    { class = "^(chromium%-browser|google%-chrome|Chromium)$", workspace = "1" },
+    { class = "^(chromium-browser|google-chrome|Chromium)$", workspace = "1" },
     { class = "^(kitty)$", initial_title = "^(kitty)$",       workspace = "2" },
-    { class = "^(code|Code|code%-url%-handler)$",              workspace = "3" },
+    { class = "^(code|Code|code-url-handler)$",              workspace = "3" },
     { class = "^(bruno)$",                                     workspace = "4" },
     { class = "^(DBeaver)$",                                   workspace = "4" },
     { class = "^(Slack|slack)$",                                workspace = "6" },
@@ -65,7 +65,7 @@ hl.window_rule({
 })
 
 -- Floating popup apps
-floating_popup({ class = "^(org%.kde%.partitionmanager)$" })
+floating_popup({ class = "^(org.kde.partitionmanager)$" })
 floating_popup({ class = "^(localsend_app)$" })
 floating_popup({ class = "^(1Password)$" })
 floating_popup({ class = "^(bruno)$" })
