@@ -9,6 +9,7 @@
     vscode
     gnumake
     stow
+    zoxide
     nerd-fonts.jetbrains-mono
     home-manager
     satty
