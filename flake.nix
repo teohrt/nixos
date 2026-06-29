@@ -25,6 +25,7 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     sops-nix.url = "github:Mic92/sops-nix";
     claude-desktop.url = "github:patrickjaja/claude-desktop-bin";
+    hyprland.url = "github:hyprwm/Hyprland";
     git-hooks = {
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -44,6 +45,7 @@
       sops-nix,
       noctalia,
       claude-desktop,
+      hyprland,
       git-hooks,
       ...
     }:
@@ -102,7 +104,7 @@
         hostPath: extraModules:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit username; };
+          specialArgs = { inherit inputs username; };
           modules = [
             hostPath
             sops-nix.nixosModules.sops

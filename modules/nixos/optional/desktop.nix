@@ -1,10 +1,18 @@
 # Desktop environment: Hyprland compositor, SDDM login, PipeWire audio, Bluetooth, printing.
-{ pkgs, username, ... }:
+{
+  pkgs,
+  inputs,
+  username,
+  ...
+}:
 {
   # Hyprland Wayland compositor
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
+    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    portalPackage =
+      inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
   };
 
   # Login manager
@@ -30,7 +38,6 @@
     enable = true;
     extraPortals = [
       pkgs.xdg-desktop-portal-gtk
-      pkgs.xdg-desktop-portal-hyprland
     ];
     # explicitly route screensharing/remotedesktop to hyprland portal, everything else to gtk
     config.common = {
