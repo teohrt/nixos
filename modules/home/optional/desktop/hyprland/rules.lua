@@ -1,14 +1,19 @@
 local ctx = require("context")
 
--- Helper: create a centered floating popup rule set for an app
+-- Popup app classes/titles that should float at half-screen centered
+local popup_apps = {}
+
+-- Helper: register a centered floating popup rule set for an app
 local function floating_popup(match)
+    table.insert(popup_apps, match)
     hl.window_rule({
         match = match,
         float = true,
-        size = { "50%", "50%" },
+        size = "50% 50%",
         center = true,
         border_size = 1,
         border_color = "rgba(" .. ctx.colors.base0D:sub(2) .. "ff)",
+        suppress_event = "maximize fullscreen",
     })
 end
 
@@ -71,21 +76,35 @@ floating_popup({ class = "^(1[Pp]assword)$" })
 floating_popup({ class = "^(bruno)$" })
 floating_popup({ title = "^(hyprmon)$" })
 
--- Bruno: suppress maximize persistence
-hl.window_rule({
-    match = { class = "^(bruno)$" },
-    suppress_event = "maximize fullscreen",
-})
-
 -- Webcam preview: float, pin, bottom-right corner, no border
 hl.window_rule({
     match = { title = "^(webcam)$" },
     float = true,
-    size = { 320, 240 },
-    move = { "100%-330", "100%-250" },
+    size = "320 240",
+    move = "100%-330 100%-250",
     pin = true,
     border_size = 0,
 })
+
+-- Force popup apps to half-screen centered after they open
+-- (some apps like Electron override the size rule on map)
+local function matches_popup(window)
+    for _, match in ipairs(popup_apps) do
+        if match.class and window.class:match(match.class) then return true end
+        if match.title and window.title:match(match.title) then return true end
+    end
+    return false
+end
+
+hl.on("window.open", function(w)
+    if not matches_popup(w) then return end
+    local mon = w.monitor
+    if mon == nil then return end
+    local width = math.floor(mon.width / mon.scale / 2)
+    local height = math.floor(mon.height / mon.scale / 2)
+    hl.dispatch(hl.dsp.window.resize({ x = width, y = height, window = "address:" .. w.address }))
+    hl.dispatch(hl.dsp.window.center({ window = "address:" .. w.address }))
+end)
 
 -- Layer rules
 hl.layer_rule({
