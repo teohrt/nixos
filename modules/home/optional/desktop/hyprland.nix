@@ -1,6 +1,6 @@
 # Hyprland window manager configuration: thin Nix shim that generates context.lua
 # with Stylix colors and Nix store paths, symlinks Lua config files, and packages
-# helper shell scripts (screenshot, terminal-here, toggle-menu, voice-input).
+# helper shell scripts (screenshot, toggle-menu, voice-input).
 {
   pkgs,
   config,
@@ -57,28 +57,8 @@ let
       terminal = ${toString config.stylix.opacity.terminal},
     }
 
-    -- Nix store binary paths
+    -- Nix store binary paths (only paths used by Lua config)
     M.bin = {
-      socat = "${pkgs.socat}/bin/socat",
-      jq = "${pkgs.jq}/bin/jq",
-      slurp = "${pkgs.slurp}/bin/slurp",
-      grim = "${pkgs.grim}/bin/grim",
-      grimblast = "${pkgs.grimblast}/bin/grimblast",
-      wl_copy = "${pkgs.wl-clipboard}/bin/wl-copy",
-      notify_send = "${pkgs.libnotify}/bin/notify-send",
-      satty = "${pkgs.satty}/bin/satty",
-      brightnessctl = "${pkgs.brightnessctl}/bin/brightnessctl",
-      mpv = "${pkgs.mpv}/bin/mpv",
-      wf_recorder = "${pkgs.wf-recorder}/bin/wf-recorder",
-      whisper_cli = "${pkgs.whisper-cpp}/bin/whisper-cli",
-      wtype = "${pkgs.wtype}/bin/wtype",
-      pw_record = "${pkgs.pipewire}/bin/pw-record",
-      curl = "${pkgs.curl}/bin/curl",
-      pgrep = "${pkgs.procps}/bin/pgrep",
-      pkill = "${pkgs.procps}/bin/pkill",
-      ps = "${pkgs.procps}/bin/ps",
-      grep = "${pkgs.gnugrep}/bin/grep",
-      walker = "${pkgs-walker.walker}/bin/walker",
       polkit_agent = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1",
     }
 
@@ -88,47 +68,6 @@ let
   # --- Shell scripts (writeShellScriptBin so they install as named commands) ---
 
   walker = "${pkgs-walker.walker}/bin/walker";
-
-  # Opens kitty in the focused terminal's working directory (or home if not a terminal)
-  # If workspace is empty, centers the terminal; otherwise tiles normally.
-  terminal-here = pkgs.writeShellScriptBin "terminal-here" ''
-    pid=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid')
-    dir="$HOME"
-    if [[ -n "$pid" && "$pid" != "null" ]]; then
-      # Find shell process among descendants (zsh, bash, fish, nu)
-      shell_pid=""
-      for child in $(${pkgs.procps}/bin/pgrep -P "$pid"); do
-        # Check direct children
-        if ${pkgs.procps}/bin/ps -p "$child" -o comm= | ${pkgs.gnugrep}/bin/grep -qE '^(zsh|bash|fish|nu)$'; then
-          shell_pid=$child
-          break
-        fi
-        # Check grandchildren
-        for grandchild in $(${pkgs.procps}/bin/pgrep -P "$child"); do
-          if ${pkgs.procps}/bin/ps -p "$grandchild" -o comm= | ${pkgs.gnugrep}/bin/grep -qE '^(zsh|bash|fish|nu)$'; then
-            shell_pid=$grandchild
-            break 2
-          fi
-        done
-      done
-      if [[ -n "$shell_pid" ]] && [[ -d "/proc/$shell_pid/cwd" ]]; then
-        dir=$(readlink "/proc/$shell_pid/cwd")
-      fi
-    fi
-
-    # Check if current workspace is empty
-    workspace=$(hyprctl activeworkspace -j | ${pkgs.jq}/bin/jq -r '.id')
-    window_count=$(hyprctl clients -j | ${pkgs.jq}/bin/jq "[.[] | select(.workspace.id == $workspace)] | length")
-
-    if [[ "$window_count" -eq 0 ]]; then
-      # Empty workspace: launch, float, resize to half screen, and center
-      kitty --directory "$dir" &
-      sleep 0.1
-      hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact 50% 50%; dispatch centerwindow"
-    else
-      exec kitty --directory "$dir"
-    fi
-  '';
 
   # Takes a screenshot, copies to clipboard, and shows notification.
   # Click notification to edit in Satty.
@@ -362,7 +301,6 @@ in
     pkgs.wf-recorder
     pkgs.whisper-cpp
     pkgs.wtype
-    terminal-here
     screenshot
     toggle-menu
     voice-input

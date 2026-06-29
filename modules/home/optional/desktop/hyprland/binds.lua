@@ -1,7 +1,69 @@
 local mod = "SUPER"
 
+---- Terminal in current directory ----
+-- Finds the shell child of the focused terminal and opens kitty in its cwd.
+-- The window.open handler in rules.lua floats kitty when it's alone on a workspace.
+local shell_names = { zsh = true, bash = true, fish = true, nu = true }
+
+local function find_shell_cwd(pid)
+    -- Read direct children from /proc
+    local cf = io.open("/proc/" .. pid .. "/task/" .. pid .. "/children", "r")
+    if not cf then return nil end
+    local children_str = cf:read("*a")
+    cf:close()
+
+    for child in children_str:gmatch("%d+") do
+        -- Check if child is a shell
+        local comm_f = io.open("/proc/" .. child .. "/comm", "r")
+        if comm_f then
+            local comm = comm_f:read("*l")
+            comm_f:close()
+            if comm and shell_names[comm] then
+                local lf = io.popen("readlink /proc/" .. child .. "/cwd")
+                if lf then
+                    local cwd = lf:read("*l")
+                    lf:close()
+                    if cwd and cwd ~= "" then return cwd end
+                end
+            end
+        end
+        -- Check grandchildren (e.g. kitty -> shell -> child)
+        local gcf = io.open("/proc/" .. child .. "/task/" .. child .. "/children", "r")
+        if gcf then
+            local gc_str = gcf:read("*a")
+            gcf:close()
+            for grandchild in gc_str:gmatch("%d+") do
+                local gc_comm_f = io.open("/proc/" .. grandchild .. "/comm", "r")
+                if gc_comm_f then
+                    local gc_comm = gc_comm_f:read("*l")
+                    gc_comm_f:close()
+                    if gc_comm and shell_names[gc_comm] then
+                        local lf = io.popen("readlink /proc/" .. grandchild .. "/cwd")
+                        if lf then
+                            local cwd = lf:read("*l")
+                            lf:close()
+                            if cwd and cwd ~= "" then return cwd end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return nil
+end
+
 ---- Window management ----
-hl.bind(mod .. " + Return",       hl.dsp.exec_cmd("terminal-here"), { description = "Terminal" })
+hl.bind(mod .. " + Return", function()
+    local dir = os.getenv("HOME")
+    local w = hl.get_active_window()
+    if w and w.pid then
+        local cwd = find_shell_cwd(tostring(w.pid))
+        if cwd then
+            dir = cwd
+        end
+    end
+    hl.exec_cmd("kitty --directory '" .. dir:gsub("'", "'\\''") .. "'")
+end, { description = "Terminal" })
 hl.bind(mod .. " + Escape",       hl.dsp.exec_cmd("noctalia-shell ipc call sessionMenu toggle"), { description = "Session menu" })
 hl.bind(mod .. " + SHIFT + Return", hl.dsp.exec_cmd("google-chrome-stable"), { description = "Browser" })
 hl.bind(mod .. " + F",            hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "Maximize" })
