@@ -12,13 +12,9 @@ hl.on("hyprland.start", function()
 end)
 
 -- Environment variables
-hl.config({
-    env = {
-        XCURSOR_SIZE = "24",
-        XCURSOR_THEME = "Adwaita",
-        HYPRCURSOR_SIZE = "24",
-        HYPRCURSOR_THEME = "Adwaita",
-        NIXOS_OZONE_WL = "1",
-        QT_QPA_PLATFORM = "wayland;xcb",
-    },
-})
+hl.env("XCURSOR_SIZE", "24")
+hl.env("XCURSOR_THEME", "Adwaita")
+hl.env("HYPRCURSOR_SIZE", "24")
+hl.env("HYPRCURSOR_THEME", "Adwaita")
+hl.env("NIXOS_OZONE_WL", "1")
+hl.env("QT_QPA_PLATFORM", "wayland;xcb")

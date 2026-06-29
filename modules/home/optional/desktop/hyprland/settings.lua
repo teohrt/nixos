@@ -55,13 +55,13 @@ hl.config({
 })
 
 -- Animation curves and rules
-hl.curve("linear", { 0, 0, 1, 1 })
+hl.curve("linear", { type = "bezier", points = { {0, 0}, {1, 1} } })
 
-hl.animation("windowsIn",   { enabled = true, speed = 1.2, curve = "linear" })
-hl.animation("windowsOut",  { enabled = true, speed = 1.2, curve = "linear" })
-hl.animation("windowsMove", { enabled = true, speed = 1.2, curve = "linear" })
-hl.animation("fade",        { enabled = true, speed = 1.2, curve = "linear" })
-hl.animation("workspaces",  { enabled = true, speed = 1.2, curve = "linear", style = "fade" })
-hl.animation("layers",      { enabled = true, speed = 1.2, curve = "linear", style = "fade" })
-hl.animation("layersIn",    { enabled = true, speed = 1.2, curve = "linear", style = "fade" })
-hl.animation("layersOut",   { enabled = true, speed = 1.2, curve = "linear", style = "fade" })
+hl.animation({ leaf = "windowsIn",   enabled = true, speed = 1.2, bezier = "linear" })
+hl.animation({ leaf = "windowsOut",  enabled = true, speed = 1.2, bezier = "linear" })
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 1.2, bezier = "linear" })
+hl.animation({ leaf = "fade",        enabled = true, speed = 1.2, bezier = "linear" })
+hl.animation({ leaf = "workspaces",  enabled = true, speed = 1.2, bezier = "linear", style = "fade" })
+hl.animation({ leaf = "layers",      enabled = true, speed = 1.2, bezier = "linear", style = "fade" })
+hl.animation({ leaf = "layersIn",    enabled = true, speed = 1.2, bezier = "linear", style = "fade" })
+hl.animation({ leaf = "layersOut",   enabled = true, speed = 1.2, bezier = "linear", style = "fade" })

@@ -12,9 +12,9 @@ local function floating_popup(match)
     })
 end
 
--- Remove borders when only one tiled window on workspace
-hl.workspacerule({ match = "w[tv1]", gaps_out = 0, gaps_in = 0 })
-hl.workspacerule({ match = "f[1]", gaps_out = 0, gaps_in = 0 })
+-- Smart gaps: remove borders when only one tiled window on workspace
+hl.workspace_rule({ workspace = "w[tv1]", gaps_out = 0, gaps_in = 0 })
+hl.workspace_rule({ workspace = "f[1]", gaps_out = 0, gaps_in = 0 })
 
 hl.window_rule({ match = { float = false, workspace = "w[tv1]" }, border_size = 0 })
 hl.window_rule({ match = { float = false, workspace = "f[1]" }, border_size = 0 })
