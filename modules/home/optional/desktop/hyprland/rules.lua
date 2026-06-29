@@ -67,7 +67,7 @@ hl.window_rule({
 -- Floating popup apps
 floating_popup({ class = "^(org.kde.partitionmanager)$" })
 floating_popup({ class = "^(localsend_app)$" })
-floating_popup({ class = "^(1Password)$" })
+floating_popup({ class = "^(1[Pp]assword)$" })
 floating_popup({ class = "^(bruno)$" })
 floating_popup({ title = "^(hyprmon)$" })
 
