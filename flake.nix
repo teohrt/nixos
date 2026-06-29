@@ -107,6 +107,7 @@
           specialArgs = { inherit inputs username; };
           modules = [
             hostPath
+            hyprland.nixosModules.default
             sops-nix.nixosModules.sops
             stylix.nixosModules.stylix
             { inherit (themeConfig) stylix; }
