@@ -20,6 +20,8 @@ in
   programs.kitty = {
     enable = true;
     package = pkgs-kitty.kitty;
+    shellIntegration.mode = "enabled";
+    shellIntegration.enableZshIntegration = false;
     settings = {
       # Window padding (kitty uses single value for all sides)
       window_padding_width = 12;
