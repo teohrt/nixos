@@ -204,7 +204,13 @@ let
       record_option="Record Screen"
     fi
 
-    choice=$(printf "Take Screenshot\n$record_option\nWebcam Preview\nScreensaver\nBrightness\nVolume" | ${walker} --dmenu -p "Toggle")
+    if [ -f /run/spoof-enabled ]; then
+      spoof_option="Disable Spoof"
+    else
+      spoof_option="Enable Spoof"
+    fi
+
+    choice=$(printf "Take Screenshot\n$record_option\nWebcam Preview\nScreensaver\nBrightness\nVolume\n$spoof_option" | ${walker} --dmenu -p "Toggle")
     case "$choice" in
       "Take Screenshot")
         sub=$(printf "Region\nWindow\nScreen" | ${walker} --dmenu -p "Screenshot")
@@ -254,6 +260,18 @@ let
           75%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 75% ;;
           100%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 100% ;;
         esac
+        ;;
+      "Enable Spoof"|"Disable Spoof")
+        systemctl start toggle-spoof
+        sleep 2  # wait for NM restart to assign new MAC
+        if [ -f /run/spoof-enabled ]; then
+          spoof_host=$(cat /run/spoof-hostname 2>/dev/null || echo "unknown")
+          spoof_mac=$(cat /sys/class/net/wl*/address 2>/dev/null | head -1 || echo "unknown")
+          ${pkgs.libnotify}/bin/notify-send -u low "Network Spoof Enabled" "Hostname: $spoof_host\nMAC: $spoof_mac"
+        else
+          real_mac=$(cat /sys/class/net/wl*/address 2>/dev/null | head -1 || echo "unknown")
+          ${pkgs.libnotify}/bin/notify-send -u low "Network Spoof Disabled" "Hostname: $(hostname)\nMAC: $real_mac"
+        fi
         ;;
     esac
   '';

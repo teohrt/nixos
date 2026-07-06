@@ -24,7 +24,12 @@
 # Names come from rig(1)'s bundled US name database, not from this file,
 # so the source code doesn't reveal an enumerable list.
 #
-# To test mid-session:
+# Runtime toggle:
+#   systemctl start toggle-spoof   (or via Super+T → "Enable/Disable Spoof")
+# State is tracked in /run/spoof-enabled (present = spoofing active).
+# Defaults to enabled on boot.
+#
+# To test mid-session without the toggle:
 #   systemctl restart randomize-hostname && systemctl restart NetworkManager
 # (nmcli general reload is NOT enough — it reloads NM's main config,
 # not connection profiles. NM must fully restart to re-read them.)
@@ -108,6 +113,31 @@ let
         fi
       fi
     done
+
+    # Save state so the toggle menu can show the spoofed identity
+    echo "$NEW_HOSTNAME" > /run/spoof-hostname
+    ${pkgs.coreutils}/bin/touch /run/spoof-enabled
+  '';
+
+  # Undo spoofing: remove dhcp-hostname from NM connections and restart NM
+  # so DHCP falls back to the real system hostname.
+  disable-spoof = pkgs.writeShellScript "disable-spoof" ''
+    for conn in /etc/NetworkManager/system-connections/*; do
+      [ -f "$conn" ] || continue
+      ${pkgs.gnused}/bin/sed -i '/^dhcp-hostname=/d' "$conn"
+    done
+    ${pkgs.coreutils}/bin/rm -f /run/spoof-enabled
+    /run/current-system/sw/bin/systemctl restart NetworkManager
+  '';
+
+  # Toggle spoofing on/off based on current state
+  toggle-spoof = pkgs.writeShellScript "toggle-spoof" ''
+    if [ -f /run/spoof-enabled ]; then
+      ${disable-spoof}
+    else
+      ${randomize-hostname}
+      /run/current-system/sw/bin/systemctl restart NetworkManager
+    fi
   '';
 in
 {
@@ -139,6 +169,16 @@ in
       Type = "oneshot";
       RemainAfterExit = true;
       ExecStart = randomize-hostname;
+    };
+  };
+
+  # Toggle service — invoked by the user (Super+T menu) to flip spoofing
+  # on or off at runtime. Runs as root so it can modify NM connections.
+  systemd.services.toggle-spoof = {
+    description = "Toggle network identity spoofing";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = toggle-spoof;
     };
   };
 }
