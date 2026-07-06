@@ -5,6 +5,7 @@
     ../../modules/nixos/core
     ../../modules/nixos/optional/desktop.nix
     ../../modules/nixos/optional/networking.nix
+    ../../modules/nixos/optional/privacy.nix
     ../../modules/nixos/optional/docker.nix
     ../../modules/nixos/optional/system-apps.nix
     ../../modules/nixos/optional/sops.nix
