@@ -271,9 +271,9 @@ let
         mac=$(cat /sys/class/net/wl*/address 2>/dev/null | head -1 || echo "unknown")
         if [ -f /run/spoof-enabled ]; then
           spoof_host=$(cat /run/spoof-hostname 2>/dev/null || echo "unknown")
-          ${pkgs.libnotify}/bin/notify-send -u low "Network Spoof Enabled" "Hostname: $spoof_host\nMAC: $mac"
+          ${pkgs.libnotify}/bin/notify-send -u critical "Network Spoof Enabled" "Hostname: $spoof_host\n\nMAC: $mac"
         else
-          ${pkgs.libnotify}/bin/notify-send -u low "Network Spoof Disabled" "Hostname: $(hostname)\nMAC: $mac"
+          ${pkgs.libnotify}/bin/notify-send -u critical "Network Spoof Disabled" "Hostname: $(hostname)\n\nMAC: $mac"
         fi
         ;;
     esac
