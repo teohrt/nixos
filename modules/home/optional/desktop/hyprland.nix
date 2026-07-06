@@ -263,14 +263,17 @@ let
         ;;
       "Enable Spoof"|"Disable Spoof")
         systemctl start toggle-spoof
-        sleep 2  # wait for NM restart to assign new MAC
+        # Wait for NM to fully reconnect before reading MAC
+        for _ in $(seq 1 30); do
+          [ "$(${pkgs.networkmanager}/bin/nmcli -t -f STATE general 2>/dev/null)" = "connected" ] && break
+          sleep 0.5
+        done
+        mac=$(cat /sys/class/net/wl*/address 2>/dev/null | head -1 || echo "unknown")
         if [ -f /run/spoof-enabled ]; then
           spoof_host=$(cat /run/spoof-hostname 2>/dev/null || echo "unknown")
-          spoof_mac=$(cat /sys/class/net/wl*/address 2>/dev/null | head -1 || echo "unknown")
-          ${pkgs.libnotify}/bin/notify-send -u low "Network Spoof Enabled" "Hostname: $spoof_host\nMAC: $spoof_mac"
+          ${pkgs.libnotify}/bin/notify-send -u low "Network Spoof Enabled" "Hostname: $spoof_host\nMAC: $mac"
         else
-          real_mac=$(cat /sys/class/net/wl*/address 2>/dev/null | head -1 || echo "unknown")
-          ${pkgs.libnotify}/bin/notify-send -u low "Network Spoof Disabled" "Hostname: $(hostname)\nMAC: $real_mac"
+          ${pkgs.libnotify}/bin/notify-send -u low "Network Spoof Disabled" "Hostname: $(hostname)\nMAC: $mac"
         fi
         ;;
     esac

@@ -84,6 +84,12 @@ let
         ;;
     esac
 
+    # Save the real hardware MAC before NM starts and randomizes it.
+    # This runs Before=NetworkManager.service, so the interface still
+    # has the permanent address. Used by the toggle notification.
+    ${pkgs.coreutils}/bin/cat /sys/class/net/wl*/address 2>/dev/null \
+      | ${pkgs.coreutils}/bin/head -1 > /run/real-mac
+
     # Patch all saved NM connections to send our hostname via DHCP.
     # On boot this runs before NM (Before=NetworkManager.service), so NM
     # reads the updated files on first startup.
@@ -119,14 +125,27 @@ let
     ${pkgs.coreutils}/bin/touch /run/spoof-enabled
   '';
 
-  # Undo spoofing: remove dhcp-hostname from NM connections and restart NM
-  # so DHCP falls back to the real system hostname.
+  # Undo spoofing: remove spoofed DHCP hostname, restore real MAC
+  # (cloned-mac-address=permanent overrides the NixOS default of "random"),
+  # and restore default DUID.
   disable-spoof = pkgs.writeShellScript "disable-spoof" ''
     for conn in /etc/NetworkManager/system-connections/*; do
       [ -f "$conn" ] || continue
       ${pkgs.gnused}/bin/sed -i '/^dhcp-hostname=/d' "$conn"
+      ${pkgs.gnused}/bin/sed -i '/^dhcp-duid=/d' "$conn"
+      ${pkgs.gnused}/bin/sed -i '/^cloned-mac-address=/d' "$conn"
+
+      # Force real MAC on wifi connections
+      if ${pkgs.gnugrep}/bin/grep -q '^\[wifi\]' "$conn"; then
+        ${pkgs.gnused}/bin/sed -i '/^\[wifi\]/a cloned-mac-address=permanent' "$conn"
+      fi
+
+      # Force real MAC on ethernet connections
+      if ${pkgs.gnugrep}/bin/grep -q '^\[802-3-ethernet\]' "$conn"; then
+        ${pkgs.gnused}/bin/sed -i '/^\[802-3-ethernet\]/a cloned-mac-address=permanent' "$conn"
+      fi
     done
-    ${pkgs.coreutils}/bin/rm -f /run/spoof-enabled
+    ${pkgs.coreutils}/bin/rm -f /run/spoof-enabled /run/spoof-hostname
     /run/current-system/sw/bin/systemctl restart NetworkManager
   '';
 
@@ -135,6 +154,12 @@ let
     if [ -f /run/spoof-enabled ]; then
       ${disable-spoof}
     else
+      # Remove any "permanent" MAC overrides so NM falls back to the
+      # default "random" from NixOS config
+      for conn in /etc/NetworkManager/system-connections/*; do
+        [ -f "$conn" ] || continue
+        ${pkgs.gnused}/bin/sed -i '/^cloned-mac-address=/d' "$conn"
+      done
       ${randomize-hostname}
       /run/current-system/sw/bin/systemctl restart NetworkManager
     fi
