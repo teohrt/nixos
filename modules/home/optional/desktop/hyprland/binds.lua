@@ -1,4 +1,5 @@
 local mod = "SUPER"
+local ipc = "noctalia msg"
 
 ---- Terminal in current directory ----
 -- Finds the shell child of the focused terminal and opens kitty in its cwd.
@@ -64,18 +65,19 @@ hl.bind(mod .. " + Return", function()
     end
     hl.exec_cmd("kitty --directory '" .. dir:gsub("'", "'\\''") .. "'")
 end, { description = "Terminal" })
-hl.bind(mod .. " + Escape",       hl.dsp.exec_cmd("noctalia-shell ipc call sessionMenu toggle"), { description = "Session menu" })
+hl.bind(mod .. " + Escape",       hl.dsp.exec_cmd(ipc .. " panel-toggle session"), { description = "Session menu" })
 hl.bind(mod .. " + SHIFT + Return", hl.dsp.exec_cmd("google-chrome-stable"), { description = "Browser" })
 hl.bind(mod .. " + F",            hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "Maximize" })
 hl.bind(mod .. " + SHIFT + F",    hl.dsp.exec_cmd("nautilus --new-window"), { description = "File manager" })
 hl.bind(mod .. " + Q",            hl.dsp.window.close(), { description = "Close window" })
 
 ---- UI toggles ----
-hl.bind(mod .. " + SPACE",        hl.dsp.exec_cmd("noctalia-shell ipc call launcher toggle"), { description = "Launch apps" })
-hl.bind(mod .. " + B",            hl.dsp.exec_cmd("noctalia-shell ipc call bar toggle"), { description = "Toggle bar" })
+hl.bind(mod .. " + SPACE",        hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"), { description = "Launch apps" })
+hl.bind(mod .. " + B",            hl.dsp.exec_cmd(ipc .. " bar-toggle"), { description = "Toggle bar" })
 hl.bind(mod .. " + J",            hl.dsp.layout("togglesplit"), { description = "Toggle split" })
 hl.bind(mod .. " + P",            hl.dsp.window.pseudo(), { description = "Pseudo window" })
-hl.bind(mod .. " + SHIFT + W",    hl.dsp.exec_cmd("noctalia-shell ipc call wallpaper toggle"), { description = "Wallpaper picker" })
+hl.bind(mod .. " + SHIFT + V",    hl.dsp.exec_cmd(ipc .. " panel-toggle clipboard"), { description = "Clipboard history" })
+hl.bind(mod .. " + SHIFT + W",    hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"), { description = "Wallpaper picker" })
 hl.bind(mod .. " + M",            hl.dsp.exec_cmd("kitty --single-instance --instance-group popup --session none --title hyprmon -e hyprmon"), { description = "Monitor settings" })
 
 ---- Pop window (inline — replaces popWindow shell script) ----
@@ -132,12 +134,12 @@ for i = 1, 10 do
 end
 
 ---- Media keys (repeating, work while locked) ----
-hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd("noctalia-shell ipc call volume increase"), { repeating = true, locked = true })
-hl.bind("XF86AudioLowerVolume",  hl.dsp.exec_cmd("noctalia-shell ipc call volume decrease"), { repeating = true, locked = true })
-hl.bind("XF86AudioMute",         hl.dsp.exec_cmd("noctalia-shell ipc call volume muteOutput"), { locked = true })
-hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd("noctalia-shell ipc call volume muteInput"), { locked = true })
-hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd("noctalia-shell ipc call brightness increase"), { repeating = true, locked = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("noctalia-shell ipc call brightness decrease"), { repeating = true, locked = true })
+hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd(ipc .. " volume-up"), { repeating = true, locked = true })
+hl.bind("XF86AudioLowerVolume",  hl.dsp.exec_cmd(ipc .. " volume-down"), { repeating = true, locked = true })
+hl.bind("XF86AudioMute",         hl.dsp.exec_cmd(ipc .. " volume-mute"), { locked = true })
+hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd(ipc .. " mic-mute"), { locked = true })
+hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd(ipc .. " brightness-up"), { repeating = true, locked = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(ipc .. " brightness-down"), { repeating = true, locked = true })
 
 ---- Mouse bindings ----
 hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })

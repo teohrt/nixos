@@ -37,9 +37,9 @@ end)
 
 local function refresh_bar()
     hl.timer(function()
-        hl.exec_cmd("noctalia-shell ipc call bar hideBar")
+        hl.exec_cmd("noctalia msg bar-hide")
         hl.timer(function()
-            hl.exec_cmd("noctalia-shell ipc call bar showBar")
+            hl.exec_cmd("noctalia msg bar-show")
         end, { timeout = 200, type = "oneshot" })
     end, { timeout = 300, type = "oneshot" })
 end

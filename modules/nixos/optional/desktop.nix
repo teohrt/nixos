@@ -92,7 +92,7 @@
       ];
     };
 
-    # Battery status daemon (used by noctalia-shell bar, hypridle for battery-aware behavior)
+    # Battery status daemon (used by Noctalia bar, hypridle for battery-aware behavior)
     upower.enable = true;
 
     # Power profile switching (power-saver, balanced, performance)
@@ -104,7 +104,7 @@
   # Realtime scheduling for PipeWire (low-latency audio)
   security = {
     pam.services.hyprlock = { };
-    pam.services.noctalia-shell = { };
+    pam.services.noctalia = { };
     rtkit.enable = true;
   };
 }

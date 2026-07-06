@@ -75,6 +75,7 @@ floating_popup({ class = "^(localsend_app)$" })
 floating_popup({ class = "^(1[Pp]assword)$" })
 floating_popup({ class = "^(bruno)$" })
 floating_popup({ title = "^(hyprmon)$" })
+floating_popup({ class = "^(dev.noctalia.Noctalia)$" })
 
 -- Webcam preview: float, pin, bottom-right corner, no border
 hl.window_rule({
@@ -138,4 +139,14 @@ end)
 hl.layer_rule({
     match = { namespace = "selection" },
     no_anim = true,
+})
+
+hl.layer_rule({
+    match = {
+        namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$",
+    },
+    no_anim = true,
+    ignore_alpha = 0.5,
+    blur = true,
+    blur_popups = true,
 })
