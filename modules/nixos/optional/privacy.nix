@@ -4,9 +4,12 @@
 # What this covers:
 #   - MAC address:    randomized per-connection by NetworkManager
 #   - DHCP hostname:  spoofed per-boot via a systemd service that patches
-#                     NM connection files before NM starts (IPv4 + IPv6)
+#                     NM connection files before NM starts (IPv4 only —
+#                     NM's DHCPv6 client doesn't send a hostname by default)
 #   - LLMNR:          disabled so systemd-resolved won't answer link-local
 #                     multicast queries with the real hostname
+#   - DHCPv6 DUID:    set to link-layer mode so the DUID is derived from
+#                     the (randomized) MAC instead of a stable UUID
 #   - mDNS (Avahi):   publishing disabled so the real hostname isn't
 #                     broadcast as "hostname.local" — service discovery
 #                     (e.g. network printers) still works
@@ -82,7 +85,9 @@ let
     for conn in /etc/NetworkManager/system-connections/*; do
       [ -f "$conn" ] || continue
 
-      # IPv4 DHCP hostname (Option 12)
+      # IPv4 DHCP hostname (Option 12).
+      # IPv6 is not patched — NM's DHCPv6 client doesn't send a hostname
+      # by default (verified via tcpdump on port 546/547).
       if ${pkgs.gnugrep}/bin/grep -q '^\[ipv4\]' "$conn"; then
         if ${pkgs.gnugrep}/bin/grep -q '^dhcp-hostname=' "$conn"; then
           ${pkgs.gnused}/bin/sed -i "s/^dhcp-hostname=.*/dhcp-hostname=$NEW_HOSTNAME/" "$conn"
@@ -91,12 +96,15 @@ let
         fi
       fi
 
-      # IPv6 DHCP hostname
+      # DHCPv6 DUID — default is a stable UUID that persists across MAC
+      # changes, making it a tracking vector. Setting dhcp-duid=ll derives
+      # it from the link-layer (MAC) address instead, so it rotates
+      # automatically with MAC randomization.
       if ${pkgs.gnugrep}/bin/grep -q '^\[ipv6\]' "$conn"; then
-        if ${pkgs.gnugrep}/bin/grep -q '^dhcp-hostname=' "$conn"; then
-          ${pkgs.gnused}/bin/sed -i "/^\[ipv6\]/,/^\[/{s/^dhcp-hostname=.*/dhcp-hostname=$NEW_HOSTNAME/}" "$conn"
+        if ${pkgs.gnugrep}/bin/grep -q '^dhcp-duid=' "$conn"; then
+          ${pkgs.gnused}/bin/sed -i "/^\[ipv6\]/,/^\[/{s/^dhcp-duid=.*/dhcp-duid=ll/}" "$conn"
         else
-          ${pkgs.gnused}/bin/sed -i "/^\[ipv6\]/a dhcp-hostname=$NEW_HOSTNAME" "$conn"
+          ${pkgs.gnused}/bin/sed -i "/^\[ipv6\]/a dhcp-duid=ll" "$conn"
         fi
       fi
     done
