@@ -69,84 +69,19 @@ let
 
   walker = "${pkgs-walker.walker}/bin/walker";
 
-  # Takes a screenshot, copies to clipboard, and shows notification.
-  # Click notification to edit in Satty.
+  # Screenshot menu using Noctalia's built-in screenshot tool
   screenshot = pkgs.writeShellScriptBin "screenshot" ''
-    file=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
-    mkdir -p ~/Pictures/Screenshots
-
-    # Select region first (cursor visible)
-    region=$(${pkgs.slurp}/bin/slurp) || exit 1
-
-    # Hide cursor by moving it off-screen, capture, then restore
-    cursorpos=$(hyprctl cursorpos)
-    hyprctl dispatch movecursor 99999 99999
-    ${pkgs.grim}/bin/grim -g "$region" "$file"
-    result=$?
-    hyprctl dispatch movecursor ''${cursorpos// / }
-
-    [[ $result -ne 0 ]] && exit 1
-
-    # Copy to clipboard
-    ${pkgs.wl-clipboard}/bin/wl-copy < "$file"
-
-    # Notification in background so script doesn't block
-    (
-      action=$(${pkgs.libnotify}/bin/notify-send -a "Screenshot" -i "$file" \
-        "Screenshot saved" "$file" \
-        --action="default=Open" \
-        --action="edit=Edit")
-      case "$action" in
-        default) xdg-open "$file" ;;
-        edit) ${pkgs.satty}/bin/satty --filename "$file" ;;
-      esac
-    ) &
+    choice=$(printf "Region\nMonitor\nAll Screens" | ${walker} --dmenu -p "Screenshot")
+    case "$choice" in
+      Region) noctalia msg screenshot-region ;;
+      Monitor) noctalia msg screenshot-fullscreen ;;
+      "All Screens") noctalia msg screenshot-fullscreen all ;;
+    esac
   '';
 
   # Toggle menu - quick actions via walker dmenu
   # Screen option has 1s delay to avoid capturing the menu itself
   toggle-menu = pkgs.writeShellScriptBin "toggle-menu" ''
-    take_screenshot() {
-      file=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
-
-      case "$1" in
-        region)
-          # Select region first (cursor visible), then hide cursor and capture
-          region=$(${pkgs.slurp}/bin/slurp) || return 1
-          cursorpos=$(hyprctl cursorpos)
-          hyprctl dispatch movecursor 99999 99999
-          ${pkgs.grim}/bin/grim -g "$region" "$file"
-          result=$?
-          hyprctl dispatch movecursor ''${cursorpos// / }
-          ${pkgs.wl-clipboard}/bin/wl-copy < "$file"
-          ;;
-        window|screen)
-          # Hide cursor, capture, restore
-          cursorpos=$(hyprctl cursorpos)
-          hyprctl dispatch movecursor 99999 99999
-          if [[ "$1" == "window" ]]; then
-            ${pkgs.grimblast}/bin/grimblast copysave active "$file"
-          else
-            ${pkgs.grimblast}/bin/grimblast copysave screen "$file"
-          fi
-          result=$?
-          hyprctl dispatch movecursor ''${cursorpos// / }
-          ;;
-      esac
-
-      [[ $result -ne 0 ]] && return 1
-      (
-        action=$(${pkgs.libnotify}/bin/notify-send -u low -a "Screenshot" -i "$file" \
-          "Screenshot saved" "Copied to clipboard. $file" \
-          --action="default=Open" \
-          --action="edit=Edit")
-        case "$action" in
-          default) xdg-open "$file" ;;
-          edit) ${pkgs.satty}/bin/satty --filename "$file" ;;
-        esac
-      ) &
-    }
-
     start_recording() {
       mkdir -p ~/Videos/Recordings
       file=~/Videos/Recordings/$(date +%Y-%m-%d_%H-%M-%S).mp4
@@ -210,16 +145,8 @@ let
       spoof_option="Enable Spoof"
     fi
 
-    choice=$(printf "Take Screenshot\n$record_option\nWebcam Preview\nScreensaver\nBrightness\nVolume\n$spoof_option" | ${walker} --dmenu -p "Toggle")
+    choice=$(printf "$record_option\nWebcam Preview\nScreensaver\nBrightness\nVolume\n$spoof_option" | ${walker} --dmenu -p "Toggle")
     case "$choice" in
-      "Take Screenshot")
-        sub=$(printf "Region\nWindow\nScreen" | ${walker} --dmenu -p "Screenshot")
-        case "$sub" in
-          Region) take_screenshot region ;;
-          Window) take_screenshot window ;;
-          Screen) take_screenshot screen ;;
-        esac
-        ;;
       "Stop Recording")
         pkill -x wf-recorder
         file=$(cat /tmp/current-recording 2>/dev/null)
