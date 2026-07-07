@@ -1,0 +1,162 @@
+local ctx = require("context")
+
+-- Popup app classes/titles that should float at half-screen centered
+local popup_apps = {}
+
+-- Helper: register a centered floating popup rule set for an app
+local function floating_popup(match)
+    table.insert(popup_apps, match)
+    hl.window_rule({
+        match = match,
+        float = true,
+        size = "50% 50%",
+        center = true,
+        border_size = 1,
+        border_color = "rgba(" .. ctx.colors.base0D:sub(2) .. "ff)",
+        suppress_event = "maximize fullscreen",
+    })
+end
+
+-- Smart gaps: remove borders when only one tiled window on workspace
+hl.workspace_rule({ workspace = "w[tv1]", gaps_out = 0, gaps_in = 0 })
+hl.workspace_rule({ workspace = "f[1]", gaps_out = 0, gaps_in = 0 })
+
+hl.window_rule({ match = { float = false, workspace = "w[tv1]" }, border_size = 0 })
+hl.window_rule({ match = { float = false, workspace = "f[1]" }, border_size = 0 })
+
+-- Default workspace assignments
+local workspace_assignments = {
+    { class = "^(chromium-browser|google-chrome|Chromium)$", workspace = "1" },
+    { class = "^(kitty)$", initial_title = "^(kitty)$",       workspace = "2" },
+    { class = "^(code|Code|code-url-handler)$",              workspace = "3" },
+    { class = "^(bruno)$",                                     workspace = "4" },
+    { class = "^(DBeaver)$",                                   workspace = "4" },
+    { class = "^(Slack|slack)$",                                workspace = "6" },
+    { class = "^(obsidian)$",                                  workspace = "7" },
+    { class = "^(spotify|Spotify)$",                           workspace = "8" },
+    { class = "^(zoom)$",                                      workspace = "10" },
+}
+
+for _, rule in ipairs(workspace_assignments) do
+    local match = { class = rule.class }
+    if rule.initial_title then
+        match.initial_title = rule.initial_title
+    end
+    hl.window_rule({ match = match, workspace = rule.workspace })
+end
+
+-- Screensaver rules
+hl.window_rule({
+    match = { class = "^(screensaver)$" },
+    fullscreen = true,
+    no_anim = true,
+    no_dim = true,
+    border_size = 0,
+})
+
+-- Opacity rules for semi-transparent apps
+local transparent_apps = { "org.gnome.Nautilus", "Spotify", "Slack" }
+local app_opacity = tostring(ctx.opacity.applications) .. " " .. tostring(ctx.opacity.applications)
+for _, class in ipairs(transparent_apps) do
+    hl.window_rule({
+        match = { class = "^(" .. class .. ")$" },
+        opacity = app_opacity,
+    })
+end
+
+hl.window_rule({
+    match = { class = "^(obsidian)$" },
+    opacity = "0.9 0.9",
+})
+
+-- Floating popup apps
+floating_popup({ class = "^(org.kde.partitionmanager)$" })
+floating_popup({ class = "^(localsend_app)$" })
+floating_popup({ class = "^(1[Pp]assword)$" })
+floating_popup({ class = "^(bruno)$" })
+floating_popup({ title = "^(hyprmon)$" })
+floating_popup({ class = "^(dev.noctalia.Noctalia)$" })
+
+-- Webcam preview: float, pin, no border (positioned in window.open handler)
+hl.window_rule({
+    match = { title = "^(webcam)$" },
+    float = true,
+    size = "320 240",
+    pin = true,
+    border_size = 0,
+})
+
+-- Force popup apps to half-screen centered after they open
+-- (some apps like Electron override the size rule on map)
+local function matches_popup(window)
+    for _, match in ipairs(popup_apps) do
+        if match.class and window.class:match(match.class) then return true end
+        if match.title and window.title:match(match.title) then return true end
+    end
+    return false
+end
+
+hl.on("window.open", function(w)
+    -- Float kitty at half-screen centered if it's alone on its workspace
+    if w.class == "kitty" and w.title == "kitty" then
+        local ws = w.workspace
+        if ws then
+            local alone = true
+            local ws_windows = hl.get_workspace_windows(ws.id)
+            if ws_windows then
+                for _, existing in ipairs(ws_windows) do
+                    if existing.address ~= w.address then
+                        alone = false
+                        break
+                    end
+                end
+            end
+            if alone then
+                local mon = w.monitor
+                if mon then
+                    local width = math.floor(mon.width / mon.scale / 2)
+                    local height = math.floor(mon.height / mon.scale / 2)
+                    hl.dispatch(hl.dsp.window.float({ action = "set", window = "address:" .. w.address }))
+                    hl.dispatch(hl.dsp.window.resize({ x = width, y = height, window = "address:" .. w.address }))
+                    hl.dispatch(hl.dsp.window.center({ window = "address:" .. w.address }))
+                end
+            end
+        end
+    end
+
+    -- Webcam preview: force to bottom-right after open
+    if w.title == "webcam" then
+        local mon = w.monitor
+        if mon then
+            local mon_w = math.floor(mon.width / mon.scale)
+            local mon_h = math.floor(mon.height / mon.scale)
+            hl.dispatch(hl.dsp.window.move({ x = mon_w - 330, y = mon_h - 250, window = "address:" .. w.address }))
+        end
+        return
+    end
+
+    -- Force popup apps to half-screen centered
+    if not matches_popup(w) then return end
+    local mon = w.monitor
+    if mon == nil then return end
+    local width = math.floor(mon.width / mon.scale / 2)
+    local height = math.floor(mon.height / mon.scale / 2)
+    hl.dispatch(hl.dsp.window.resize({ x = width, y = height, window = "address:" .. w.address }))
+    hl.dispatch(hl.dsp.window.center({ window = "address:" .. w.address }))
+end)
+
+-- Layer rules
+hl.layer_rule({
+    match = { namespace = "selection" },
+    no_anim = true,
+})
+
+hl.layer_rule({
+    match = {
+        namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd)$",
+    },
+    no_anim = true,
+    ignore_alpha = 0.5,
+    blur = true,
+    blur_popups = true,
+})

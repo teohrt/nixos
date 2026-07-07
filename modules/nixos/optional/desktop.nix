@@ -1,10 +1,17 @@
 # Desktop environment: Hyprland compositor, SDDM login, PipeWire audio, Bluetooth, printing.
-{ pkgs, username, ... }:
 {
-  # Hyprland Wayland compositor
+  pkgs,
+  pkgs-hyprland,
+  username,
+  ...
+}:
+{
+  # Hyprland Wayland compositor (pinned nixpkgs for 0.55.4 with Lua config support)
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
+    package = pkgs-hyprland.hyprland;
+    portalPackage = pkgs-hyprland.xdg-desktop-portal-hyprland;
   };
 
   # Login manager
@@ -30,7 +37,6 @@
     enable = true;
     extraPortals = [
       pkgs.xdg-desktop-portal-gtk
-      pkgs.xdg-desktop-portal-hyprland
     ];
     # explicitly route screensharing/remotedesktop to hyprland portal, everything else to gtk
     config.common = {
@@ -86,7 +92,7 @@
       ];
     };
 
-    # Battery status daemon (used by noctalia-shell bar, hypridle for battery-aware behavior)
+    # Battery status daemon (used by Noctalia bar, hypridle for battery-aware behavior)
     upower.enable = true;
 
     # Power profile switching (power-saver, balanced, performance)
@@ -98,7 +104,7 @@
   # Realtime scheduling for PipeWire (low-latency audio)
   security = {
     pam.services.hyprlock = { };
-    pam.services.noctalia-shell = { };
+    pam.services.noctalia = { };
     rtkit.enable = true;
   };
 }

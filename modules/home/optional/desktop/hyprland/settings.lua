@@ -1,0 +1,68 @@
+local ctx = require("context")
+
+hl.config({
+    general = {
+        gaps_in = 0,
+        gaps_out = 0,
+        border_size = 1,
+        col = {
+            active_border = "rgba(" .. ctx.colors.base0D:sub(2) .. "ff)",
+            inactive_border = "rgba(" .. ctx.colors.base0D:sub(2) .. "ff)",
+        },
+        layout = "dwindle",
+    },
+
+    misc = {
+        focus_on_activate = true,
+        force_default_wallpaper = 0,
+        disable_hyprland_logo = true,
+        disable_splash_rendering = true,
+    },
+
+    input = {
+        kb_layout = "us",
+        follow_mouse = 1,
+        sensitivity = 0,
+        repeat_rate = 50,
+        repeat_delay = 300,
+        touchpad = {
+            disable_while_typing = false,
+        },
+    },
+
+    decoration = {
+        rounding = 0,
+        blur = {
+            enabled = true,
+            size = 6,
+            passes = 4,
+            vibrancy = 0.2,
+            contrast = 1.1,
+            noise = 0.02,
+        },
+    },
+
+    animations = {
+        enabled = true,
+    },
+
+    dwindle = {
+        preserve_split = true,
+    },
+
+    xwayland = {
+        force_zero_scaling = true,
+    },
+})
+
+-- Animation curves and rules
+hl.curve("linear", { type = "bezier", points = { {0, 0}, {1, 1} } })
+
+hl.animation({ leaf = "windowsIn",   enabled = true, speed = 1.2, bezier = "linear" })
+hl.animation({ leaf = "windowsOut",  enabled = true, speed = 1.2, bezier = "linear" })
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 1.2, bezier = "linear" })
+hl.animation({ leaf = "fade",        enabled = true, speed = 1.2, bezier = "linear" })
+hl.animation({ leaf = "workspaces",  enabled = true, speed = 1.2, bezier = "linear", style = "fade" })
+hl.animation({ leaf = "layers",      enabled = true, speed = 1.2, bezier = "linear", style = "fade" })
+hl.animation({ leaf = "layersIn",    enabled = true, speed = 1.2, bezier = "linear", style = "fade" })
+hl.animation({ leaf = "layersOut",   enabled = true, speed = 1.2, bezier = "linear", style = "fade" })

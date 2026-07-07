@@ -6,8 +6,9 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-walker.url = "github:nixos/nixpkgs/46db2e09e1d3f113a13c0d7b81e2f221c63b8ce9";
     nixpkgs-kitty.url = "github:nixos/nixpkgs/54b9582d13af461680f6d6fdae4ee138dfd60d23"; # kitty 0.46.2
+    nixpkgs-hyprland.url = "github:nixos/nixpkgs/e73de5be04e0eff4190a1432b946d469c794e7b4"; # hyprland 0.55.4
     noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
+      url = "github:noctalia-dev/noctalia";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
@@ -37,6 +38,7 @@
       nixpkgs-unstable,
       nixpkgs-walker,
       nixpkgs-kitty,
+      nixpkgs-hyprland,
       home-manager,
       stylix,
       spicetify-nix,
@@ -60,6 +62,7 @@
       };
       pkgs-walker = nixpkgs-walker.legacyPackages.${system};
       pkgs-kitty = nixpkgs-kitty.legacyPackages.${system};
+      pkgs-hyprland = nixpkgs-hyprland.legacyPackages.${system};
 
       # Import stylix theme config (nord)
       themeConfig = import ./modules/home/themes.nix { inherit pkgs; };
@@ -89,6 +92,7 @@
               pkgs-unstable
               pkgs-walker
               pkgs-kitty
+              pkgs-hyprland
               spicetify-nix
               noctalia
               username
@@ -102,7 +106,14 @@
         hostPath: extraModules:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit username; };
+          specialArgs = {
+            inherit
+              inputs
+              pkgs-unstable
+              pkgs-hyprland
+              username
+              ;
+          };
           modules = [
             hostPath
             sops-nix.nixosModules.sops
@@ -129,13 +140,33 @@
           hooks = {
             nixfmt-rfc-style.enable = true;
             statix.enable = true;
+            selene.enable = true;
           };
         };
       };
 
       devShells.${system}.default = pkgs.mkShell {
-        inherit (inputs.self.checks.${system}.pre-commit-check) shellHook;
-        buildInputs = inputs.self.checks.${system}.pre-commit-check.enabledPackages;
+        buildInputs = inputs.self.checks.${system}.pre-commit-check.enabledPackages ++ [
+          pkgs.lua-language-server
+          pkgs.selene
+        ];
+        shellHook = ''
+          ${inputs.self.checks.${system}.pre-commit-check.shellHook}
+
+          # Generate .luarc.json with Hyprland Lua stubs for LSP type-checking
+          cat > modules/home/optional/desktop/hyprland/.luarc.json <<'LUARC'
+          {
+            "runtime": { "version": "Lua 5.4" },
+            "workspace": {
+              "library": ["${pkgs-hyprland.hyprland}/share/hypr/stubs"],
+              "checkThirdParty": false
+            },
+            "diagnostics": {
+              "globals": ["hl"]
+            }
+          }
+          LUARC
+        '';
       };
     };
 }

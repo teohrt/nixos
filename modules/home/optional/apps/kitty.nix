@@ -20,6 +20,8 @@ in
   programs.kitty = {
     enable = true;
     package = pkgs-kitty.kitty;
+    shellIntegration.mode = "enabled";
+    shellIntegration.enableZshIntegration = false;
     settings = {
       # Window padding (kitty uses single value for all sides)
       window_padding_width = 12;
@@ -56,10 +58,6 @@ in
 
     # Keybindings mirroring Hyprland (Ctrl instead of Super)
     keybindings = {
-      # Copy/paste
-      "super+c" = "copy_to_clipboard";
-      "super+v" = "paste_from_clipboard";
-
       # Window (split) focus - Ctrl+arrows
       "ctrl+left" = "neighboring_window left";
       "ctrl+right" = "neighboring_window right";

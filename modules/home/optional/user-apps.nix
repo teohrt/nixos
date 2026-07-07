@@ -154,10 +154,8 @@ in
     system-config-printer # printer management GUI
     evince # PDF viewer
     vlc # video player
-    grimblast # screenshot tool for Hyprland
     brightnessctl # brightness control (requires video group)
     wl-clipboard # clipboard utilities (wl-copy / wl-paste)
-    wl-clip-persist # keeps clipboard alive after source process exits
     nautilus # file manager
     nautilus-python # enables right-click extensions (e.g. open in terminal)
     file-roller # right-click archive extract/compress

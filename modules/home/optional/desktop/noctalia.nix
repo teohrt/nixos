@@ -1,84 +1,79 @@
-# Noctalia Shell: bar, launcher, notifications, lock screen, OSD.
+# Noctalia v5: bar, launcher, notifications, lock screen, OSD.
 # Replaces waybar, walker, swaync, hyprlock, swayosd, and swww/mpvpaper.
 # Hypridle is kept separately for the custom tte screensaver.
 { lib, noctalia, ... }:
 {
   imports = [ noctalia.homeModules.default ];
 
-  programs.noctalia-shell = {
+  programs.noctalia = {
     enable = true;
 
     settings = {
-      bar = {
-        barType = "simple";
+      audio.enable_overdrive = true;
+
+      bar.main = {
         position = "bottom";
-        density = "comfortable";
-        showCapsule = false;
-        backgroundOpacity = 1.0;
-        showOutline = false;
-        outerCorners = false;
-        widgetSpacing = 6;
-        fontScale = 1.2;
-        widgets = {
-          left = [
-            {
-              id = "Workspace";
-              focusedColor = "none";
-              occupiedColor = "none";
-              emptyColor = "none";
-              pillSize = 0.8;
-              fontWeight = "bold";
-            }
-          ];
-          center = [
-            { id = "Battery"; }
-            {
-              id = "Clock";
-              formatHorizontal = "h:mm AP  ddd, MMM dd";
-            }
-            { id = "NotificationHistory"; }
-          ];
-          right = [
-            { id = "Network"; }
-            { id = "SystemMonitor"; }
-            { id = "Bluetooth"; }
-            { id = "Volume"; }
-            { id = "ControlCenter"; }
-          ];
+        scale = 1.3;
+        widget_spacing = 19;
+        radius = 0;
+        margin_edge = 0;
+        margin_ends = 0;
+        start = [ "workspaces" ];
+        center = [
+          "battery"
+          "clock"
+          "notifications"
+        ];
+        end = [
+          "network"
+          "sysmon"
+          "bluetooth"
+          "volume"
+          "control-center"
+        ];
+      };
+
+      control_center = {
+        sidebar = "none";
+        sidebar_section = "none";
+        calendar.show_events_card = false;
+      };
+
+      theme = {
+        mode = "dark";
+        source = "builtin";
+        builtin = "Nord";
+      };
+
+      location.address = "New York, US";
+
+      dock.enabled = false;
+      desktop_widgets.enabled = true;
+      lockscreen_widgets.enabled = false;
+
+      shell = {
+        ui_scale = 1.2;
+        animation.speed = 1.6;
+        panel = {
+          control_center_placement = "floating";
+          open_near_click_control_center = true;
         };
       };
 
-      general = {
-        radiusRatio = 1;
-        boxRadiusRatio = 0;
-        iRadiusRatio = 0;
-        screenRadiusRatio = 0;
-        dimmerOpacity = 0;
-        showChangelogOnStartup = false;
-        telemetryEnabled = false;
+      widget.clock = {
+        format = "{:%-I:%M %p - %A}";
+        anchor = true;
       };
 
-      ui.panelBackgroundOpacity = 1.0;
-
-      colorSchemes = {
-        useWallpaperColors = false;
-        predefinedScheme = "Nord";
-        darkMode = true;
+      widget.workspaces = {
+        focused_color = "outline";
+        occupied_color = "on_tertiary";
+        empty_color = "on_tertiary";
+        scale = 1.3;
       };
-
-      location.name = "New York, US";
-
-      sessionMenu.showKeybinds = false;
-
-      dock.enabled = false;
-      desktopWidgets.enabled = true;
-
-      # Hypridle handles idle/lock/screensaver — disable Noctalia's built-in idle management
-      idle.enabled = false;
     };
   };
 
-  # Let Noctalia use its own theming; disable Stylix's noctalia-shell and hyprpaper targets
-  stylix.targets.noctalia-shell.enable = false;
+  # Let Noctalia use its own theming; disable Stylix's hyprpaper target
   stylix.targets.hyprpaper.enable = lib.mkForce false;
 }
