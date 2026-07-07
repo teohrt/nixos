@@ -77,12 +77,11 @@ floating_popup({ class = "^(bruno)$" })
 floating_popup({ title = "^(hyprmon)$" })
 floating_popup({ class = "^(dev.noctalia.Noctalia)$" })
 
--- Webcam preview: float, pin, bottom-right corner, no border
+-- Webcam preview: float, pin, no border (positioned in window.open handler)
 hl.window_rule({
     match = { title = "^(webcam)$" },
     float = true,
     size = "320 240",
-    move = "100%-330 100%-250",
     pin = true,
     border_size = 0,
 })
@@ -123,6 +122,17 @@ hl.on("window.open", function(w)
                 end
             end
         end
+    end
+
+    -- Webcam preview: force to bottom-right after open
+    if w.title == "webcam" then
+        local mon = w.monitor
+        if mon then
+            local mon_w = math.floor(mon.width / mon.scale)
+            local mon_h = math.floor(mon.height / mon.scale)
+            hl.dispatch(hl.dsp.window.move({ x = mon_w - 330, y = mon_h - 250, window = "address:" .. w.address }))
+        end
+        return
     end
 
     -- Force popup apps to half-screen centered
