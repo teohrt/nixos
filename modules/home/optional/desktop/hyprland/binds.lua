@@ -117,7 +117,7 @@ hl.bind(mod .. " + T",            hl.dsp.exec_cmd("toggle-menu"), { description 
 hl.bind(mod .. " + slash",        hl.dsp.exec_cmd("voice-input"), { description = "Voice input" })
 
 ---- Screenshot ----
-hl.bind(mod .. " + S",            hl.dsp.exec_cmd("screenshot"), { description = "Screenshot region" })
+hl.bind(mod .. " + S",            hl.dsp.exec_cmd(ipc .. " screenshot-region"), { description = "Screenshot region" })
 
 ---- Window resizing ----
 hl.bind(mod .. " + minus",        hl.dsp.window.resize({ x = -100, y = 0, relative = true }), { description = "Shrink window" })

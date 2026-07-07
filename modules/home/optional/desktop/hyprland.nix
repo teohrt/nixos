@@ -69,18 +69,7 @@ let
 
   walker = "${pkgs-walker.walker}/bin/walker";
 
-  # Screenshot menu using Noctalia's built-in screenshot tool
-  screenshot = pkgs.writeShellScriptBin "screenshot" ''
-    choice=$(printf "Region\nMonitor\nAll Screens" | ${walker} --dmenu -p "Screenshot")
-    case "$choice" in
-      Region) noctalia msg screenshot-region ;;
-      Monitor) noctalia msg screenshot-fullscreen ;;
-      "All Screens") noctalia msg screenshot-fullscreen all ;;
-    esac
-  '';
-
   # Toggle menu - quick actions via walker dmenu
-  # Screen option has 1s delay to avoid capturing the menu itself
   toggle-menu = pkgs.writeShellScriptBin "toggle-menu" ''
     start_recording() {
       mkdir -p ~/Videos/Recordings
@@ -249,7 +238,6 @@ in
     pkgs.wf-recorder
     pkgs.whisper-cpp
     pkgs.wtype
-    screenshot
     toggle-menu
     voice-input
   ];
