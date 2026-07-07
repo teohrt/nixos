@@ -6,7 +6,7 @@ let
   # Exits on any keypress or when the window loses focus.
   screensaverCmd = pkgs.writeShellScriptBin "screensaver-cmd" ''
     EFFECTS=(beams binarypath blackhole bouncyballs bubbles burn colorshift crumble
-             decrypt errorcorrect expand fireworks highlight laseretch matrix middleout
+             decrypt errorcorrect expand fireworks highlight laseretch middleout
              orbittingvolley overflow pour rain rings scattered slice slide spotlights
              spray swarm sweep synthgrid unstable vhstape waves wipe)
 
@@ -66,11 +66,11 @@ let
     focused=$(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[] | select(.focused == true).name')
 
     for m in $(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[] | .name'); do
-      hyprctl dispatch focusmonitor "$m"
-      hyprctl dispatch exec "kitty --class=screensaver -o background=#000000 -o cursor=#000000 -o cursor_trail=0 -o font_size=18 -e screensaver-cmd"
+      hyprctl dispatch "hl.dsp.focus({monitor = \"$m\"})"
+      hyprctl dispatch "hl.dsp.exec_cmd(\"kitty --class=screensaver -o background=#000000 -o cursor=#000000 -o cursor_trail=0 -o font_size=18 -e screensaver-cmd\")"
     done
 
-    hyprctl dispatch focusmonitor "$focused"
+    hyprctl dispatch "hl.dsp.focus({monitor = \"$focused\"})"
   '';
 in
 {
