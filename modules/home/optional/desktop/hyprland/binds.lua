@@ -71,12 +71,23 @@ hl.bind(mod .. " + F",            hl.dsp.window.fullscreen({ mode = "maximized" 
 hl.bind(mod .. " + SHIFT + F",    hl.dsp.exec_cmd("nautilus --new-window"), { description = "File manager" })
 hl.bind(mod .. " + Q",            hl.dsp.window.close(), { description = "Close window" })
 
+---- Copy (SUPER+C → CTRL+SHIFT+C in terminals, CTRL+C elsewhere) ----
+hl.bind(mod .. " + C", function()
+    local w = hl.get_active_window()
+    if w and w.class == "kitty" then
+        hl.dispatch(hl.dsp.send_shortcut({ mods = "CTRL SHIFT", key = "c", window = "activewindow" }))
+    else
+        hl.dispatch(hl.dsp.send_shortcut({ mods = "CTRL", key = "c", window = "activewindow" }))
+    end
+end, { description = "Copy" })
+
+hl.bind(mod .. " + V",            hl.dsp.exec_cmd(ipc .. " panel-toggle clipboard"), { description = "Clipboard history" })
+
 ---- UI toggles ----
 hl.bind(mod .. " + SPACE",        hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"), { description = "Launch apps" })
 hl.bind(mod .. " + B",            hl.dsp.exec_cmd(ipc .. " bar-toggle"), { description = "Toggle bar" })
 hl.bind(mod .. " + J",            hl.dsp.layout("togglesplit"), { description = "Toggle split" })
 hl.bind(mod .. " + P",            hl.dsp.window.pseudo(), { description = "Pseudo window" })
-hl.bind(mod .. " + SHIFT + V",    hl.dsp.exec_cmd(ipc .. " panel-toggle clipboard"), { description = "Clipboard history" })
 hl.bind(mod .. " + SHIFT + W",    hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"), { description = "Wallpaper picker" })
 hl.bind(mod .. " + M",            hl.dsp.exec_cmd("kitty --single-instance --instance-group popup --session none --title hyprmon -e hyprmon"), { description = "Monitor settings" })
 

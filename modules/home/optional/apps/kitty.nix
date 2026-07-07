@@ -58,10 +58,6 @@ in
 
     # Keybindings mirroring Hyprland (Ctrl instead of Super)
     keybindings = {
-      # Copy/paste
-      "super+c" = "copy_to_clipboard";
-      "super+v" = "paste_from_clipboard";
-
       # Window (split) focus - Ctrl+arrows
       "ctrl+left" = "neighboring_window left";
       "ctrl+right" = "neighboring_window right";
