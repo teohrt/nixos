@@ -25,8 +25,10 @@
           "notifications"
         ];
         end = [
+          "cpu"
+          "ram"
+          "temp"
           "network"
-          "sysmon"
           "bluetooth"
           "volume"
           "control-center"
@@ -60,16 +62,28 @@
         };
       };
 
-      widget.clock = {
-        format = "{:%-I:%M %p - %A}";
-        anchor = true;
-      };
-
-      widget.workspaces = {
-        focused_color = "outline";
-        occupied_color = "on_tertiary";
-        empty_color = "on_tertiary";
-        scale = 1.3;
+      widget = {
+        clock = {
+          format = "{:%-I:%M %p}";
+          anchor = true;
+        };
+        control-center.glyph = "parachute";
+        cpu.display = "text";
+        ram.display = "text";
+        temp.display = "text";
+        network.show_label = false;
+        volume.show_label = false;
+        sysmon = {
+          display = "graph";
+          glyph = "cpu-usage";
+          show_label = false;
+        };
+        workspaces = {
+          focused_color = "outline";
+          occupied_color = "on_tertiary";
+          empty_color = "on_tertiary";
+          scale = 1.3;
+        };
       };
     };
   };
