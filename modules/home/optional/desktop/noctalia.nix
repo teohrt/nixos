@@ -55,7 +55,7 @@
 
       shell = {
         ui_scale = 1.2;
-        animation.speed = 1.6;
+        animation.speed = 1.4;
         panel = {
           control_center_placement = "attached";
           open_near_click_control_center = true;
