@@ -101,7 +101,7 @@ in
 
     # Applied AFTER Stylix's base16 include, so this actually overrides the background
     extraConfig = ''
-      font_size 16
+      font_size 15
       placement_strategy top-left
       background #${config.lib.stylix.colors.base01}
       tab_bar_style separator
@@ -122,20 +122,20 @@ in
   # -i loads aliases, -c runs the command, exec zsh replaces the process with an interactive shell so the tab stays open
   # "l" is my ls alias to give customized directory contents visibility for each tab
   xdg.configFile."kitty/startup.conf".text = ''
-    new_tab work
-    cd ~/Dev/work/hudsonts
-    launch zsh -i -c "l; exec zsh"
-
     new_tab misc
     cd ~/Dev
-    launch zsh -i -c "l; exec zsh"
+    launch zsh -i -c "clear; exec zsh"
+
+    new_tab work
+    cd ~/Dev/work/hudsonts
+    launch zsh -i -c "clear; exec zsh"
 
     new_tab nixos
     cd ~/Dev/other/nixos
-    launch zsh -i -c "l; exec zsh"
+    launch zsh -i -c "clear; exec zsh"
 
     new_tab dotfiles
     cd ~/Dev/other/dotfiles
-    launch zsh -i -c "l; exec zsh"
+    launch zsh -i -c "clear; exec zsh"
   '';
 }
