@@ -49,6 +49,8 @@
 
       location.address = "Brooklyn, NY";
 
+      plugins.enabled = [ "noctalia/wallhaven" ];
+
       dock.enabled = false;
       desktop_widgets.enabled = true;
       lockscreen_widgets.enabled = false;
@@ -111,7 +113,6 @@
         };
         control-center.glyph = "snowflake";
         cpu.display = "text";
-        notification-history.enabled = true;
         ram = {
           show_label = false;
           display = "text";

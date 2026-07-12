@@ -88,7 +88,8 @@ hl.bind(mod .. " + SPACE",        hl.dsp.exec_cmd(ipc .. " panel-toggle launcher
 hl.bind(mod .. " + B",            hl.dsp.exec_cmd(ipc .. " bar-toggle"), { description = "Toggle bar" })
 hl.bind(mod .. " + J",            hl.dsp.layout("togglesplit"), { description = "Toggle split" })
 hl.bind(mod .. " + P",            hl.dsp.window.pseudo(), { description = "Pseudo window" })
-hl.bind(mod .. " + SHIFT + W",    hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"), { description = "Wallpaper picker" })
+hl.bind(mod .. " + W",            hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"), { description = "Wallpaper picker" })
+hl.bind(mod .. " + SHIFT + W",    hl.dsp.exec_cmd(ipc .. " panel-toggle noctalia/wallhaven:browser"), { description = "Wallhaven browser" })
 hl.bind(mod .. " + M",            hl.dsp.exec_cmd("kitty --single-instance --instance-group popup --session none --title hyprmon -e hyprmon"), { description = "Monitor settings" })
 
 ---- Pop window (inline — replaces popWindow shell script) ----
