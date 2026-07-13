@@ -17,11 +17,8 @@ local function floating_popup(match)
     })
 end
 
--- Smart gaps: remove borders when only one tiled window on workspace
-hl.workspace_rule({ workspace = "w[tv1]", gaps_out = 0, gaps_in = 0 })
+-- Remove gaps and borders for fullscreen windows
 hl.workspace_rule({ workspace = "f[1]", gaps_out = 0, gaps_in = 0 })
-
-hl.window_rule({ match = { float = false, workspace = "w[tv1]" }, border_size = 0 })
 hl.window_rule({ match = { float = false, workspace = "f[1]" }, border_size = 0 })
 
 -- Default workspace assignments
@@ -97,33 +94,6 @@ local function matches_popup(window)
 end
 
 hl.on("window.open", function(w)
-    -- Float kitty at half-screen centered if it's alone on its workspace
-    if w.class == "kitty" and w.title == "kitty" then
-        local ws = w.workspace
-        if ws then
-            local alone = true
-            local ws_windows = hl.get_workspace_windows(ws.id)
-            if ws_windows then
-                for _, existing in ipairs(ws_windows) do
-                    if existing.address ~= w.address then
-                        alone = false
-                        break
-                    end
-                end
-            end
-            if alone then
-                local mon = w.monitor
-                if mon then
-                    local width = math.floor(mon.width / mon.scale / 2)
-                    local height = math.floor(mon.height / mon.scale / 2)
-                    hl.dispatch(hl.dsp.window.float({ action = "set", window = "address:" .. w.address }))
-                    hl.dispatch(hl.dsp.window.resize({ x = width, y = height, window = "address:" .. w.address }))
-                    hl.dispatch(hl.dsp.window.center({ window = "address:" .. w.address }))
-                end
-            end
-        end
-    end
-
     -- Webcam preview: force to bottom-right after open
     if w.title == "webcam" then
         local mon = w.monitor

@@ -12,13 +12,21 @@
       audio.enable_overdrive = true;
 
       bar.main = {
-        position = "bottom";
+        position = "top";
         scale = 1.3;
         widget_spacing = 32;
-        radius = 0;
+        radius = 80;
         margin_edge = 0;
-        margin_ends = 0;
-        start = [ "workspaces" ];
+        margin_ends = 500;
+        margin_opposite_edge = 0;
+        shadow = false;
+        capsule_padding = 10.0;
+        capsule_radius = 21;
+        capsule_thickness = 1.0;
+        start = [
+          "control-center"
+          "workspaces"
+        ];
         center = [
           "battery"
           "clock"
@@ -28,10 +36,9 @@
           "cpu"
           "ram"
           "temp"
-          "network"
           "bluetooth"
           "volume"
-          "control-center"
+          "network"
         ];
       };
 
@@ -67,13 +74,9 @@
 
       shell = {
         external_ip_enabled = true;
-        ui_scale = 1.2;
         animation.speed = 1.6;
         screenshot.directory = "/home/trace/Pictures/Screenshots";
-        panel = {
-          control_center_placement = "attached";
-          open_near_click_control_center = true;
-        };
+        panel.open_near_click_control_center = true;
         session.actions = [
           {
             action = "lock";
@@ -91,14 +94,14 @@
           }
           {
             action = "reboot";
-            shortcut = "3";
+            shortcut = "4";
             enabled = true;
             countdown_seconds = 0.0;
             variant = "default";
           }
           {
             action = "shutdown";
-            shortcut = "4";
+            shortcut = "5";
             enabled = true;
             countdown_seconds = 0.0;
             variant = "destructive";
