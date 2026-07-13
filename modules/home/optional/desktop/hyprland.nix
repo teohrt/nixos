@@ -260,8 +260,6 @@ in
     enable = true;
     package = pkgs.hyprland;
     systemd.enable = false; # UWSM handles session targets and env export; HM's version would conflict
-    configType = "hyprlang";
-    # Empty settings — Lua config takes priority via hyprland.lua
-    settings = { };
+    configType = "lua";
   };
 }
