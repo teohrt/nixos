@@ -17,7 +17,7 @@
         widget_spacing = 32;
         radius = 80;
         margin_edge = 0;
-        margin_ends = 250;
+        margin_ends = 500;
         margin_opposite_edge = 0;
         shadow = false;
         capsule_padding = 10.0;
@@ -35,7 +35,6 @@
         end = [
           "cpu"
           "ram"
-          "temp"
           "bluetooth"
           "volume"
           "network"
@@ -115,13 +114,15 @@
           anchor = true;
         };
         control-center.glyph = "snowflake";
-        cpu.display = "text";
+        cpu = {
+          compactMode = true;
+          show_label = false;
+        };
         ram = {
           show_label = false;
-          display = "text";
+          compactMode = true;
           stat = "ram_pct";
         };
-        temp.display = "text";
         network.show_label = false;
         volume.show_label = false;
         sysmon = {
