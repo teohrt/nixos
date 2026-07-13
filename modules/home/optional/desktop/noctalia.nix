@@ -17,7 +17,7 @@
         widget_spacing = 32;
         radius = 80;
         margin_edge = 0;
-        margin_ends = 500;
+        margin_ends = 250;
         margin_opposite_edge = 0;
         shadow = false;
         capsule_padding = 10.0;

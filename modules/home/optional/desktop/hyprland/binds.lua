@@ -86,6 +86,7 @@ hl.bind(mod .. " + V",            hl.dsp.exec_cmd(ipc .. " panel-toggle clipboar
 ---- UI toggles ----
 hl.bind(mod .. " + SPACE",        hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"), { description = "Launch apps" })
 hl.bind(mod .. " + B",            hl.dsp.exec_cmd(ipc .. " bar-toggle"), { description = "Toggle bar" })
+hl.bind(mod .. " + SHIFT + B",    hl.dsp.exec_cmd("rm -f ~/.local/state/noctalia/settings.toml && pkill .noctalia-wrapp; sleep 0.5; noctalia &"), { description = "Reset Noctalia config" })
 hl.bind(mod .. " + J",            hl.dsp.layout("togglesplit"), { description = "Toggle split" })
 hl.bind(mod .. " + P",            hl.dsp.window.pseudo(), { description = "Pseudo window" })
 hl.bind(mod .. " + W",            hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"), { description = "Wallpaper picker" })
