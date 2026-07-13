@@ -4,8 +4,6 @@
 {
   pkgs,
   config,
-  pkgs-walker,
-  pkgs-hyprland,
   ...
 }:
 let
@@ -67,7 +65,7 @@ let
 
   # --- Shell scripts (writeShellScriptBin so they install as named commands) ---
 
-  walker = "${pkgs-walker.walker}/bin/walker";
+  walker = "${pkgs.walker}/bin/walker";
 
   # Toggle menu - quick actions via walker dmenu
   toggle-menu = pkgs.writeShellScriptBin "toggle-menu" ''
@@ -260,7 +258,8 @@ in
 
   wayland.windowManager.hyprland = {
     enable = true;
-    package = pkgs-hyprland.hyprland;
+    package = pkgs.hyprland;
+    configType = "hyprlang";
     # Empty settings — Lua config takes priority via hyprland.lua
     settings = { };
   };

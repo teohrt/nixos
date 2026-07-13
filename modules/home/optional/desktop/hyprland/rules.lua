@@ -55,7 +55,7 @@ hl.window_rule({
 })
 
 -- Opacity rules for semi-transparent apps
-local transparent_apps = { "org.gnome.Nautilus", "Spotify", "Slack" }
+local transparent_apps = { "org.gnome.Nautilus", "[Ss]potify", "[Ss]lack" }
 local app_opacity = tostring(ctx.opacity.applications) .. " " .. tostring(ctx.opacity.applications)
 for _, class in ipairs(transparent_apps) do
     hl.window_rule({

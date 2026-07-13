@@ -2,21 +2,18 @@
   description = "NixOS configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-walker.url = "github:nixos/nixpkgs/46db2e09e1d3f113a13c0d7b81e2f221c63b8ce9";
-    nixpkgs-kitty.url = "github:nixos/nixpkgs/54b9582d13af461680f6d6fdae4ee138dfd60d23"; # kitty 0.46.2
-    nixpkgs-hyprland.url = "github:nixos/nixpkgs/e73de5be04e0eff4190a1432b946d469c794e7b4"; # hyprland 0.55.4
     noctalia = {
       url = "github:noctalia-dev/noctalia";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix = {
-      url = "github:danth/stylix/release-25.11";
+      url = "github:danth/stylix/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     spicetify-nix = {
@@ -36,9 +33,6 @@
     inputs@{
       nixpkgs,
       nixpkgs-unstable,
-      nixpkgs-walker,
-      nixpkgs-kitty,
-      nixpkgs-hyprland,
       home-manager,
       stylix,
       spicetify-nix,
@@ -60,10 +54,6 @@
         inherit system;
         config.allowUnfree = true;
       };
-      pkgs-walker = nixpkgs-walker.legacyPackages.${system};
-      pkgs-kitty = nixpkgs-kitty.legacyPackages.${system};
-      pkgs-hyprland = nixpkgs-hyprland.legacyPackages.${system};
-
       # Import stylix theme config (nord)
       themeConfig = import ./modules/home/themes.nix { inherit pkgs; };
 
@@ -82,6 +72,7 @@
             ./modules/home/optional/desktop/hypridle.nix
             ./modules/home/optional/apps/kitty.nix
             ./modules/home/optional/apps/firefox.nix
+            ./modules/home/optional/apps/slack.nix
             ./modules/home/optional/apps/vscode.nix
             ./modules/home/optional/apps/obsidian.nix
             ./modules/home/optional/apps/spicetify.nix
@@ -90,9 +81,6 @@
           extraSpecialArgs = {
             inherit
               pkgs-unstable
-              pkgs-walker
-              pkgs-kitty
-              pkgs-hyprland
               spicetify-nix
               noctalia
               username
@@ -110,7 +98,6 @@
             inherit
               inputs
               pkgs-unstable
-              pkgs-hyprland
               username
               ;
           };
@@ -158,7 +145,7 @@
           {
             "runtime": { "version": "Lua 5.4" },
             "workspace": {
-              "library": ["${pkgs-hyprland.hyprland}/share/hypr/stubs"],
+              "library": ["${pkgs.hyprland}/share/hypr/stubs"],
               "checkThirdParty": false
             },
             "diagnostics": {

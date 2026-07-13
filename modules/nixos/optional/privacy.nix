@@ -176,7 +176,7 @@ in
   # multicast name queries with the real hostname. LLMNR is a Microsoft
   # protocol where devices on the same subnet can resolve each other's
   # hostnames without DNS; disabling it has no effect on normal DNS.
-  services.resolved.llmnr = "false";
+  services.resolved.settings.Resolve.LLMNR = "false";
 
   # Disable Avahi hostname publishing — Avahi broadcasts "hostname.local"
   # to the network via mDNS. With publish disabled, we can still discover

@@ -2,7 +2,6 @@
 {
   lib,
   pkgs,
-  pkgs-kitty,
   config,
   ...
 }:
@@ -19,7 +18,7 @@ in
 {
   programs.kitty = {
     enable = true;
-    package = pkgs-kitty.kitty;
+    package = pkgs.kitty;
     shellIntegration.mode = "enabled";
     shellIntegration.enableZshIntegration = false;
     settings = {
