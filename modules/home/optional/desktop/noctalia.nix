@@ -14,13 +14,13 @@
       bar.main = {
         position = "top";
         scale = 1.3;
-        widget_spacing = 32;
+        widget_spacing = 20;
         radius = 80;
         margin_edge = 0;
         margin_ends = 500;
         margin_opposite_edge = 0;
         shadow = false;
-        capsule_padding = 10.0;
+        capsule_padding = 15.0;
         capsule_radius = 21;
         capsule_thickness = 1.0;
         start = [
