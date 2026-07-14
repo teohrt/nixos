@@ -58,6 +58,11 @@
 
       plugins.enabled = [ "noctalia/wallhaven" ];
 
+      plugin_settings."noctalia/wallhaven" = {
+        browser_placement = "floating";
+        browser_position = "center";
+      };
+
       dock.enabled = false;
       desktop_widgets.enabled = true;
       lockscreen_widgets.enabled = false;
@@ -76,7 +81,13 @@
         external_ip_enabled = true;
         animation.speed = 1.6;
         screenshot.directory = "/home/trace/Pictures/Screenshots";
-        panel.open_near_click_control_center = true;
+        panel = {
+          open_near_click_control_center = true;
+          borders = false;
+          floating_offset = 0;
+          wallpaper_placement = "floating";
+          wallpaper_position = "center";
+        };
         session.actions = [
           {
             action = "lock";
@@ -110,12 +121,20 @@
       };
 
       widget = {
-        clock.format = "{:%-I:%M %p}";
+        clock = {
+          format = "{:%-I:%M %p}";
+          anchor = true;
+        };
         control-center.glyph = "snowflake";
         cpu.show_label = false;
         ram = {
           show_label = false;
           stat = "ram_pct";
+        };
+        battery = {
+          display_mode = "graphic";
+          show_label = false;
+          scale = 0.7;
         };
         network.show_label = false;
         volume.show_label = false;

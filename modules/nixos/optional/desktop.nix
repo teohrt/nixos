@@ -66,6 +66,10 @@ in
   # regreet greeter — provides config, state dirs, and accounts-daemon
   programs.regreet.enable = true;
 
+  # Stylix manages regreet theming via default_session.command, but we use a custom
+  # Hyprland-based greeter session for multi-monitor support, so disable that target.
+  stylix.targets.regreet.enable = false;
+
   # Login manager — greetd with Hyprland as greeter compositor for multi-monitor support
   services.greetd = {
     enable = true;
