@@ -14,6 +14,7 @@
       bar.main = {
         position = "top";
         scale = 1.3;
+        hover_highlight = false;
         widget_spacing = 20;
         radius = 80;
         margin_edge = 0;
@@ -53,7 +54,7 @@
         builtin = "Nord";
       };
 
-      location.address = "Brooklyn, NY";
+      location.auto_locate = true;
 
       plugins.enabled = [ "noctalia/wallhaven" ];
 
@@ -109,18 +110,11 @@
       };
 
       widget = {
-        clock = {
-          format = "{:%-I:%M %p}";
-          anchor = true;
-        };
+        clock.format = "{:%-I:%M %p}";
         control-center.glyph = "snowflake";
-        cpu = {
-          compactMode = true;
-          show_label = false;
-        };
+        cpu.show_label = false;
         ram = {
           show_label = false;
-          compactMode = true;
           stat = "ram_pct";
         };
         network.show_label = false;

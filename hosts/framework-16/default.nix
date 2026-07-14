@@ -143,8 +143,5 @@
   # Firmware for audio, wifi, etc.
   hardware.enableRedistributableFirmware = true;
 
-  time.timeZone = "America/New_York";
-  i18n.defaultLocale = "en_US.UTF-8";
-
   system.stateVersion = "25.11";
 }
