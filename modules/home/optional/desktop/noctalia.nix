@@ -70,10 +70,13 @@
       notification = {
         show_actions = false;
         show_app_name = false;
+        offset_x = 15;
+        offset_y = 0;
       };
 
       osd = {
-        position = "top_right";
+        position = "top_center";
+        offset_y = 20;
         kinds.media = false;
       };
 
