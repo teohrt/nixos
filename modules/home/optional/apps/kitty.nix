@@ -50,7 +50,7 @@ in
 
       # Tabs and layouts
       enabled_layouts = "splits,stack";
-      tab_bar_edge = "bottom";
+      tab_bar_edge = "top";
       tab_bar_margin_height = "0 0";
       startup_session = "~/.config/kitty/startup.conf";
     };
