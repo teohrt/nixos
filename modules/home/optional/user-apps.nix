@@ -132,6 +132,7 @@ in
     cmatrix
     go
     croc
+    delta # git-delta — syntax-highlighting diff pager
     pkgs-unstable.smassh
 
     # apps

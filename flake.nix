@@ -125,6 +125,7 @@
       checks.${system} = {
         pre-commit-check = git-hooks.lib.${system}.run {
           src = ./.;
+          package = pkgs.prek;
           hooks = {
             nixfmt-rfc-style.enable = true;
             statix.enable = true;
