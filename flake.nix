@@ -71,6 +71,7 @@
             ./modules/home/optional/desktop/walker.nix
             ./modules/home/optional/desktop/hypridle.nix
             ./modules/home/optional/apps/kitty.nix
+            ./modules/home/optional/apps/browser-chooser.nix
             ./modules/home/optional/apps/firefox.nix
             ./modules/home/optional/apps/slack.nix
             ./modules/home/optional/apps/vscode.nix
