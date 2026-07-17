@@ -8,6 +8,7 @@ _:
 {
   programs.firefox = {
     enable = true;
+    configPath = ".mozilla/firefox";
     profiles.default = {
       settings = {
         "toolkit.legacyUserProfileCustomizations.stylesheets" = true;

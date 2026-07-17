@@ -4,8 +4,6 @@
 {
   pkgs,
   config,
-  pkgs-walker,
-  pkgs-hyprland,
   ...
 }:
 let
@@ -67,20 +65,9 @@ let
 
   # --- Shell scripts (writeShellScriptBin so they install as named commands) ---
 
-  walker = "${pkgs-walker.walker}/bin/walker";
-
-  # Screenshot menu using Noctalia's built-in screenshot tool
-  screenshot = pkgs.writeShellScriptBin "screenshot" ''
-    choice=$(printf "Region\nMonitor\nAll Screens" | ${walker} --dmenu -p "Screenshot")
-    case "$choice" in
-      Region) noctalia msg screenshot-region ;;
-      Monitor) noctalia msg screenshot-fullscreen ;;
-      "All Screens") noctalia msg screenshot-fullscreen all ;;
-    esac
-  '';
+  walker = "${pkgs.walker}/bin/walker";
 
   # Toggle menu - quick actions via walker dmenu
-  # Screen option has 1s delay to avoid capturing the menu itself
   toggle-menu = pkgs.writeShellScriptBin "toggle-menu" ''
     start_recording() {
       mkdir -p ~/Videos/Recordings
@@ -249,7 +236,6 @@ in
     pkgs.wf-recorder
     pkgs.whisper-cpp
     pkgs.wtype
-    screenshot
     toggle-menu
     voice-input
   ];
@@ -272,8 +258,8 @@ in
 
   wayland.windowManager.hyprland = {
     enable = true;
-    package = pkgs-hyprland.hyprland;
-    # Empty settings — Lua config takes priority via hyprland.lua
-    settings = { };
+    package = pkgs.hyprland;
+    systemd.enable = false; # UWSM handles session targets and env export; HM's version would conflict
+    configType = "lua";
   };
 }

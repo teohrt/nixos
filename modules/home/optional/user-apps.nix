@@ -44,13 +44,13 @@ let
       gtk3
       nss
       nspr
-      xorg.libX11
-      xorg.libxcb
-      xorg.libXcomposite
-      xorg.libXdamage
-      xorg.libXext
-      xorg.libXfixes
-      xorg.libXrandr
+      libx11
+      libxcb
+      libxcomposite
+      libxdamage
+      libxext
+      libxfixes
+      libxrandr
       pango
       systemd
       libdrm
@@ -132,6 +132,7 @@ in
     cmatrix
     go
     croc
+    delta # git-delta — syntax-highlighting diff pager
     pkgs-unstable.smassh
 
     # apps
@@ -139,7 +140,6 @@ in
     _1password-gui
     obsidian
     localsend
-    slack
     discord
     bubblewrap # sandbox for Claude Desktop Cowork mode
     zoom-wayland # wrapped for Wayland screen sharing

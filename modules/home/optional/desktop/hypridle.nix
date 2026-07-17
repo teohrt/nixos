@@ -57,6 +57,15 @@ let
     fi
   '';
 
+  # Noctalia's caffeine prefers logind idle inhibitors over Wayland ones.
+  # Hypridle only sees Wayland idle inhibitors (via Hyprland), so it ignores
+  # logind entirely. This script bridges the gap by checking systemd-inhibit
+  # for active idle blockers before each timeout fires.
+  idleInhibited = pkgs.writeShellScriptBin "idle-inhibited" ''
+    ${pkgs.systemd}/bin/systemd-inhibit --list --no-pager 2>/dev/null | \
+      ${pkgs.gawk}/bin/awk -F' *' '/idle.*block/ { found=1 } END { exit !found }'
+  '';
+
   # Launches the screensaver terminal on every connected monitor.
   # Exits silently if the screensaver has been toggled off.
   launchScreensaver = pkgs.writeShellScriptBin "launch-screensaver" ''
@@ -93,11 +102,11 @@ in
       listener = [
         {
           timeout = 150; # 2.5 min — launch screensaver (skipped if already locked)
-          on-timeout = "noctalia msg status 2>/dev/null | grep -q '\"locked\"' && true || ${launchScreensaver}/bin/launch-screensaver";
+          on-timeout = "${idleInhibited}/bin/idle-inhibited || { noctalia msg status 2>/dev/null | grep -q '\"locked\"' && true || ${launchScreensaver}/bin/launch-screensaver; }";
         }
         {
           timeout = 151; # immediately after screensaver — lock screen
-          on-timeout = "loginctl lock-session";
+          on-timeout = "${idleInhibited}/bin/idle-inhibited || loginctl lock-session";
         }
         {
           timeout = 330; # 5.5 min — keyboard backlight off
@@ -111,7 +120,7 @@ in
         }
         {
           timeout = 600; # 10 min — suspend
-          on-timeout = "systemctl suspend";
+          on-timeout = "${idleInhibited}/bin/idle-inhibited || systemctl suspend";
         }
       ];
     };

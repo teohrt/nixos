@@ -86,9 +86,11 @@ hl.bind(mod .. " + V",            hl.dsp.exec_cmd(ipc .. " panel-toggle clipboar
 ---- UI toggles ----
 hl.bind(mod .. " + SPACE",        hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"), { description = "Launch apps" })
 hl.bind(mod .. " + B",            hl.dsp.exec_cmd(ipc .. " bar-toggle"), { description = "Toggle bar" })
+hl.bind(mod .. " + SHIFT + B",    hl.dsp.exec_cmd("rm -f ~/.local/state/noctalia/settings.toml && noctalia msg config-reload"), { description = "Reset Noctalia config" })
 hl.bind(mod .. " + J",            hl.dsp.layout("togglesplit"), { description = "Toggle split" })
 hl.bind(mod .. " + P",            hl.dsp.window.pseudo(), { description = "Pseudo window" })
-hl.bind(mod .. " + SHIFT + W",    hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"), { description = "Wallpaper picker" })
+hl.bind(mod .. " + W",            hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"), { description = "Wallpaper picker" })
+hl.bind(mod .. " + SHIFT + W",    hl.dsp.exec_cmd(ipc .. " panel-toggle noctalia/wallhaven:browser"), { description = "Wallhaven browser" })
 hl.bind(mod .. " + M",            hl.dsp.exec_cmd("kitty --single-instance --instance-group popup --session none --title hyprmon -e hyprmon"), { description = "Monitor settings" })
 
 ---- Pop window (inline — replaces popWindow shell script) ----
@@ -117,7 +119,7 @@ hl.bind(mod .. " + T",            hl.dsp.exec_cmd("toggle-menu"), { description 
 hl.bind(mod .. " + slash",        hl.dsp.exec_cmd("voice-input"), { description = "Voice input" })
 
 ---- Screenshot ----
-hl.bind(mod .. " + S",            hl.dsp.exec_cmd("screenshot"), { description = "Screenshot region" })
+hl.bind(mod .. " + S",            hl.dsp.exec_cmd(ipc .. " screenshot-region"), { description = "Screenshot region" })
 
 ---- Window resizing ----
 hl.bind(mod .. " + minus",        hl.dsp.window.resize({ x = -100, y = 0, relative = true }), { description = "Shrink window" })

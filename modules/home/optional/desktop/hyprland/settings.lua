@@ -2,8 +2,8 @@ local ctx = require("context")
 
 hl.config({
     general = {
-        gaps_in = 0,
-        gaps_out = 0,
+        gaps_in = 5,
+        gaps_out = 10,
         border_size = 1,
         col = {
             active_border = "rgba(" .. ctx.colors.base0D:sub(2) .. "ff)",
@@ -31,7 +31,7 @@ hl.config({
     },
 
     decoration = {
-        rounding = 0,
+        rounding = 10,
         blur = {
             enabled = true,
             size = 6,

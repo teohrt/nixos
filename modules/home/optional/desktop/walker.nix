@@ -4,7 +4,6 @@
   config,
   lib,
   pkgs,
-  pkgs-walker,
   ...
 }:
 let
@@ -12,7 +11,7 @@ let
   bgOpacity = toString (config.stylix.opacity.terminal * 0.35);
 in
 {
-  home.packages = [ pkgs-walker.walker ];
+  home.packages = [ pkgs.walker ];
 
   xdg.configFile = {
     "walker/config.toml".text = ''

@@ -37,11 +37,17 @@ if ctx.hostname == "framework-16" then
     hl.bind("switch:on:Lid Switch", function()
         hl.monitor({ output = "eDP-1", disabled = true })
         hl.exec_cmd("brightnessctl -d amdgpu_bl1 set 0")
+        hl.timer(function()
+            hl.exec_cmd("hyprctl reload")
+        end, { timeout = 500, type = "oneshot" })
     end, { locked = true })
 
     hl.bind("switch:off:Lid Switch", function()
         hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = 1.25, disabled = false })
         hl.exec_cmd("brightnessctl -d amdgpu_bl1 set 100%")
+        hl.timer(function()
+            hl.exec_cmd("hyprctl reload")
+        end, { timeout = 500, type = "oneshot" })
     end, { locked = true })
 
 elseif ctx.hostname == "my-thinkpad" then

@@ -79,6 +79,13 @@
     shell = pkgs.zsh;
   };
 
+  i18n.defaultLocale = "en_US.UTF-8";
+
+  services.tzupdate = {
+    enable = true;
+    timer.enable = false;
+  };
+
   nixpkgs.config.allowUnfree = true;
 
   environment.sessionVariables = {
