@@ -129,6 +129,7 @@ in
     which
     tree
     gawk
+    gum # charmbracelet — interactive prompts and widgets for shell scripts
     cmatrix
     go
     croc
