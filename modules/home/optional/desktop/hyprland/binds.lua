@@ -86,7 +86,16 @@ hl.bind(mod .. " + V",            hl.dsp.exec_cmd(ipc .. " panel-toggle clipboar
 ---- UI toggles ----
 hl.bind(mod .. " + SPACE",        hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"), { description = "Launch apps" })
 hl.bind(mod .. " + B",            hl.dsp.exec_cmd(ipc .. " bar-toggle"), { description = "Toggle bar" })
-hl.bind(mod .. " + SHIFT + B",    hl.dsp.exec_cmd("rm -f ~/.local/state/noctalia/settings.toml && noctalia msg config-reload"), { description = "Reset Noctalia config" })
+hl.bind(mod .. " + SHIFT + B", function()
+    local w = hl.get_active_window()
+    if w and w.class == "google-chrome" then
+        if w.fullscreen_client == 0 then
+            hl.dispatch(hl.dsp.window.fullscreen_state({ internal = 0, client = 2 }))
+        else
+            hl.dispatch(hl.dsp.window.fullscreen_state({ internal = 0, client = 0 }))
+        end
+    end
+end, { description = "Toggle Chrome top bar" })
 hl.bind(mod .. " + J",            hl.dsp.layout("togglesplit"), { description = "Toggle split" })
 hl.bind(mod .. " + P",            hl.dsp.window.pseudo(), { description = "Pseudo window" })
 hl.bind(mod .. " + W",            hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"), { description = "Wallpaper picker" })
