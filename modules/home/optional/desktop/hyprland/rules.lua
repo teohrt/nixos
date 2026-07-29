@@ -94,6 +94,12 @@ local function matches_popup(window)
 end
 
 hl.on("window.open", function(w)
+    -- Zoom annotation toolbar: close immediately
+    if w.class:match("^zoom$") and w.title == "annotate_toolbar" then
+        hl.dispatch(hl.dsp.window.close({ window = "address:" .. w.address }))
+        return
+    end
+
     -- Webcam preview: force to bottom-right after open
     if w.title == "webcam" then
         local mon = w.monitor
