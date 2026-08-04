@@ -71,6 +71,16 @@ hl.bind(mod .. " + F",            hl.dsp.window.fullscreen({ mode = "maximized" 
 hl.bind(mod .. " + SHIFT + F",    hl.dsp.exec_cmd("nautilus --new-window"), { description = "File manager" })
 hl.bind(mod .. " + Q",            hl.dsp.window.close(), { description = "Close window" })
 
+local gaps_removed = false
+hl.bind(mod .. " + G", function()
+    gaps_removed = not gaps_removed
+    if gaps_removed then
+        hl.config({ general = { gaps_in = 0, gaps_out = 0 }, decoration = { rounding = 0 } })
+    else
+        hl.config({ general = { gaps_in = 7, gaps_out = 15 }, decoration = { rounding = 10 } })
+    end
+end, { description = "Toggle gaps" })
+
 ---- Copy (SUPER+C → CTRL+SHIFT+C in terminals, CTRL+C elsewhere) ----
 hl.bind(mod .. " + C", function()
     local w = hl.get_active_window()
