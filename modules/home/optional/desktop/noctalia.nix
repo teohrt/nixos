@@ -38,6 +38,7 @@
           "ram"
           "bluetooth"
           "volume"
+          "spoof-status"
           "network"
         ];
       };
@@ -56,11 +57,19 @@
 
       location.auto_locate = true;
 
-      plugins.enabled = [ "noctalia/wallhaven" ];
+      plugins.enabled = [
+        "noctalia/wallhaven"
+        "local/spoof-status"
+      ];
 
       plugin_settings."noctalia/wallhaven" = {
         browser_placement = "floating";
         browser_position = "center";
+      };
+
+      plugin_settings."local/spoof-status" = {
+        info_placement = "attached";
+        info_open_near_click = true;
       };
 
       dock.enabled = false;
@@ -124,6 +133,7 @@
       };
 
       widget = {
+        spoof-status.type = "local/spoof-status:status";
         clock = {
           format = "{:%-I:%M %p}";
           anchor = true;
@@ -154,6 +164,14 @@
         };
       };
     };
+  };
+
+  xdg.dataFile = {
+    "noctalia/nix-plugins/spoof-status/plugin.toml".source =
+      ./noctalia-plugins/spoof-status/plugin.toml;
+    "noctalia/nix-plugins/spoof-status/widget.luau".source =
+      ./noctalia-plugins/spoof-status/widget.luau;
+    "noctalia/nix-plugins/spoof-status/panel.luau".source = ./noctalia-plugins/spoof-status/panel.luau;
   };
 
   # Let Noctalia use its own theming; disable Stylix's hyprpaper target

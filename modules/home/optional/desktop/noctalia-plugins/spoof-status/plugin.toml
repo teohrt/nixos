@@ -1,0 +1,16 @@
+id            = "local/spoof-status"
+name          = "Spoof Status"
+version       = "1.0.0"
+plugin_api    = 3
+author        = "local"
+min_noctalia  = "5.0.0"
+
+[[widget]]
+id    = "status"
+entry = "widget.luau"
+
+[[panel]]
+id     = "info"
+entry  = "panel.luau"
+width  = 300
+height = 290
