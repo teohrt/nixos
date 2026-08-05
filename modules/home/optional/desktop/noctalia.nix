@@ -167,11 +167,9 @@
   };
 
   xdg.dataFile = {
-    "noctalia/nix-plugins/spoof-status/plugin.toml".source =
-      ./noctalia-plugins/spoof-status/plugin.toml;
-    "noctalia/nix-plugins/spoof-status/widget.luau".source =
-      ./noctalia-plugins/spoof-status/widget.luau;
-    "noctalia/nix-plugins/spoof-status/panel.luau".source = ./noctalia-plugins/spoof-status/panel.luau;
+    "noctalia/plugins/spoof-status/plugin.toml".source = ./noctalia-plugins/spoof-status/plugin.toml;
+    "noctalia/plugins/spoof-status/widget.luau".source = ./noctalia-plugins/spoof-status/widget.luau;
+    "noctalia/plugins/spoof-status/panel.luau".source = ./noctalia-plugins/spoof-status/panel.luau;
   };
 
   # Let Noctalia use its own theming; disable Stylix's hyprpaper target
