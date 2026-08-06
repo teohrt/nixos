@@ -112,12 +112,11 @@ hl.bind(mod .. " + W",            hl.dsp.exec_cmd(ipc .. " panel-toggle wallpape
 hl.bind(mod .. " + SHIFT + W",    hl.dsp.exec_cmd(ipc .. " panel-toggle noctalia/wallhaven:browser"), { description = "Wallhaven browser" })
 hl.bind(mod .. " + M",            hl.dsp.exec_cmd("kitty --single-instance --instance-group popup --session none --title hyprmon -e hyprmon"), { description = "Monitor settings" })
 
----- Pop window (inline — replaces popWindow shell script) ----
+---- Float window (toggle float, resize to half-screen, center) ----
 hl.bind(mod .. " + O", function()
     local w = hl.get_active_window()
     if w == nil then return end
-    if w.pinned then
-        hl.dispatch(hl.dsp.window.pin())
+    if w.floating then
         hl.dispatch(hl.dsp.window.float({ action = "unset" }))
     else
         local mon = w.monitor
@@ -126,10 +125,8 @@ hl.bind(mod .. " + O", function()
         hl.dispatch(hl.dsp.window.float({ action = "set" }))
         hl.dispatch(hl.dsp.window.resize({ x = width, y = height }))
         hl.dispatch(hl.dsp.window.center())
-        hl.dispatch(hl.dsp.window.pin())
-        hl.dispatch(hl.dsp.window.alter_zorder({ mode = "top" }))
     end
-end, { description = "Pop window out" })
+end, { description = "Float window" })
 
 ---- Toggle menu (still calls shell script for external tools) ----
 hl.bind(mod .. " + T",            hl.dsp.exec_cmd("toggle-menu"), { description = "Toggle menu" })
@@ -163,6 +160,12 @@ for i = 1, 10 do
     local key = i % 10 -- 10 maps to key 0
     hl.bind(mod .. " + " .. key,           hl.dsp.focus({ workspace = i }), { description = "Workspace " .. i })
     hl.bind(mod .. " + SHIFT + " .. key,   hl.dsp.window.move({ workspace = i }), { description = "Move to workspace " .. i })
+end
+
+---- Scratch pad ----
+for _, ctrl in ipairs({ "Control_L", "Control_R" }) do
+    hl.bind(mod .. " + " .. ctrl,           hl.dsp.workspace.toggle_special("scratchpad"), { description = "Toggle scratch pad" })
+    hl.bind(mod .. " + SHIFT + " .. ctrl,   hl.dsp.window.move({ workspace = "special:scratchpad" }), { description = "Move to scratch pad" })
 end
 
 ---- Media keys (repeating, work while locked) ----
