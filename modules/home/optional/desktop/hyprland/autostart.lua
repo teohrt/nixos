@@ -1,12 +1,5 @@
-local ctx = require("context")
-
 hl.on("hyprland.start", function()
-    -- Desktop shell (bar, launcher, notifications, OSD, lock screen)
     hl.exec_cmd("noctalia")
-
-    -- Auth agent for privilege escalation prompts
-    hl.exec_cmd(ctx.bin.polkit_agent)
-
 end)
 
 -- Environment variables

@@ -1,5 +1,5 @@
-# Noctalia v5: bar, launcher, notifications, lock screen, OSD.
-# Replaces waybar, walker, swaync, hyprlock, swayosd, and swww/mpvpaper.
+# Noctalia v5: bar, launcher, notifications, lock screen, OSD, polkit_agent, clipboard management.
+# Replaces waybar, walker, swaync, hyprlock, polkit_gnome, swayosd, and swww/mpvpaper.
 # Hypridle is kept separately for the custom tte screensaver.
 {
   lib,
@@ -98,6 +98,7 @@ in
       };
 
       shell = {
+        polkit_agent = true;
         external_ip_enabled = true;
         animation.speed = 1.6;
         screenshot.directory = "/home/trace/Pictures/Screenshots";

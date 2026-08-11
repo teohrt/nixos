@@ -55,11 +55,6 @@ let
       terminal = ${toString config.stylix.opacity.terminal},
     }
 
-    -- Nix store binary paths (only paths used by Lua config)
-    M.bin = {
-      polkit_agent = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1",
-    }
-
     return M
   '';
 
