@@ -55,6 +55,10 @@ let
       terminal = ${toString config.stylix.opacity.terminal},
     }
 
+    M.plugins = {
+      dynamic_cursors = "${pkgs.hyprlandPlugins.hypr-dynamic-cursors}/lib/libhypr-dynamic-cursors.so",
+    }
+
     return M
   '';
 
@@ -254,6 +258,7 @@ in
   wayland.windowManager.hyprland = {
     enable = true;
     package = pkgs.hyprland;
+    plugins = [ pkgs.hyprlandPlugins.hypr-dynamic-cursors ];
     systemd.enable = false; # UWSM handles session targets and env export; HM's version would conflict
     configType = "lua";
   };
