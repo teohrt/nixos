@@ -57,6 +57,7 @@ let
 
     M.plugins = {
       dynamic_cursors = "${pkgs.hyprlandPlugins.hypr-dynamic-cursors}/lib/libhypr-dynamic-cursors.so",
+      hyprfocus = "${pkgs.hyprlandPlugins.hyprfocus}/lib/libhyprfocus.so",
     }
 
     return M
@@ -258,7 +259,10 @@ in
   wayland.windowManager.hyprland = {
     enable = true;
     package = pkgs.hyprland;
-    plugins = [ pkgs.hyprlandPlugins.hypr-dynamic-cursors ];
+    plugins = [
+      pkgs.hyprlandPlugins.hypr-dynamic-cursors
+      pkgs.hyprlandPlugins.hyprfocus
+    ];
     systemd.enable = false; # UWSM handles session targets and env export; HM's version would conflict
     configType = "lua";
   };

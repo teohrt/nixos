@@ -56,6 +56,16 @@ hl.config({
     },
 })
 
+hl.config({
+    plugin = {
+        hyprfocus = {
+            mode = "slide",
+            only_on_monitor_change = false,
+            slide_height = 10,
+        },
+    },
+})
+
 -- Animation curves
 hl.curve("easeOutQuint", { type = "bezier", points = { {0.23, 1}, {0.32, 1} } })
 hl.curve("quick",        { type = "bezier", points = { {0.15, 0}, {0.1, 1} } })
@@ -68,3 +78,5 @@ hl.animation({ leaf = "workspaces",  enabled = true, speed = 1.1, bezier = "ease
 hl.animation({ leaf = "layers",      enabled = true, speed = 1.1, bezier = "easeOutQuint", style = "slide" })
 hl.animation({ leaf = "layersIn",    enabled = true, speed = 1.1, bezier = "easeOutQuint", style = "slide" })
 hl.animation({ leaf = "layersOut",   enabled = true, speed = 0.7, bezier = "quick",        style = "slide" })
+hl.animation({ leaf = "hyprfocusIn",  enabled = true, speed = 1.7, bezier = "easeOutQuint" })
+hl.animation({ leaf = "hyprfocusOut", enabled = true, speed = 1.7, bezier = "easeOutQuint" })
