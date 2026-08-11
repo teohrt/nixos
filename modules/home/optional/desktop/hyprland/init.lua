@@ -8,9 +8,10 @@ for _, path in pairs(ctx.plugins) do
     hl.plugin.load(path)
 end
 
-require("settings")
-require("monitors")
-require("rules")
-require("binds")
-require("autostart")
-require("events")
+local dir = os.getenv("HOME") .. "/.config/hypr/"
+for entry in io.popen("ls " .. dir .. "*.lua"):lines() do
+    local name = entry:match("([^/]+)%.lua$")
+    if name and name ~= "hyprland" then
+        require(name)
+    end
+end
