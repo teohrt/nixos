@@ -1,7 +1,15 @@
 # Noctalia v5: bar, launcher, notifications, lock screen, OSD.
 # Replaces waybar, walker, swaync, hyprlock, swayosd, and swww/mpvpaper.
 # Hypridle is kept separately for the custom tte screensaver.
-{ lib, noctalia, ... }:
+{
+  lib,
+  pkgs,
+  noctalia,
+  ...
+}:
+let
+  noctalia-pkg = noctalia.packages.${pkgs.system}.default;
+in
 {
   imports = [ noctalia.homeModules.default ];
 
@@ -138,7 +146,8 @@
           format = "{:%-I:%M %p}";
           anchor = true;
         };
-        control-center.glyph = "snowflake";
+        control-center.custom_image = "${noctalia-pkg}/share/noctalia/assets/images/distros/nixos.svg";
+        control-center.custom_image_colorize = true;
         cpu.show_label = false;
         ram = {
           show_label = false;
