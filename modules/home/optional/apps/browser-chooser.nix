@@ -13,7 +13,9 @@ let
       *)        exit 0 ;;
     esac
 
-    exec ${pkgs.google-chrome}/bin/google-chrome-stable --profile-directory="$profile" "$url"
+    ${pkgs.google-chrome}/bin/google-chrome-stable --profile-directory="$profile" "$url" &
+    sleep 0.3
+    ${pkgs.hyprland}/bin/hyprctl dispatch 'hl.dsp.focus({ window = "class:google-chrome" })'
   '';
 
   desktopEntry = pkgs.makeDesktopItem {
