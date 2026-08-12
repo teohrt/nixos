@@ -61,7 +61,7 @@ hl.config({
         hyprfocus = {
             mode = "slide",
             only_on_monitor_change = false,
-            slide_height = 10,
+            slide_height = 5,
         },
     },
 })
