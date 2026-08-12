@@ -154,6 +154,7 @@ in
     imv # image viewer
     system-config-printer # printer management GUI
     evince # PDF viewer
+    libreoffice # office suite + PDF editing via Draw
     vlc # video player
     brightnessctl # brightness control (requires video group)
     nautilus # file manager
