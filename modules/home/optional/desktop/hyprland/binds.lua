@@ -163,8 +163,24 @@ for i = 1, 10 do
 end
 
 ---- Scratch pad ----
+-- Suppress hyprfocus animations when closing the scratchpad so the
+-- returning focus doesn't trigger a distracting slide on the main workspace.
+local function toggle_scratchpad()
+    local special = hl.get_active_special_workspace()
+    local closing = special ~= nil and special.name == "special:scratchpad"
+
+    if not closing then
+        hl.dispatch(hl.dsp.workspace.toggle_special("scratchpad"))
+        return
+    end
+
+    hl.config({ plugin = { hyprfocus = { only_on_monitor_change = true } } })
+    hl.dispatch(hl.dsp.workspace.toggle_special("scratchpad"))
+    hl.config({ plugin = { hyprfocus = { only_on_monitor_change = false } } })
+end
+
 for _, ctrl in ipairs({ "Control_L", "Control_R" }) do
-    hl.bind(mod .. " + " .. ctrl,           hl.dsp.workspace.toggle_special("scratchpad"), { description = "Toggle scratch pad" })
+    hl.bind(mod .. " + " .. ctrl,           toggle_scratchpad, { description = "Toggle scratch pad" })
     hl.bind(mod .. " + SHIFT + " .. ctrl,   hl.dsp.window.move({ workspace = "special:scratchpad" }), { description = "Move to scratch pad" })
 end
 
