@@ -44,6 +44,42 @@ local function refresh_bar()
     end, { timeout = 300, type = "oneshot" })
 end
 
+------------------------------------------------------------
+-- Auto-focus sole window on workspace
+------------------------------------------------------------
+-- When a layer surface closes (clipboard panel, launcher, etc.) and the
+-- workspace has exactly one window with no active window, refocus it so
+-- keyboard input reaches the right place (e.g. clipboard paste).
+
+local function refocus_sole_window()
+    if hl.get_active_window() ~= nil then return end
+
+    local ws = hl.get_active_workspace()
+    if ws == nil then return end
+
+    local windows = hl.get_workspace_windows(ws.id)
+    if windows == nil then return end
+
+    local target = nil
+    for _, w in ipairs(windows) do
+        if w.title ~= "hyprmon" and w.title ~= "webcam" then
+            if target then return end
+            target = w
+        end
+    end
+
+    if target then
+        hl.dispatch(hl.dsp.focus({ window = "address:" .. target.address }))
+    end
+end
+
+hl.on("layer.closed", function()
+    hl.timer(refocus_sole_window, { timeout = 50, type = "oneshot" })
+end)
+
+------------------------------------------------------------
+-- Restore internal display when external monitor is removed
+------------------------------------------------------------
 hl.on("monitor.removed", function(monitor)
     -- Ignore removal of internal display (lid close)
     if monitor.name:sub(1, 3) == "eDP" then return end
