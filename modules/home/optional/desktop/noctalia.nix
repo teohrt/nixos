@@ -8,7 +8,7 @@
   ...
 }:
 let
-  noctalia-pkg = noctalia.packages.${pkgs.system}.default;
+  noctalia-pkg = noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
   imports = [ noctalia.homeModules.default ];
