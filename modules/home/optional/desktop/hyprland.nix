@@ -232,7 +232,6 @@ in
 
 {
   home.packages = [
-    pkgs.hyprmon
     pkgs.wf-recorder
     pkgs.whisper-cpp
     pkgs.wtype

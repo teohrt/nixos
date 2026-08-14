@@ -9,15 +9,30 @@ local function is_lid_closed()
     return state and state:match("closed") ~= nil
 end
 
+local function find_external_monitor()
+    local h = io.popen("ls -d /sys/class/drm/card*-* 2>/dev/null")
+    if not h then return nil end
+    for dir in h:lines() do
+        local connector = dir:match("card%d+-(.+)$")
+        if connector and not connector:match("^eDP") and connector ~= "Writeback-1" then
+            local sf = io.open(dir .. "/status", "r")
+            if sf then
+                local st = sf:read("*l")
+                sf:close()
+                if st == "connected" then
+                    h:close()
+                    return connector
+                end
+            end
+        end
+    end
+    h:close()
+    return nil
+end
+
 if ctx.hostname == "framework-16" then
-    -- Internal display at 1.25x scale (disabled if lid is closed)
-    hl.monitor({
-        output = "eDP-1",
-        mode = "preferred",
-        position = "auto",
-        scale = 1.25,
-        disabled = is_lid_closed(),
-    })
+    local ext = find_external_monitor()
+
     -- External monitors at native resolution
     hl.monitor({
         output = "",
@@ -25,6 +40,18 @@ if ctx.hostname == "framework-16" then
         position = "auto",
         scale = 1,
     })
+    -- Internal display mirrors the external when one is connected
+    local edp = {
+        output = "eDP-1",
+        mode = "preferred",
+        position = "auto",
+        scale = 1.25,
+        disabled = is_lid_closed(),
+    }
+    if ext then
+        edp.mirror = ext
+    end
+    hl.monitor(edp)
 
     -- Reduced mouse sensitivity for Framework trackpad
     hl.config({
