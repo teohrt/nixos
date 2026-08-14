@@ -21,6 +21,7 @@ hl.config({
 
     input = {
         kb_layout = "us",
+        kb_options = "caps:super",
         follow_mouse = 1,
         sensitivity = 0,
         repeat_rate = 50,
