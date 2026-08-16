@@ -11,6 +11,7 @@
     ../../modules/nixos/optional/sops.nix
     ../../modules/nixos/optional/steam.nix
     ../../modules/nixos/optional/kvm.nix
+    ../../modules/nixos/optional/localsend.nix
   ];
 
   networking.hostName = "my-thinkpad";
