@@ -21,6 +21,7 @@ hl.config({
 
     input = {
         kb_layout = "us",
+        kb_options = "caps:super",
         follow_mouse = 1,
         sensitivity = 0,
         repeat_rate = 50,
@@ -48,10 +49,21 @@ hl.config({
 
     dwindle = {
         preserve_split = true,
+        special_scale_factor = 0.9,
     },
 
     xwayland = {
         force_zero_scaling = true,
+    },
+})
+
+hl.config({
+    plugin = {
+        hyprfocus = {
+            mode = "slide",
+            only_on_monitor_change = false,
+            slide_height = 5,
+        },
     },
 })
 
@@ -67,3 +79,7 @@ hl.animation({ leaf = "workspaces",  enabled = true, speed = 1.1, bezier = "ease
 hl.animation({ leaf = "layers",      enabled = true, speed = 1.1, bezier = "easeOutQuint", style = "slide" })
 hl.animation({ leaf = "layersIn",    enabled = true, speed = 1.1, bezier = "easeOutQuint", style = "slide" })
 hl.animation({ leaf = "layersOut",   enabled = true, speed = 0.7, bezier = "quick",        style = "slide" })
+hl.animation({ leaf = "specialWorkspaceIn",  enabled = true, speed = 1.1, bezier = "easeOutQuint", style = "slidefadevert 20%" })
+hl.animation({ leaf = "specialWorkspaceOut", enabled = true, speed = 1.1, bezier = "easeOutQuint", style = "slidefadevert 20%" })
+hl.animation({ leaf = "hyprfocusIn",  enabled = true, speed = 1.7, bezier = "easeOutQuint" })
+hl.animation({ leaf = "hyprfocusOut", enabled = true, speed = 1.7, bezier = "easeOutQuint" })

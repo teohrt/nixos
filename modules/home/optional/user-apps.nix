@@ -154,9 +154,9 @@ in
     imv # image viewer
     system-config-printer # printer management GUI
     evince # PDF viewer
+    libreoffice # office suite + PDF editing via Draw
     vlc # video player
     brightnessctl # brightness control (requires video group)
-    wl-clipboard # clipboard utilities (wl-copy / wl-paste)
     nautilus # file manager
     nautilus-python # enables right-click extensions (e.g. open in terminal)
     file-roller # right-click archive extract/compress

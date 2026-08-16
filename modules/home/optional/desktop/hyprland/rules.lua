@@ -19,7 +19,7 @@ end
 
 -- Remove gaps and rounded corners for fullscreen windows
 hl.workspace_rule({ workspace = "f[1]", gaps_out = 0, gaps_in = 0 })
-hl.window_rule({ match = { float = false, workspace = "f[1]" }, rounding = 0 })
+hl.window_rule({ match = { float = false, workspace = "f[1]" }, rounding = 0, border_size = 0 })
 
 -- Default workspace assignments
 local workspace_assignments = {

@@ -55,9 +55,9 @@ let
       terminal = ${toString config.stylix.opacity.terminal},
     }
 
-    -- Nix store binary paths (only paths used by Lua config)
-    M.bin = {
-      polkit_agent = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1",
+    M.plugins = {
+      dynamic_cursors = "${pkgs.hyprlandPlugins.hypr-dynamic-cursors}/lib/libhypr-dynamic-cursors.so",
+      hyprfocus = "${pkgs.hyprlandPlugins.hyprfocus}/lib/libhyprfocus.so",
     }
 
     return M
@@ -232,7 +232,6 @@ in
 
 {
   home.packages = [
-    pkgs.hyprmon
     pkgs.wf-recorder
     pkgs.whisper-cpp
     pkgs.wtype
@@ -259,6 +258,10 @@ in
   wayland.windowManager.hyprland = {
     enable = true;
     package = pkgs.hyprland;
+    plugins = [
+      pkgs.hyprlandPlugins.hypr-dynamic-cursors
+      pkgs.hyprlandPlugins.hyprfocus
+    ];
     systemd.enable = false; # UWSM handles session targets and env export; HM's version would conflict
     configType = "lua";
   };
