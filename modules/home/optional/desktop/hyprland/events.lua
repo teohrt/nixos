@@ -28,23 +28,6 @@ hl.on("window.open", function(new_window)
 end)
 
 ------------------------------------------------------------
--- Restore internal display when external monitor is removed
-------------------------------------------------------------
--- The catch-all rule in monitors.lua handles extending to external
--- monitors automatically. This handler only needs to recover from
--- the case where the lid is closed (eDP-1 disabled) and the external
--- monitor is unplugged — leaving no active displays.
-
-local function refresh_bar()
-    hl.timer(function()
-        hl.exec_cmd("noctalia msg bar-hide")
-        hl.timer(function()
-            hl.exec_cmd("noctalia msg bar-show")
-        end, { timeout = 200, type = "oneshot" })
-    end, { timeout = 300, type = "oneshot" })
-end
-
-------------------------------------------------------------
 -- Auto-focus sole window on workspace
 ------------------------------------------------------------
 -- When a layer surface closes (clipboard panel, launcher, etc.) and the
@@ -92,6 +75,5 @@ hl.on("monitor.removed", function(monitor)
             position = "auto",
             scale = ctx.default_scale,
         })
-        refresh_bar()
     end, { timeout = 500, type = "oneshot" })
 end)

@@ -40,18 +40,17 @@ if ctx.hostname == "framework-16" then
         position = "auto",
         scale = 1,
     })
-    -- Internal display mirrors the external when one is connected
-    local edp = {
+    hl.monitor({
         output = "eDP-1",
         mode = "preferred",
         position = "auto",
         scale = 1.25,
         disabled = is_lid_closed(),
-    }
+    })
+
     if ext then
-        edp.mirror = ext
+        hl.workspace_rule({ workspace = "10", monitor = "eDP-1", default = true })
     end
-    hl.monitor(edp)
 
     -- Reduced mouse sensitivity for Framework trackpad
     hl.config({
