@@ -143,6 +143,7 @@ hl.bind(mod .. " + O", function()
         hl.dispatch(hl.dsp.window.float({ action = "unset" }))
     else
         local mon = w.monitor
+        if mon == nil then return end
         local width = math.floor(mon.width / mon.scale / 2)
         local height = math.floor(mon.height / mon.scale / 2)
         hl.dispatch(hl.dsp.window.float({ action = "set" }))
