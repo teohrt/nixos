@@ -8,8 +8,9 @@ local ctx = require("context")
 -- floats kitty on empty workspaces for a centered single-window look.
 
 hl.on("window.open", function(new_window)
-    -- Skip floating helpers that should stay floating
-    if new_window.title == "hyprmon" or new_window.title == "webcam" then
+    -- Skip floating helpers and popups that should stay floating
+    if new_window.title == "webcam"
+        or new_window.class == "dev.noctalia.Noctalia" then
         return
     end
 

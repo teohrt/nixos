@@ -26,7 +26,7 @@ Full-repo review · 41 files · 6 parallel agents · deduplicated & verified
 - [x] **monitor.removed applies 1.25x scale on ThinkPad** — `hyprland/events.lua:66-79`, `hyprland.nix:10`
   `ctx.default_scale` is hardcoded to 1.25 for all hosts. ThinkPad uses scale 1. Unplugging an external monitor re-enables eDP-1 at wrong scale. Fix: parameterize `defaultScale` per host or read from monitor config.
 
-- [ ] **Noctalia popups unfloat solo kitty windows** — `hyprland/events.lua:10-28`, `hyprland/rules.lua:75`
+- [x] **Noctalia popups unfloat solo kitty windows** — `hyprland/events.lua:10-28`, `hyprland/rules.lua:75`
   `window.open` handler only excludes `hyprmon` and `webcam` titles, not Noctalia popups. Opening a wallpaper picker or panel abruptly tiles the kitty. Fix: also exclude `dev.noctalia.Noctalia` class.
 
 - [ ] **Voice input wav in /tmp enables wtype injection** — `hyprland.nix:200-201`
