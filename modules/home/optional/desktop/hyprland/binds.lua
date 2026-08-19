@@ -68,7 +68,17 @@ end, { description = "Terminal" })
 hl.bind(mod .. " + Escape",       hl.dsp.exec_cmd(ipc .. " panel-toggle session"), { description = "Session menu" })
 hl.bind(mod .. " + SHIFT + Return", hl.dsp.exec_cmd("google-chrome-stable"), { description = "Browser" })
 hl.bind(mod .. " + F",            hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "Maximize" })
-hl.bind(mod .. " + SHIFT + F",    hl.dsp.exec_cmd("nautilus --new-window"), { description = "File manager" })
+hl.bind(mod .. " + SHIFT + F", function()
+    local w = hl.get_active_window()
+    if w and w.class == "google-chrome" then
+        if w.fullscreen_client == 0 then
+            hl.dispatch(hl.dsp.window.fullscreen_state({ internal = 0, client = 2 }))
+        else
+            hl.dispatch(hl.dsp.window.fullscreen_state({ internal = 0, client = 0 }))
+        end
+    end
+end, { description = "Toggle Chrome top bar" })
+hl.bind(mod .. " + SHIFT + SPACE", hl.dsp.exec_cmd("nautilus --new-window"), { description = "File manager" })
 hl.bind(mod .. " + Q",            hl.dsp.window.close(), { description = "Close window" })
 
 local gaps_removed = false
@@ -97,15 +107,28 @@ hl.bind(mod .. " + V",            hl.dsp.exec_cmd(ipc .. " panel-toggle clipboar
 hl.bind(mod .. " + SPACE",        hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"), { description = "Launch apps" })
 hl.bind(mod .. " + B",            hl.dsp.exec_cmd(ipc .. " bar-toggle"), { description = "Toggle bar" })
 hl.bind(mod .. " + SHIFT + B", function()
-    local w = hl.get_active_window()
-    if w and w.class == "google-chrome" then
-        if w.fullscreen_client == 0 then
-            hl.dispatch(hl.dsp.window.fullscreen_state({ internal = 0, client = 2 }))
-        else
-            hl.dispatch(hl.dsp.window.fullscreen_state({ internal = 0, client = 0 }))
-        end
+    local f = io.popen("noctalia config export 2>/dev/null | grep -m1 '^position' | cut -d'\"' -f2")
+    local cur = f and f:read("*l") or "top"
+    if f then
+        f:close()
     end
-end, { description = "Toggle Chrome top bar" })
+    local new_pos = cur == "top" and "bottom" or "top"
+    local state = os.getenv("HOME") .. "/.local/state/noctalia/settings.toml"
+    local content = ""
+    local sf = io.open(state, "r")
+    if sf then
+        content = sf:read("*a")
+        sf:close()
+    end
+    content = content:gsub("%[bar%.main%]\nposition = \"[^\"]+\"\n?", "")
+    content = content:gsub("\n+$", "\n")
+    local wf = io.open(state, "w")
+    if wf then
+        wf:write(content .. "\n[bar.main]\nposition = \"" .. new_pos .. "\"\n")
+        wf:close()
+        os.execute("noctalia msg config-reload")
+    end
+end, { description = "Move bar top/bottom" })
 hl.bind(mod .. " + J",            hl.dsp.layout("togglesplit"), { description = "Toggle split" })
 hl.bind(mod .. " + P",            hl.dsp.window.pseudo(), { description = "Pseudo window" })
 hl.bind(mod .. " + W",            hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"), { description = "Wallpaper picker" })
