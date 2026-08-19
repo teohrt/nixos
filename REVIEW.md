@@ -23,7 +23,7 @@ Full-repo review · 41 files · 6 parallel agents · deduplicated & verified
 - [x] **SUPER+O crashes if monitor is nil during hotunplug** — `hyprland/binds.lua:145-146`
   `w.monitor` used without nil guard → `mon.width` crashes. The webcam handler in rules.lua:106 correctly guards this. Add `if mon == nil then return end`.
 
-- [ ] **monitor.removed applies 1.25x scale on ThinkPad** — `hyprland/events.lua:66-79`, `hyprland.nix:10`
+- [x] **monitor.removed applies 1.25x scale on ThinkPad** — `hyprland/events.lua:66-79`, `hyprland.nix:10`
   `ctx.default_scale` is hardcoded to 1.25 for all hosts. ThinkPad uses scale 1. Unplugging an external monitor re-enables eDP-1 at wrong scale. Fix: parameterize `defaultScale` per host or read from monitor config.
 
 - [ ] **Noctalia popups unfloat solo kitty windows** — `hyprland/events.lua:10-28`, `hyprland/rules.lua:75`

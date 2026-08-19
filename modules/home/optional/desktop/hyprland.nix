@@ -7,16 +7,11 @@
   ...
 }:
 let
-  defaultScale = 1.25;
-
   # Lua data file generated at Nix build time.
   # Provides Stylix colors, Nix store binary paths, opacity settings, and
   # default scale to the hand-written Lua config files.
   contextLua = pkgs.writeText "context.lua" ''
     local M = {}
-
-    -- Default monitor scale
-    M.default_scale = ${toString defaultScale}
 
     -- Hostname (read at Lua runtime)
     do
@@ -28,6 +23,9 @@ let
         M.hostname = "unknown"
       end
     end
+
+    local scales = { ["framework-16"] = 1.25 }
+    M.default_scale = scales[M.hostname] or 1
 
     -- Stylix base16 colors
     M.colors = {
