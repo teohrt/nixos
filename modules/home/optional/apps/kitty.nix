@@ -46,7 +46,7 @@ in
 
       # Enable remote control for session management
       allow_remote_control = "yes";
-      listen_on = "unix:/tmp/kitty-socket";
+      listen_on = "unix:$XDG_RUNTIME_DIR/kitty-socket";
 
       # Tabs and layouts
       enabled_layouts = "splits,stack";

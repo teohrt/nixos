@@ -12,7 +12,7 @@ Full-repo review · 41 files · 6 parallel agents · deduplicated & verified
 
 ## High
 
-- [ ] **Kitty remote control on world-accessible /tmp socket** — `apps/kitty.nix:48-49`
+- [x] **Kitty remote control on world-accessible /tmp socket** — `apps/kitty.nix:48-49`
   `allow_remote_control = "yes"` with `listen_on = "unix:/tmp/kitty-socket"`. Any local process can inject keystrokes, read terminal content, or spawn processes via `kitten @`. Fix: move to `$XDG_RUNTIME_DIR/kitty-socket`.
 
 - [x] ~~**Browser chooser uses Lua syntax in hyprctl dispatch** — `apps/browser-chooser.nix:18`~~
