@@ -42,6 +42,7 @@ in
           "notifications"
         ];
         end = [
+          "recorder"
           "cpu"
           "ram"
           "bluetooth"
@@ -67,6 +68,7 @@ in
 
       plugins.enabled = [
         "noctalia/wallhaven"
+        "noctalia/screen_recorder"
         "local/spoof-status"
       ];
 
@@ -142,6 +144,7 @@ in
       };
 
       widget = {
+        recorder.type = "noctalia/screen_recorder:recorder";
         spoof-status.type = "local/spoof-status:status";
         clock = {
           format = "{:%-I:%M %p}";

@@ -146,6 +146,7 @@ in
     zoom-wayland # wrapped for Wayland screen sharing
     postman
     bruno-v3 # API client (like Postman) — v3 from binary release
+    gpu-screen-recorder # backend for Noctalia screen recorder plugin
     easyeffects # audio effects for PipeWire
     dbeaver-unwrapped # database client (PostgreSQL, MySQL, SQLite, etc.)
     bolt-launcher # Jagex Launcher alternative (RuneLite, HDOS, RS3)
