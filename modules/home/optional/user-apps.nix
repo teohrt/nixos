@@ -144,6 +144,7 @@ in
     discord
     bubblewrap # sandbox for Claude Desktop Cowork mode
     zoom-wayland # wrapped for Wayland screen sharing
+    postman
     bruno-v3 # API client (like Postman) — v3 from binary release
     easyeffects # audio effects for PipeWire
     dbeaver-unwrapped # database client (PostgreSQL, MySQL, SQLite, etc.)
