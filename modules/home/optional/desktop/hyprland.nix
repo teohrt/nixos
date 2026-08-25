@@ -67,36 +67,16 @@ let
 
   # Toggle menu - quick actions via walker dmenu
   toggle-menu = pkgs.writeShellScriptBin "toggle-menu" ''
-    start_recording() {
-      mkdir -p ~/Videos/Recordings
-      file=~/Videos/Recordings/$(date +%Y-%m-%d_%H-%M-%S).mp4
-      echo "$file" > /tmp/current-recording
-      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 3..."
-      sleep 1
-      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 2..."
-      sleep 1
-      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 1..."
-      sleep 1
-      if [[ "$1" == "audio" ]]; then
-        ${pkgs.wf-recorder}/bin/wf-recorder -a -f "$file" &
-      else
-        ${pkgs.wf-recorder}/bin/wf-recorder -f "$file" &
-      fi
-      ${pkgs.libnotify}/bin/notify-send -u low "Recording started"
-    }
-
     set_brightness() {
       ${pkgs.brightnessctl}/bin/brightnessctl set "$1" -q
       current=$(${pkgs.brightnessctl}/bin/brightnessctl -m | cut -d, -f4)
       ${pkgs.libnotify}/bin/notify-send -u low -t 1000 "Brightness" "$current"
     }
 
-    # Toggle webcam preview window for screen recordings with face cam
     toggle_webcam() {
       if pgrep -f "mpv.*title=webcam" > /dev/null; then
         pkill -f "mpv.*title=webcam"
       else
-        # Build camera list from sysfs - only include even-numbered devices (capture, not metadata)
         cameras=""
         for dev in /dev/video*; do
           num=$(basename "$dev" | tr -dc '0-9')
@@ -109,7 +89,6 @@ let
         choice=$(printf "$cameras" | ${walker} --dmenu -p "Camera")
         [[ -z "$choice" ]] && return
 
-        # Extract device path from selection
         device=$(echo "$choice" | grep -oP '/dev/video\d+')
 
         ${pkgs.mpv}/bin/mpv --no-osc --geometry=320x240-10-10 --ontop --no-border \
@@ -118,33 +97,14 @@ let
       fi
     }
 
-    if pgrep -x wf-recorder > /dev/null; then
-      record_option="Stop Recording"
-    else
-      record_option="Record Screen"
-    fi
-
     if [ -f /run/spoof-enabled ]; then
       spoof_option="Disable Spoof"
     else
       spoof_option="Enable Spoof"
     fi
 
-    choice=$(printf "$record_option\nWebcam Preview\nScreensaver\nBrightness\nVolume\n$spoof_option" | ${walker} --dmenu -p "Toggle")
+    choice=$(printf "Webcam Preview\nScreensaver\nBrightness\nVolume\n$spoof_option" | ${walker} --dmenu -p "Toggle")
     case "$choice" in
-      "Stop Recording")
-        pkill -x wf-recorder
-        file=$(cat /tmp/current-recording 2>/dev/null)
-        rm -f /tmp/current-recording
-        ${pkgs.libnotify}/bin/notify-send -u low "Recording saved" "$file"
-        ;;
-      "Record Screen")
-        sub=$(printf "With Audio\nNo Audio" | ${walker} --dmenu -p "Record")
-        case "$sub" in
-          "With Audio") start_recording audio ;;
-          "No Audio") start_recording ;;
-        esac
-        ;;
       "Webcam Preview")
         toggle_webcam
         ;;
@@ -230,7 +190,6 @@ in
 
 {
   home.packages = [
-    pkgs.wf-recorder
     pkgs.whisper-cpp
     pkgs.wtype
     toggle-menu
