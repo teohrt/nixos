@@ -151,6 +151,14 @@ let
     esac
   '';
 
+  # Move noctalia bar between top and bottom
+  noctalia-bar-move = pkgs.writeShellScriptBin "noctalia-bar-move" ''
+    cur=$(noctalia config export 2>/dev/null | grep -m1 '^position' | cut -d'"' -f2)
+    [ "$cur" = top ] && new=bottom || new=top
+    printf '[bar.main]\nposition = "%s"\n' "$new" > "$HOME/.config/noctalia/overrides.toml"
+    noctalia msg config-reload
+  '';
+
   # Voice-to-text using whisper-cpp
   # First press starts recording, second press stops and transcribes
   voice-input = pkgs.writeShellScriptBin "voice-input" ''
@@ -192,6 +200,7 @@ in
   home.packages = [
     pkgs.whisper-cpp
     pkgs.wtype
+    noctalia-bar-move
     toggle-menu
     voice-input
   ];

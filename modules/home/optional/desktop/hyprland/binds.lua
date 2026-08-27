@@ -106,29 +106,7 @@ hl.bind(mod .. " + V",            hl.dsp.exec_cmd(ipc .. " panel-toggle clipboar
 ---- UI toggles ----
 hl.bind(mod .. " + SPACE",        hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"), { description = "Launch apps" })
 hl.bind(mod .. " + B",            hl.dsp.exec_cmd(ipc .. " bar-toggle"), { description = "Toggle bar" })
-hl.bind(mod .. " + SHIFT + B", function()
-    local f = io.popen("noctalia config export 2>/dev/null | grep -m1 '^position' | cut -d'\"' -f2")
-    local cur = f and f:read("*l") or "top"
-    if f then
-        f:close()
-    end
-    local new_pos = cur == "top" and "bottom" or "top"
-    local state = os.getenv("HOME") .. "/.local/state/noctalia/settings.toml"
-    local content = ""
-    local sf = io.open(state, "r")
-    if sf then
-        content = sf:read("*a")
-        sf:close()
-    end
-    content = content:gsub("%[bar%.main%]\nposition = \"[^\"]+\"\n?", "")
-    content = content:gsub("\n+$", "\n")
-    local wf = io.open(state, "w")
-    if wf then
-        wf:write(content .. "\n[bar.main]\nposition = \"" .. new_pos .. "\"\n")
-        wf:close()
-        os.execute("noctalia msg config-reload")
-    end
-end, { description = "Move bar top/bottom" })
+hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("noctalia-bar-move"), { description = "Move bar top/bottom" })
 hl.bind(mod .. " + J",            hl.dsp.layout("togglesplit"), { description = "Toggle split" })
 hl.bind(mod .. " + P",            hl.dsp.window.pseudo(), { description = "Pseudo window" })
 hl.bind(mod .. " + W",            hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"), { description = "Wallpaper picker" })
