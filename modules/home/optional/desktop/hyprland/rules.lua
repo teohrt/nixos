@@ -83,6 +83,15 @@ hl.window_rule({
     border_size = 0,
 })
 
+-- WiFi QR code viewer: float centered
+hl.window_rule({
+    match = { class = "^(wifi-qr)$" },
+    float = true,
+    center = true,
+    border_size = 1,
+    border_color = "rgba(" .. ctx.colors.base0D:sub(2) .. "ff)",
+})
+
 -- Force popup apps to half-screen centered after they open
 -- (some apps like Electron override the size rule on map)
 local function matches_popup(window)

@@ -64,6 +64,9 @@ let
   # --- Shell scripts (writeShellScriptBin so they install as named commands) ---
 
   walker = "${pkgs.walker}/bin/walker";
+  nmcli = "${pkgs.networkmanager}/bin/nmcli";
+  qrencode = "${pkgs.qrencode}/bin/qrencode";
+  imv = "${pkgs.imv}/bin/imv";
 
   # Toggle menu - quick actions via walker dmenu
   toggle-menu = pkgs.writeShellScriptBin "toggle-menu" ''
@@ -97,14 +100,74 @@ let
       fi
     }
 
+    show_wifi_qr() {
+      local device
+      device=$(ip route get 1.1.1.1 2>/dev/null | awk '{ for (i=1;i<=NF;i++) if ($i=="dev") { print $(i+1); exit } }')
+      if [[ -z "$device" || ! -d "/sys/class/net/$device/wireless" ]]; then
+        device=$(LC_ALL=C ${nmcli} -t -f DEVICE,TYPE,STATE device status 2>/dev/null |
+          awk -F: '$2 == "wifi" && $3 ~ /^connected/ { print $1; exit }')
+      fi
+      if [[ -z "$device" ]]; then
+        ${pkgs.libnotify}/bin/notify-send -u low "WiFi QR" "No active WiFi connection"
+        return
+      fi
+
+      local uuid
+      uuid=$(${nmcli} --get-values GENERAL.CON-UUID device show "$device" | head -n 1)
+      if [[ -z "$uuid" || "$uuid" == "--" ]]; then
+        ${pkgs.libnotify}/bin/notify-send -u low "WiFi QR" "No active WiFi connection"
+        return
+      fi
+
+      mapfile -t fields < <(${nmcli} --show-secrets --escape no --get-values \
+        802-11-wireless.ssid,802-11-wireless-security.key-mgmt,802-11-wireless-security.psk,802-11-wireless-security.wep-key0 \
+        connection show uuid "$uuid")
+
+      local ssid=''${fields[0]:-}
+      local key_mgmt=''${fields[1]:-}
+      local psk=''${fields[2]:-}
+      local wep_key=''${fields[3]:-}
+
+      if [[ -z "$ssid" ]]; then
+        ${pkgs.libnotify}/bin/notify-send -u low "WiFi QR" "Could not read WiFi name"
+        return
+      fi
+
+      local security password
+      if [[ -n "$key_mgmt" && "$key_mgmt" != "none" ]]; then
+        security=WPA; password=$psk
+      elif [[ -n "$wep_key" ]]; then
+        security=WEP; password=$wep_key
+      else
+        security=nopass; password=""
+      fi
+
+      local esc_ssid esc_pass
+      esc_ssid=$(printf '%s' "$ssid" | sed 's/[\\;,:"]/\\&/g')
+      esc_pass=$(printf '%s' "$password" | sed 's/[\\;,:"]/\\&/g')
+
+      local payload="WIFI:T:$security;S:$esc_ssid;P:$esc_pass;;"
+      local qr_file="/tmp/wifi-qr-$$.png"
+      printf '%s' "$payload" | ${qrencode} -t PNG -o "$qr_file" -s 10 -m 4
+
+      ${imv} -i wifi-qr "$qr_file" &
+      local viewer_pid=$!
+      sleep 0.3
+      rm -f "$qr_file"
+      wait "$viewer_pid" 2>/dev/null
+    }
+
     if [ -f /run/spoof-enabled ]; then
       spoof_option="Disable Spoof"
     else
       spoof_option="Enable Spoof"
     fi
 
-    choice=$(printf "Webcam Preview\nScreensaver\nBrightness\nVolume\n$spoof_option" | ${walker} --dmenu -p "Toggle")
+    choice=$(printf "WiFi QR\nWebcam Preview\nScreensaver\nBrightness\nVolume\n$spoof_option" | ${walker} --dmenu -p "Toggle")
     case "$choice" in
+      "WiFi QR")
+        show_wifi_qr
+        ;;
       "Webcam Preview")
         toggle_webcam
         ;;
