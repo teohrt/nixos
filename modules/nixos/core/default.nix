@@ -81,10 +81,7 @@
 
   i18n.defaultLocale = "en_US.UTF-8";
 
-  services.tzupdate = {
-    enable = true;
-    timer.enable = false;
-  };
+  services.tzupdate.enable = true;
 
   nixpkgs.config.allowUnfree = true;
 
