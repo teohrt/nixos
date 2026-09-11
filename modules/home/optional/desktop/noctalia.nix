@@ -24,9 +24,9 @@ in
         scale = 1.3;
         hover_highlight = false;
         widget_spacing = 20;
-        radius = 80;
+        radius = 0;
         margin_edge = 0;
-        margin_ends = 500;
+        margin_ends = 0;
         margin_opposite_edge = 0;
         shadow = false;
         capsule_padding = 15.0;
