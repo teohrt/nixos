@@ -72,14 +72,18 @@ in
         "local/spoof-status"
       ];
 
-      plugin_settings."noctalia/wallhaven" = {
-        browser_placement = "floating";
-        browser_position = "center";
-      };
-
-      plugin_settings."local/spoof-status" = {
-        info_placement = "attached";
-        info_open_near_click = true;
+      plugin_settings = {
+        "noctalia/screen_recorder" = {
+          video_source = "focused";
+        };
+        "noctalia/wallhaven" = {
+          browser_placement = "floating";
+          browser_position = "center";
+        };
+        "local/spoof-status" = {
+          info_placement = "attached";
+          info_open_near_click = true;
+        };
       };
 
       dock.enabled = false;
