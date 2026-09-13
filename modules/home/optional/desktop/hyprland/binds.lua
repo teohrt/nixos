@@ -108,7 +108,7 @@ hl.bind(mod .. " + SPACE",        hl.dsp.exec_cmd(ipc .. " panel-toggle launcher
 hl.bind(mod .. " + B",            hl.dsp.exec_cmd(ipc .. " bar-toggle"), { description = "Toggle bar" })
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("noctalia-bar-move"), { description = "Move bar top/bottom" })
 hl.bind(mod .. " + J",            hl.dsp.layout("togglesplit"), { description = "Toggle split" })
-hl.bind(mod .. " + P",            hl.dsp.window.pseudo(), { description = "Pseudo window" })
+hl.bind(mod .. " + P",            hl.dsp.window.pin(), { description = "Pin window (all workspaces)" })
 hl.bind(mod .. " + W",            hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"), { description = "Wallpaper picker" })
 hl.bind(mod .. " + SHIFT + W",    hl.dsp.exec_cmd(ipc .. " panel-toggle noctalia/wallhaven:browser"), { description = "Wallhaven browser" })
 
