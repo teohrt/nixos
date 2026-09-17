@@ -22,7 +22,6 @@
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     sops-nix.url = "github:Mic92/sops-nix";
-    claude-desktop.url = "github:patrickjaja/claude-desktop-bin";
     git-hooks = {
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -39,7 +38,6 @@
       nixos-hardware,
       sops-nix,
       noctalia,
-      claude-desktop,
       git-hooks,
       ...
     }:
@@ -109,7 +107,6 @@
             { inherit (themeConfig) stylix; }
             home-manager.nixosModules.home-manager
             hmNixosModule
-            { environment.systemPackages = [ claude-desktop.packages.${system}.default ]; }
           ]
           ++ extraModules;
         };
