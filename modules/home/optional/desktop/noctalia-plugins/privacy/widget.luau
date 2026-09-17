@@ -10,5 +10,5 @@ function update()
 end
 
 function onClick()
-    noctalia.togglePanel("local/spoof-status:info")
+    noctalia.togglePanel("local/privacy:info")
 end

@@ -1,5 +1,5 @@
-id            = "local/spoof-status"
-name          = "Spoof Status"
+id            = "local/privacy"
+name          = "Privacy"
 version       = "1.0.0"
 plugin_api    = 3
 author        = "local"
@@ -13,4 +13,4 @@ entry = "widget.luau"
 id     = "info"
 entry  = "panel.luau"
 width  = 300
-height = 290
+height = 330

@@ -47,7 +47,7 @@ in
           "ram"
           "bluetooth"
           "volume"
-          "spoof-status"
+          "privacy"
           "network"
         ];
       };
@@ -69,7 +69,7 @@ in
       plugins.enabled = [
         "noctalia/wallhaven"
         "noctalia/screen_recorder"
-        "local/spoof-status"
+        "local/privacy"
       ];
 
       plugin_settings = {
@@ -80,7 +80,7 @@ in
           browser_placement = "floating";
           browser_position = "center";
         };
-        "local/spoof-status" = {
+        "local/privacy" = {
           info_placement = "attached";
           info_open_near_click = true;
         };
@@ -149,7 +149,7 @@ in
 
       widget = {
         recorder.type = "noctalia/screen_recorder:recorder";
-        spoof-status.type = "local/spoof-status:status";
+        privacy.type = "local/privacy:status";
         clock = {
           format = "{:%-I:%M %p}";
           anchor = true;
@@ -184,9 +184,9 @@ in
   };
 
   xdg.dataFile = {
-    "noctalia/plugins/spoof-status/plugin.toml".source = ./noctalia-plugins/spoof-status/plugin.toml;
-    "noctalia/plugins/spoof-status/widget.luau".source = ./noctalia-plugins/spoof-status/widget.luau;
-    "noctalia/plugins/spoof-status/panel.luau".source = ./noctalia-plugins/spoof-status/panel.luau;
+    "noctalia/plugins/privacy/plugin.toml".source = ./noctalia-plugins/privacy/plugin.toml;
+    "noctalia/plugins/privacy/widget.luau".source = ./noctalia-plugins/privacy/widget.luau;
+    "noctalia/plugins/privacy/panel.luau".source = ./noctalia-plugins/privacy/panel.luau;
   };
 
   # Let Noctalia use its own theming; disable Stylix's hyprpaper target
