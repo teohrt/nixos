@@ -150,6 +150,7 @@ in
     easyeffects # audio effects for PipeWire
     dbeaver-unwrapped # database client (PostgreSQL, MySQL, SQLite, etc.)
     bolt-launcher # Jagex Launcher alternative (RuneLite, HDOS, RS3)
+    qbittorrent
 
     # wayland / hyprland ecosystem
     kdePackages.partitionmanager
