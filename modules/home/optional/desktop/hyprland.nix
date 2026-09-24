@@ -164,13 +164,14 @@ let
     fi
 
     set_scale() {
+      prev=$(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0].scale')
       hyprctl eval "
         local monitors = hl.get_monitors()
         for _, m in ipairs(monitors) do
           hl.monitor({ output = m.name, mode = 'preferred', position = 'auto', scale = $1 })
         end
       "
-      ${pkgs.libnotify}/bin/notify-send -u low -t 1000 "Scale" "$1"
+      ${pkgs.libnotify}/bin/notify-send -u low -t 3000 "Scale" "$prev → $1"
     }
 
     choice=$(printf "WiFi QR\nWebcam Preview\nScreensaver\nBrightness\nVolume\nScale\n$spoof_option" | ${walker} --dmenu -p "Toggle")
