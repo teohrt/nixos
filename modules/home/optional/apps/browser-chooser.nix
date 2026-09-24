@@ -13,7 +13,7 @@ let
       *)        exit 0 ;;
     esac
 
-    ${pkgs.google-chrome}/bin/google-chrome-stable --profile-directory="$profile" "$url" &
+    ${pkgs.google-chrome}/bin/google-chrome-stable --no-default-browser-check --profile-directory="$profile" "$url" &
     sleep 0.3
     ${pkgs.hyprland}/bin/hyprctl dispatch 'hl.dsp.focus({ window = "class:google-chrome" })'
   '';
