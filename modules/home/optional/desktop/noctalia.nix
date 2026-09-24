@@ -91,10 +91,12 @@ in
       lockscreen_widgets.enabled = false;
 
       notification = {
-        show_actions = false;
+        show_actions = true;
         show_app_name = false;
-        offset_x = 15;
-        offset_y = 0;
+        position = "top_center";
+        offset_x = 30;
+        offset_y = 30;
+        scale = 1.3;
       };
 
       osd = {
