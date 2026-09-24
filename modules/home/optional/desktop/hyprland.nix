@@ -163,7 +163,17 @@ let
       spoof_option="Enable Spoof"
     fi
 
-    choice=$(printf "WiFi QR\nWebcam Preview\nScreensaver\nBrightness\nVolume\n$spoof_option" | ${walker} --dmenu -p "Toggle")
+    set_scale() {
+      hyprctl eval "
+        local monitors = hl.get_monitors()
+        for _, m in ipairs(monitors) do
+          hl.monitor({ output = m.name, mode = 'preferred', position = 'auto', scale = $1 })
+        end
+      "
+      ${pkgs.libnotify}/bin/notify-send -u low -t 1000 "Scale" "$1"
+    }
+
+    choice=$(printf "WiFi QR\nWebcam Preview\nScreensaver\nBrightness\nVolume\nScale\n$spoof_option" | ${walker} --dmenu -p "Toggle")
     case "$choice" in
       "WiFi QR")
         show_wifi_qr
@@ -195,6 +205,11 @@ let
           75%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 75% ;;
           100%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 100% ;;
         esac
+        ;;
+      "Scale")
+        current=$(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0].scale')
+        sub=$(printf "2.0\n1.9\n1.8\n1.7\n1.6\n1.5\n1.4\n1.3\n1.2\n1.1\n1.0" | ${walker} --dmenu -p "Scale ($current)")
+        [[ -n "$sub" ]] && set_scale "$sub"
         ;;
       "Enable Spoof"|"Disable Spoof")
         systemctl start toggle-spoof
