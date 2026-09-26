@@ -119,6 +119,7 @@ in
 {
   home.packages = with pkgs; [
     # cli utilities
+    wl-clipboard # wl-copy/wl-paste — needed for Claude Code image paste on Wayland
     terminaltexteffects # tte — terminal text effects (used by screensaver)
     claude-code
     nodejs
