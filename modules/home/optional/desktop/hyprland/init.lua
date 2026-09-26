@@ -9,9 +9,13 @@ for _, path in pairs(ctx.plugins) do
 end
 
 local dir = os.getenv("HOME") .. "/.config/hypr/"
-for entry in io.popen("ls " .. dir .. "*.lua"):lines() do
-    local name = entry:match("([^/]+)%.lua$")
-    if name and name ~= "hyprland" then
-        require(name)
+local h = io.popen("ls " .. dir .. "*.lua 2>/dev/null")
+if h then
+    for entry in h:lines() do
+        local name = entry:match("([^/]+)%.lua$")
+        if name and name ~= "hyprland" then
+            require(name)
+        end
     end
+    h:close()
 end

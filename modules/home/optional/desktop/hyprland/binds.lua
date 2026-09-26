@@ -68,7 +68,17 @@ end, { description = "Terminal" })
 hl.bind(mod .. " + Escape",       hl.dsp.exec_cmd(ipc .. " panel-toggle session"), { description = "Session menu" })
 hl.bind(mod .. " + SHIFT + Return", hl.dsp.exec_cmd("google-chrome-stable"), { description = "Browser" })
 hl.bind(mod .. " + F",            hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "Maximize" })
-hl.bind(mod .. " + SHIFT + F",    hl.dsp.exec_cmd("nautilus --new-window"), { description = "File manager" })
+hl.bind(mod .. " + SHIFT + F", function()
+    local w = hl.get_active_window()
+    if w and w.class == "google-chrome" then
+        if w.fullscreen_client == 0 then
+            hl.dispatch(hl.dsp.window.fullscreen_state({ internal = 0, client = 2 }))
+        else
+            hl.dispatch(hl.dsp.window.fullscreen_state({ internal = 0, client = 0 }))
+        end
+    end
+end, { description = "Toggle Chrome top bar" })
+hl.bind(mod .. " + SHIFT + SPACE", hl.dsp.exec_cmd("nautilus --new-window"), { description = "File manager" })
 hl.bind(mod .. " + Q",            hl.dsp.window.close(), { description = "Close window" })
 
 local gaps_removed = false
@@ -96,18 +106,9 @@ hl.bind(mod .. " + V",            hl.dsp.exec_cmd(ipc .. " panel-toggle clipboar
 ---- UI toggles ----
 hl.bind(mod .. " + SPACE",        hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"), { description = "Launch apps" })
 hl.bind(mod .. " + B",            hl.dsp.exec_cmd(ipc .. " bar-toggle"), { description = "Toggle bar" })
-hl.bind(mod .. " + SHIFT + B", function()
-    local w = hl.get_active_window()
-    if w and w.class == "google-chrome" then
-        if w.fullscreen_client == 0 then
-            hl.dispatch(hl.dsp.window.fullscreen_state({ internal = 0, client = 2 }))
-        else
-            hl.dispatch(hl.dsp.window.fullscreen_state({ internal = 0, client = 0 }))
-        end
-    end
-end, { description = "Toggle Chrome top bar" })
+hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("noctalia-bar-move"), { description = "Move bar top/bottom" })
 hl.bind(mod .. " + J",            hl.dsp.layout("togglesplit"), { description = "Toggle split" })
-hl.bind(mod .. " + P",            hl.dsp.window.pseudo(), { description = "Pseudo window" })
+hl.bind(mod .. " + P",            hl.dsp.window.pin(), { description = "Pin window (all workspaces)" })
 hl.bind(mod .. " + W",            hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"), { description = "Wallpaper picker" })
 hl.bind(mod .. " + SHIFT + W",    hl.dsp.exec_cmd(ipc .. " panel-toggle noctalia/wallhaven:browser"), { description = "Wallhaven browser" })
 
@@ -120,6 +121,7 @@ hl.bind(mod .. " + O", function()
         hl.dispatch(hl.dsp.window.float({ action = "unset" }))
     else
         local mon = w.monitor
+        if mon == nil then return end
         local width = math.floor(mon.width / mon.scale / 2)
         local height = math.floor(mon.height / mon.scale / 2)
         hl.dispatch(hl.dsp.window.float({ action = "set" }))

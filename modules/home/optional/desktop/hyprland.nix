@@ -7,16 +7,11 @@
   ...
 }:
 let
-  defaultScale = 1.25;
-
   # Lua data file generated at Nix build time.
   # Provides Stylix colors, Nix store binary paths, opacity settings, and
   # default scale to the hand-written Lua config files.
   contextLua = pkgs.writeText "context.lua" ''
     local M = {}
-
-    -- Default monitor scale
-    M.default_scale = ${toString defaultScale}
 
     -- Hostname (read at Lua runtime)
     do
@@ -28,6 +23,9 @@ let
         M.hostname = "unknown"
       end
     end
+
+    local scales = { ["framework-16"] = 1.25 }
+    M.default_scale = scales[M.hostname] or 1
 
     -- Stylix base16 colors
     M.colors = {
@@ -66,39 +64,22 @@ let
   # --- Shell scripts (writeShellScriptBin so they install as named commands) ---
 
   walker = "${pkgs.walker}/bin/walker";
+  nmcli = "${pkgs.networkmanager}/bin/nmcli";
+  qrencode = "${pkgs.qrencode}/bin/qrencode";
+  imv = "${pkgs.imv}/bin/imv";
 
   # Toggle menu - quick actions via walker dmenu
   toggle-menu = pkgs.writeShellScriptBin "toggle-menu" ''
-    start_recording() {
-      mkdir -p ~/Videos/Recordings
-      file=~/Videos/Recordings/$(date +%Y-%m-%d_%H-%M-%S).mp4
-      echo "$file" > /tmp/current-recording
-      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 3..."
-      sleep 1
-      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 2..."
-      sleep 1
-      ${pkgs.libnotify}/bin/notify-send -u low -t 800 "Recording in 1..."
-      sleep 1
-      if [[ "$1" == "audio" ]]; then
-        ${pkgs.wf-recorder}/bin/wf-recorder -a -f "$file" &
-      else
-        ${pkgs.wf-recorder}/bin/wf-recorder -f "$file" &
-      fi
-      ${pkgs.libnotify}/bin/notify-send -u low "Recording started"
-    }
-
     set_brightness() {
       ${pkgs.brightnessctl}/bin/brightnessctl set "$1" -q
       current=$(${pkgs.brightnessctl}/bin/brightnessctl -m | cut -d, -f4)
       ${pkgs.libnotify}/bin/notify-send -u low -t 1000 "Brightness" "$current"
     }
 
-    # Toggle webcam preview window for screen recordings with face cam
     toggle_webcam() {
       if pgrep -f "mpv.*title=webcam" > /dev/null; then
         pkill -f "mpv.*title=webcam"
       else
-        # Build camera list from sysfs - only include even-numbered devices (capture, not metadata)
         cameras=""
         for dev in /dev/video*; do
           num=$(basename "$dev" | tr -dc '0-9')
@@ -111,7 +92,6 @@ let
         choice=$(printf "$cameras" | ${walker} --dmenu -p "Camera")
         [[ -z "$choice" ]] && return
 
-        # Extract device path from selection
         device=$(echo "$choice" | grep -oP '/dev/video\d+')
 
         ${pkgs.mpv}/bin/mpv --no-osc --geometry=320x240-10-10 --ontop --no-border \
@@ -120,11 +100,62 @@ let
       fi
     }
 
-    if pgrep -x wf-recorder > /dev/null; then
-      record_option="Stop Recording"
-    else
-      record_option="Record Screen"
-    fi
+    show_wifi_qr() {
+      local device
+      device=$(ip route get 1.1.1.1 2>/dev/null | awk '{ for (i=1;i<=NF;i++) if ($i=="dev") { print $(i+1); exit } }')
+      if [[ -z "$device" || ! -d "/sys/class/net/$device/wireless" ]]; then
+        device=$(LC_ALL=C ${nmcli} -t -f DEVICE,TYPE,STATE device status 2>/dev/null |
+          awk -F: '$2 == "wifi" && $3 ~ /^connected/ { print $1; exit }')
+      fi
+      if [[ -z "$device" ]]; then
+        ${pkgs.libnotify}/bin/notify-send -u low "WiFi QR" "No active WiFi connection"
+        return
+      fi
+
+      local uuid
+      uuid=$(${nmcli} --get-values GENERAL.CON-UUID device show "$device" | head -n 1)
+      if [[ -z "$uuid" || "$uuid" == "--" ]]; then
+        ${pkgs.libnotify}/bin/notify-send -u low "WiFi QR" "No active WiFi connection"
+        return
+      fi
+
+      mapfile -t fields < <(${nmcli} --show-secrets --escape no --get-values \
+        802-11-wireless.ssid,802-11-wireless-security.key-mgmt,802-11-wireless-security.psk,802-11-wireless-security.wep-key0 \
+        connection show uuid "$uuid")
+
+      local ssid=''${fields[0]:-}
+      local key_mgmt=''${fields[1]:-}
+      local psk=''${fields[2]:-}
+      local wep_key=''${fields[3]:-}
+
+      if [[ -z "$ssid" ]]; then
+        ${pkgs.libnotify}/bin/notify-send -u low "WiFi QR" "Could not read WiFi name"
+        return
+      fi
+
+      local security password
+      if [[ -n "$key_mgmt" && "$key_mgmt" != "none" ]]; then
+        security=WPA; password=$psk
+      elif [[ -n "$wep_key" ]]; then
+        security=WEP; password=$wep_key
+      else
+        security=nopass; password=""
+      fi
+
+      local esc_ssid esc_pass
+      esc_ssid=$(printf '%s' "$ssid" | sed 's/[\\;,:"]/\\&/g')
+      esc_pass=$(printf '%s' "$password" | sed 's/[\\;,:"]/\\&/g')
+
+      local payload="WIFI:T:$security;S:$esc_ssid;P:$esc_pass;;"
+      local qr_file="/tmp/wifi-qr-$$.png"
+      printf '%s' "$payload" | ${qrencode} -t PNG -o "$qr_file" -s 10 -m 4
+
+      ${imv} -i wifi-qr "$qr_file" &
+      local viewer_pid=$!
+      sleep 0.3
+      rm -f "$qr_file"
+      wait "$viewer_pid" 2>/dev/null
+    }
 
     if [ -f /run/spoof-enabled ]; then
       spoof_option="Disable Spoof"
@@ -132,20 +163,21 @@ let
       spoof_option="Enable Spoof"
     fi
 
-    choice=$(printf "$record_option\nWebcam Preview\nScreensaver\nBrightness\nVolume\n$spoof_option" | ${walker} --dmenu -p "Toggle")
+    set_scale() {
+      prev=$(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0].scale')
+      hyprctl eval "
+        local monitors = hl.get_monitors()
+        for _, m in ipairs(monitors) do
+          hl.monitor({ output = m.name, mode = 'preferred', position = 'auto', scale = $1 })
+        end
+      "
+      ${pkgs.libnotify}/bin/notify-send -u low -t 3000 "Scale" "$prev → $1"
+    }
+
+    choice=$(printf "WiFi QR\nWebcam Preview\nScreensaver\nBrightness\nVolume\nScale\n$spoof_option" | ${walker} --dmenu -p "Toggle")
     case "$choice" in
-      "Stop Recording")
-        pkill -x wf-recorder
-        file=$(cat /tmp/current-recording 2>/dev/null)
-        rm -f /tmp/current-recording
-        ${pkgs.libnotify}/bin/notify-send -u low "Recording saved" "$file"
-        ;;
-      "Record Screen")
-        sub=$(printf "With Audio\nNo Audio" | ${walker} --dmenu -p "Record")
-        case "$sub" in
-          "With Audio") start_recording audio ;;
-          "No Audio") start_recording ;;
-        esac
+      "WiFi QR")
+        show_wifi_qr
         ;;
       "Webcam Preview")
         toggle_webcam
@@ -175,6 +207,11 @@ let
           100%) wpctl set-volume @DEFAULT_AUDIO_SINK@ 100% ;;
         esac
         ;;
+      "Scale")
+        current=$(hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[0].scale')
+        sub=$(printf "2.0\n1.9\n1.8\n1.7\n1.6\n1.5\n1.4\n1.3\n1.2\n1.1\n1.0" | ${walker} --dmenu -p "Scale ($current)")
+        [[ -n "$sub" ]] && set_scale "$sub"
+        ;;
       "Enable Spoof"|"Disable Spoof")
         systemctl start toggle-spoof
         # Wait for NM to fully reconnect before reading MAC
@@ -191,6 +228,14 @@ let
         fi
         ;;
     esac
+  '';
+
+  # Move noctalia bar between top and bottom
+  noctalia-bar-move = pkgs.writeShellScriptBin "noctalia-bar-move" ''
+    cur=$(noctalia config export 2>/dev/null | grep -m1 '^position' | cut -d'"' -f2)
+    [ "$cur" = top ] && new=bottom || new=top
+    printf '[bar.main]\nposition = "%s"\n' "$new" > "$HOME/.config/noctalia/overrides.toml"
+    noctalia msg config-reload
   '';
 
   # Voice-to-text using whisper-cpp
@@ -232,9 +277,9 @@ in
 
 {
   home.packages = [
-    pkgs.wf-recorder
     pkgs.whisper-cpp
     pkgs.wtype
+    noctalia-bar-move
     toggle-menu
     voice-input
   ];

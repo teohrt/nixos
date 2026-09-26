@@ -8,8 +8,9 @@ local ctx = require("context")
 -- floats kitty on empty workspaces for a centered single-window look.
 
 hl.on("window.open", function(new_window)
-    -- Skip floating helpers that should stay floating
-    if new_window.title == "hyprmon" or new_window.title == "webcam" then
+    -- Skip floating helpers and popups that should stay floating
+    if new_window.title == "webcam"
+        or new_window.class == "dev.noctalia.Noctalia" then
         return
     end
 
@@ -26,23 +27,6 @@ hl.on("window.open", function(new_window)
         end
     end
 end)
-
-------------------------------------------------------------
--- Restore internal display when external monitor is removed
-------------------------------------------------------------
--- The catch-all rule in monitors.lua handles extending to external
--- monitors automatically. This handler only needs to recover from
--- the case where the lid is closed (eDP-1 disabled) and the external
--- monitor is unplugged — leaving no active displays.
-
-local function refresh_bar()
-    hl.timer(function()
-        hl.exec_cmd("noctalia msg bar-hide")
-        hl.timer(function()
-            hl.exec_cmd("noctalia msg bar-show")
-        end, { timeout = 200, type = "oneshot" })
-    end, { timeout = 300, type = "oneshot" })
-end
 
 ------------------------------------------------------------
 -- Auto-focus sole window on workspace
@@ -92,6 +76,5 @@ hl.on("monitor.removed", function(monitor)
             position = "auto",
             scale = ctx.default_scale,
         })
-        refresh_bar()
     end, { timeout = 500, type = "oneshot" })
 end)

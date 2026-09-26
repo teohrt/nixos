@@ -138,6 +138,7 @@
     ../../modules/nixos/optional/steam.nix
     ../../modules/nixos/optional/kvm.nix
     ../../modules/nixos/optional/localsend.nix
+    ../../modules/nixos/optional/vpn.nix
   ];
 
   networking.hostName = "framework-16";

@@ -24,9 +24,9 @@ in
         scale = 1.3;
         hover_highlight = false;
         widget_spacing = 20;
-        radius = 80;
+        radius = 0;
         margin_edge = 0;
-        margin_ends = 500;
+        margin_ends = 0;
         margin_opposite_edge = 0;
         shadow = false;
         capsule_padding = 15.0;
@@ -42,11 +42,12 @@ in
           "notifications"
         ];
         end = [
+          "recorder"
           "cpu"
           "ram"
           "bluetooth"
           "volume"
-          "spoof-status"
+          "privacy"
           "network"
         ];
       };
@@ -67,17 +68,22 @@ in
 
       plugins.enabled = [
         "noctalia/wallhaven"
-        "local/spoof-status"
+        "noctalia/screen_recorder"
+        "local/privacy"
       ];
 
-      plugin_settings."noctalia/wallhaven" = {
-        browser_placement = "floating";
-        browser_position = "center";
-      };
-
-      plugin_settings."local/spoof-status" = {
-        info_placement = "attached";
-        info_open_near_click = true;
+      plugin_settings = {
+        "noctalia/screen_recorder" = {
+          video_source = "focused";
+        };
+        "noctalia/wallhaven" = {
+          browser_placement = "floating";
+          browser_position = "center";
+        };
+        "local/privacy" = {
+          info_placement = "attached";
+          info_open_near_click = true;
+        };
       };
 
       dock.enabled = false;
@@ -85,10 +91,12 @@ in
       lockscreen_widgets.enabled = false;
 
       notification = {
-        show_actions = false;
+        show_actions = true;
         show_app_name = false;
-        offset_x = 15;
-        offset_y = 0;
+        position = "top_center";
+        offset_x = 30;
+        offset_y = 30;
+        scale = 1.3;
       };
 
       osd = {
@@ -142,7 +150,8 @@ in
       };
 
       widget = {
-        spoof-status.type = "local/spoof-status:status";
+        recorder.type = "noctalia/screen_recorder:recorder";
+        privacy.type = "local/privacy:status";
         clock = {
           format = "{:%-I:%M %p}";
           anchor = true;
@@ -177,9 +186,9 @@ in
   };
 
   xdg.dataFile = {
-    "noctalia/plugins/spoof-status/plugin.toml".source = ./noctalia-plugins/spoof-status/plugin.toml;
-    "noctalia/plugins/spoof-status/widget.luau".source = ./noctalia-plugins/spoof-status/widget.luau;
-    "noctalia/plugins/spoof-status/panel.luau".source = ./noctalia-plugins/spoof-status/panel.luau;
+    "noctalia/plugins/privacy/plugin.toml".source = ./noctalia-plugins/privacy/plugin.toml;
+    "noctalia/plugins/privacy/widget.luau".source = ./noctalia-plugins/privacy/widget.luau;
+    "noctalia/plugins/privacy/panel.luau".source = ./noctalia-plugins/privacy/panel.luau;
   };
 
   # Let Noctalia use its own theming; disable Stylix's hyprpaper target
