@@ -68,6 +68,52 @@ let
   qrencode = "${pkgs.qrencode}/bin/qrencode";
   imv = "${pkgs.imv}/bin/imv";
 
+  # Countdown reminders backed by systemd transient timers
+  remind = pkgs.writeShellScriptBin "remind" ''
+    notify="${pkgs.libnotify}/bin/notify-send"
+    reminder_dir="''${XDG_RUNTIME_DIR:-/tmp}/reminders"
+    dbus_addr="''${DBUS_SESSION_BUS_ADDRESS:-unix:path=/run/user/$(id -u)/bus}"
+
+    case "''${1:-}" in
+      show)
+        body=""
+        while IFS= read -r timer; do
+          unit="''${timer%.timer}"; name="''${unit#remind-}"
+          mins="''${name%%m-*}"; set_at="''${name##*m-}"
+          msg=""; [[ -f "$reminder_dir/$unit.message" ]] && msg=$(<"$reminder_dir/$unit.message")
+          body+="''${msg:-''${mins}-min reminder} at $(date -d "@$(( set_at + mins * 60 ))" "+%-I:%M %p")"$'\n'
+        done < <(systemctl --user list-timers --all --no-legend --no-pager "remind-*.timer" 2>/dev/null | awk 'NF > 1 { print $(NF-1) }')
+        [[ -z "$body" ]] \
+          && "$notify" -u low "Reminders" "No active reminders" \
+          || "$notify" -u low "Reminders" "''${body%$'\n'}"
+        ;;
+      clear)
+        systemctl --user list-timers --all --no-legend --no-pager "remind-*.timer" 2>/dev/null \
+          | awk 'NF > 1 { print $(NF-1) }' | xargs -r systemctl --user stop 2>/dev/null || true
+        rm -f "$reminder_dir"/remind-*.message 2>/dev/null || true
+        "$notify" -u low "Reminders" "Cleared"
+        ;;
+      "")
+        echo "Usage: remind [minutes] [message] | show | clear" >&2
+        exit 1
+        ;;
+      *)
+        [[ "$1" =~ ^[0-9]+$ ]] || { echo "Error: minutes must be a number" >&2; exit 1; }
+        minutes=$1 msg="''${2:-}"
+        unit="remind-''${minutes}m-$(date +%s)"
+        remind_at=$(date -d "+$minutes minutes" "+%-I:%M %p")
+        mkdir -p "$reminder_dir"
+        [[ -n "$msg" ]] && printf '%s' "$msg" > "$reminder_dir/$unit.message"
+        systemd-run --user --quiet --collect \
+          --setenv=DBUS_SESSION_BUS_ADDRESS="$dbus_addr" \
+          --on-active="''${minutes}m" --unit="$unit" \
+          ${pkgs.bash}/bin/bash -c '${pkgs.libnotify}/bin/notify-send -u normal "Reminder" "$1"; rm -f "$2"' \
+          bash "''${msg:-''${minutes}-minute reminder}" "$reminder_dir/$unit.message"
+        "$notify" -u low "''${msg:-Reminder} in $minutes minutes" "Set for $remind_at"
+        ;;
+    esac
+  '';
+
   # Toggle menu - quick actions via walker dmenu
   toggle-menu = pkgs.writeShellScriptBin "toggle-menu" ''
     set_brightness() {
@@ -174,10 +220,25 @@ let
       ${pkgs.libnotify}/bin/notify-send -u low -t 3000 "Scale" "$prev → $1"
     }
 
-    choice=$(printf "WiFi QR\nWebcam Preview\nScreensaver\nBrightness\nVolume\nScale\n$spoof_option" | ${walker} --dmenu -p "Toggle")
+    choice=$(printf "WiFi QR\nReminder\nWebcam Preview\nScreensaver\nBrightness\nVolume\nScale\n$spoof_option" | ${walker} --dmenu -p "Toggle")
     case "$choice" in
       "WiFi QR")
         show_wifi_qr
+        ;;
+      "Reminder")
+        sub=$(printf "Show\nClear" | ${walker} --dmenu -p "Remind in (min)")
+        case "$sub" in
+          "Show")  remind show ;;
+          "Clear") remind clear ;;
+          *)
+            mins=$(printf '%s' "$sub" | grep -oE '^[0-9]+')
+            if [[ -n "$mins" ]]; then
+              msg=$(printf "(no message)\n" | ${walker} --dmenu -p "Reminder message (optional)")
+              [[ "$msg" == "(no message)" || -z "$msg" ]] && msg=""
+              remind "$mins" "$msg"
+            fi
+            ;;
+        esac
         ;;
       "Webcam Preview")
         toggle_webcam
@@ -280,6 +341,7 @@ in
     pkgs.whisper-cpp
     pkgs.wtype
     noctalia-bar-move
+    remind
     toggle-menu
     voice-input
   ];
