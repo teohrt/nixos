@@ -83,11 +83,13 @@ hl.window_rule({
     border_size = 0,
 })
 
--- WiFi QR code viewer: float centered
+-- WiFi QR code viewer: float centered at a fixed square size (QR codes are always square,
+-- so a square window prevents imv's fit-scaling from adding black bars on the sides)
 hl.window_rule({
     match = { class = "^(wifi-qr)$" },
     float = true,
     center = true,
+    size = "450 450",
     border_size = 1,
     border_color = "rgba(" .. ctx.colors.base0D:sub(2) .. "ff)",
 })
