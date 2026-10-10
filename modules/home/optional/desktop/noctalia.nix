@@ -7,9 +7,6 @@
   noctalia,
   ...
 }:
-let
-  noctalia-pkg = noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
-in
 {
   imports = [ noctalia.homeModules.default ];
 
@@ -156,12 +153,12 @@ in
           format = "{:%-I:%M %p}";
           anchor = true;
         };
-        control-center.custom_image = "${noctalia-pkg}/share/noctalia/assets/images/distros/nixos.svg";
+        control-center.custom_image = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
         control-center.custom_image_colorize = true;
-        cpu.show_label = false;
+        cpu.show_value = false;
         ram = {
-          show_label = false;
           stat = "ram_pct";
+          show_value = false;
         };
         battery = {
           display_mode = "graphic";
@@ -171,9 +168,9 @@ in
         network.show_label = false;
         volume.show_label = false;
         sysmon = {
-          display = "graph";
+          visualization = "graph";
           glyph = "cpu-usage";
-          show_label = false;
+          show_value = false;
         };
         workspaces = {
           focused_color = "outline";
