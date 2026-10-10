@@ -1,5 +1,10 @@
 # Packages that should be installed to the user profile.
-{ pkgs, pkgs-unstable, ... }:
+{
+  pkgs,
+  pkgs-unstable,
+  herdr-nix,
+  ...
+}:
 let
   # Wrap DBeaver to bypass Stylix's GTK theme (Java/SWT apps render incorrectly with it)
   dbeaver-unwrapped = pkgs.symlinkJoin {
@@ -122,6 +127,7 @@ in
     wl-clipboard # wl-copy/wl-paste — needed for Claude Code image paste on Wayland
     terminaltexteffects # tte — terminal text effects (used by screensaver)
     claude-code
+    herdr-nix.packages.${pkgs.system}.default
     nodejs
     lazydocker
     ripgrep
