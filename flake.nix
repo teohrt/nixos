@@ -98,7 +98,6 @@
       mkHost =
         hostPath: extraModules:
         nixpkgs.lib.nixosSystem {
-          inherit system;
           specialArgs = {
             inherit
               inputs
@@ -108,6 +107,7 @@
           };
           modules = [
             hostPath
+            { nixpkgs.hostPlatform = system; }
             sops-nix.nixosModules.sops
             stylix.nixosModules.stylix
             { inherit (themeConfig) stylix; }

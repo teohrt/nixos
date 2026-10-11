@@ -127,7 +127,7 @@ in
     wl-clipboard # wl-copy/wl-paste — needed for Claude Code image paste on Wayland
     terminaltexteffects # tte — terminal text effects (used by screensaver)
     claude-code
-    herdr-nix.packages.${pkgs.system}.default
+    herdr-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
     nodejs
     lazydocker
     ripgrep
