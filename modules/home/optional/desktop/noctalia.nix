@@ -20,9 +20,11 @@
         position = "top";
         scale = 1.3;
         hover_highlight = false;
+        capsule = true;
+        background_opacity = 0.0;
         widget_spacing = 20;
         radius = 0;
-        margin_edge = 0;
+        margin_edge = 15;
         margin_ends = 0;
         margin_opposite_edge = 0;
         shadow = false;
@@ -78,7 +80,7 @@
           browser_position = "center";
         };
         "local/privacy" = {
-          info_placement = "attached";
+          info_placement = "floating";
           info_open_near_click = true;
         };
       };
@@ -109,8 +111,12 @@
         screenshot.directory = "/home/trace/Pictures/Screenshots";
         panel = {
           open_near_click_control_center = true;
+          transparency_mode = "solid";
           borders = false;
-          floating_offset = 0;
+          floating_offset = 30;
+          control_center_placement = "floating";
+          clipboard_placement = "floating";
+          session_placement = "floating";
           wallpaper_placement = "floating";
           wallpaper_position = "center";
         };
