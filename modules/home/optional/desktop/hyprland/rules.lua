@@ -17,8 +17,9 @@ local function floating_popup(match)
     })
 end
 
--- Remove gaps and rounded corners for fullscreen windows
-hl.workspace_rule({ workspace = "f[1]", gaps_out = 0, gaps_in = 0 })
+-- Remove inner gaps, rounded corners, and borders for fullscreen windows
+-- Outer gaps and bar space are handled by gaps_out default + bar exclusive zone
+hl.workspace_rule({ workspace = "f[1]", gaps_in = 0 })
 hl.window_rule({ match = { float = false, workspace = "f[1]" }, rounding = 0, border_size = 0 })
 
 -- Default workspace assignments
