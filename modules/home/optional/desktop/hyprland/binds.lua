@@ -81,14 +81,30 @@ end, { description = "Toggle Chrome top bar" })
 hl.bind(mod .. " + SHIFT + SPACE", hl.dsp.exec_cmd("nautilus --new-window"), { description = "File manager" })
 hl.bind(mod .. " + Q",            hl.dsp.window.close(), { description = "Close window" })
 
-local gaps_removed = false
+bar_position = "top"
+bar_visible = true
+gaps_removed = false
+
+function apply_gaps()
+    local out_gaps
+    if gaps_removed then
+        out_gaps = { top = 0, right = 0, bottom = 0, left = 0 }
+    else
+        out_gaps = { top = 15, right = 15, bottom = 15, left = 15 }
+    end
+    if bar_visible then
+        out_gaps[bar_position] = 0
+    end
+    if gaps_removed then
+        hl.config({ general = { gaps_in = 0, gaps_out = out_gaps }, decoration = { rounding = 0 } })
+    else
+        hl.config({ general = { gaps_in = 7, gaps_out = out_gaps }, decoration = { rounding = 10 } })
+    end
+end
+
 hl.bind(mod .. " + G", function()
     gaps_removed = not gaps_removed
-    if gaps_removed then
-        hl.config({ general = { gaps_in = 0, gaps_out = 0 }, decoration = { rounding = 0 } })
-    else
-        hl.config({ general = { gaps_in = 7, gaps_out = 15 }, decoration = { rounding = 10 } })
-    end
+    apply_gaps()
 end, { description = "Toggle gaps" })
 
 ---- Copy (SUPER+C → CTRL+SHIFT+C in terminals, CTRL+C elsewhere) ----
@@ -105,7 +121,11 @@ hl.bind(mod .. " + V",            hl.dsp.exec_cmd(ipc .. " panel-toggle clipboar
 
 ---- UI toggles ----
 hl.bind(mod .. " + SPACE",        hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"), { description = "Launch apps" })
-hl.bind(mod .. " + B",            hl.dsp.exec_cmd(ipc .. " bar-toggle"), { description = "Toggle bar" })
+hl.bind(mod .. " + B", function()
+    bar_visible = not bar_visible
+    hl.dispatch(hl.dsp.exec_cmd(ipc .. " bar-toggle"))
+    apply_gaps()
+end, { description = "Toggle bar" })
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("noctalia-bar-move"), { description = "Move bar top/bottom" })
 hl.bind(mod .. " + J",            hl.dsp.layout("togglesplit"), { description = "Toggle split" })
 hl.bind(mod .. " + P",            hl.dsp.window.pin(), { description = "Pin window (all workspaces)" })

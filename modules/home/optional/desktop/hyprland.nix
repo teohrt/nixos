@@ -297,6 +297,7 @@ let
     [ "$cur" = top ] && new=bottom || new=top
     printf '[bar.main]\nposition = "%s"\n' "$new" > "$HOME/.config/noctalia/overrides.toml"
     noctalia msg config-reload
+    hyprctl eval "bar_position = \"$new\"; apply_gaps()"
   '';
 
   # Voice-to-text using whisper-cpp

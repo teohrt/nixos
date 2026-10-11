@@ -1,4 +1,13 @@
 ---
+base: lua51
 globals:
   hl:
+    any: true
+  bar_position:
+    any: true
+  bar_visible:
+    any: true
+  gaps_removed:
+    any: true
+  apply_gaps:
     any: true

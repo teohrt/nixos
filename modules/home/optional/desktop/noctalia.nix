@@ -26,7 +26,7 @@
         radius = 0;
         margin_edge = 15;
         margin_ends = 0;
-        margin_opposite_edge = 0;
+        margin_opposite_edge = 15;
         shadow = false;
         capsule_padding = 15.0;
         capsule_radius = 21;
