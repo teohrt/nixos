@@ -85,6 +85,29 @@ in
     };
   };
 
+  # Prevent nixos-rebuild switch from killing the active graphical session.
+  # greetd restart kills the login session; UWSM unit restarts trigger
+  # OnSuccess=wayland-session-shutdown.target which tears down the compositor.
+  # New configs take effect on next reboot instead.
+  systemd = {
+    services.greetd = {
+      stopIfChanged = false;
+      restartIfChanged = false;
+    };
+    user.services."wayland-wm@" = {
+      overrideStrategy = "asDropin";
+      restartIfChanged = false;
+      stopIfChanged = false;
+      enableDefaultPath = false;
+    };
+    user.services."wayland-session-bindpid@" = {
+      overrideStrategy = "asDropin";
+      restartIfChanged = false;
+      stopIfChanged = false;
+      enableDefaultPath = false;
+    };
+  };
+
   # XDG portal for Hyprland
   xdg.portal = {
     enable = true;
