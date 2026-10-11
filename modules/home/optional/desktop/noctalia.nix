@@ -32,7 +32,6 @@
         capsule_radius = 21;
         capsule_thickness = 1.0;
         start = [
-          "control-center"
           "workspaces"
         ];
         center = [
