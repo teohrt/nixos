@@ -17,8 +17,9 @@ local function floating_popup(match)
     })
 end
 
--- Remove gaps and rounded corners for fullscreen windows
-hl.workspace_rule({ workspace = "f[1]", gaps_out = 0, gaps_in = 0 })
+-- Remove inner gaps, rounded corners, and borders for fullscreen windows
+-- Outer gaps and bar space are handled by gaps_out default + bar exclusive zone
+hl.workspace_rule({ workspace = "f[1]", gaps_in = 0 })
 hl.window_rule({ match = { float = false, workspace = "f[1]" }, rounding = 0, border_size = 0 })
 
 -- Default workspace assignments
@@ -83,11 +84,13 @@ hl.window_rule({
     border_size = 0,
 })
 
--- WiFi QR code viewer: float centered
+-- WiFi QR code viewer: float centered at a fixed square size (QR codes are always square,
+-- so a square window prevents imv's fit-scaling from adding black bars on the sides)
 hl.window_rule({
     match = { class = "^(wifi-qr)$" },
     float = true,
     center = true,
+    size = "450 450",
     border_size = 1,
     border_color = "rgba(" .. ctx.colors.base0D:sub(2) .. "ff)",
 })

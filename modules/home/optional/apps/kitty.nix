@@ -22,6 +22,8 @@ in
     shellIntegration.mode = "enabled";
     shellIntegration.enableZshIntegration = false;
     settings = {
+      remember_window_size = false;
+
       # Window padding (kitty uses single value for all sides)
       window_padding_width = 12;
       window_border_width = "0.5pt";

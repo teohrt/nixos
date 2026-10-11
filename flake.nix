@@ -21,6 +21,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    herdr-nix = {
+      url = "github:herdrdev/herdr-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     sops-nix.url = "github:Mic92/sops-nix";
     git-hooks = {
       url = "github:cachix/git-hooks.nix";
@@ -38,6 +42,7 @@
       nixos-hardware,
       sops-nix,
       noctalia,
+      herdr-nix,
       git-hooks,
       ...
     }:
@@ -82,6 +87,7 @@
               pkgs-unstable
               spicetify-nix
               noctalia
+              herdr-nix
               username
               ;
           };
@@ -92,7 +98,6 @@
       mkHost =
         hostPath: extraModules:
         nixpkgs.lib.nixosSystem {
-          inherit system;
           specialArgs = {
             inherit
               inputs
@@ -102,6 +107,7 @@
           };
           modules = [
             hostPath
+            { nixpkgs.hostPlatform = system; }
             sops-nix.nixosModules.sops
             stylix.nixosModules.stylix
             { inherit (themeConfig) stylix; }
