@@ -9,6 +9,9 @@
 let
   lokiPort = 9831;
   grafanaPort = 9832;
+  prometheusPort = 9090;
+  nodeExporterPort = 9100;
+  processExporterPort = 9256;
   hostname = config.networking.hostName;
 
   uid = toString config.users.users.${username}.uid;
@@ -120,6 +123,49 @@ in
       configPath = alloyConfigDir;
     };
 
+    prometheus = {
+      enable = true;
+      port = prometheusPort;
+      listenAddress = "127.0.0.1";
+      retentionTime = "48h";
+      globalConfig = {
+        scrape_interval = "15s";
+        evaluation_interval = "15s";
+      };
+      scrapeConfigs = [
+        {
+          job_name = "node";
+          static_configs = [
+            { targets = [ "127.0.0.1:${toString nodeExporterPort}" ]; }
+          ];
+        }
+        {
+          job_name = "process";
+          static_configs = [
+            { targets = [ "127.0.0.1:${toString processExporterPort}" ]; }
+          ];
+        }
+      ];
+      exporters = {
+        node = {
+          enable = true;
+          port = nodeExporterPort;
+          listenAddress = "127.0.0.1";
+        };
+        process = {
+          enable = true;
+          port = processExporterPort;
+          listenAddress = "127.0.0.1";
+          settings.process_names = [
+            {
+              name = "{{.Comm}}";
+              cmdline = [ ".+" ];
+            }
+          ];
+        };
+      };
+    };
+
     grafana = {
       enable = true;
       settings = {
@@ -147,6 +193,13 @@ in
             url = "http://127.0.0.1:${toString lokiPort}";
             isDefault = true;
           }
+          {
+            name = "Prometheus";
+            type = "prometheus";
+            uid = "prometheus";
+            access = "proxy";
+            url = "http://127.0.0.1:${toString prometheusPort}";
+          }
         ];
 
         dashboards.settings.providers = [
@@ -165,6 +218,10 @@ in
       loki = {
         type = "loki";
         uid = "loki";
+      };
+      prom = {
+        type = "prometheus";
+        uid = "prometheus";
       };
       errFilter = ''level=~"emerg|alert|crit|err|error"'';
 
@@ -217,6 +274,10 @@ in
         {
           title = "Session (greetd)";
           uid = "stream-session";
+        }
+        {
+          title = "System Resources";
+          uid = "system-resources";
         }
       ];
 
@@ -922,6 +983,490 @@ in
         };
         title = "Overview (all sources)";
         uid = "system-errors";
+      };
+
+      "grafana/dashboards/system-resources.json".text = builtins.toJSON {
+        annotations.list = [ ];
+        description = "CPU, memory, disk, and swap with per-process breakdowns";
+        editable = true;
+        graphTooltip = 1;
+        links = mkLinks "system-resources";
+        refresh = "30s";
+        panels = [
+          {
+            title = "CPU";
+            type = "gauge";
+            gridPos = {
+              h = 5;
+              w = 6;
+              x = 0;
+              y = 0;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = ''100 - (avg(irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)'';
+                instant = true;
+                refId = "A";
+              }
+            ];
+            fieldConfig.defaults = {
+              unit = "percent";
+              min = 0;
+              max = 100;
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  {
+                    color = "green";
+                    value = null;
+                  }
+                  {
+                    color = "yellow";
+                    value = 70;
+                  }
+                  {
+                    color = "red";
+                    value = 90;
+                  }
+                ];
+              };
+            };
+            options.reduceOptions.calcs = [ "lastNotNull" ];
+          }
+          {
+            title = "Memory";
+            type = "gauge";
+            gridPos = {
+              h = 5;
+              w = 6;
+              x = 6;
+              y = 0;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = "(1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100";
+                instant = true;
+                refId = "A";
+              }
+            ];
+            fieldConfig.defaults = {
+              unit = "percent";
+              min = 0;
+              max = 100;
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  {
+                    color = "green";
+                    value = null;
+                  }
+                  {
+                    color = "yellow";
+                    value = 70;
+                  }
+                  {
+                    color = "red";
+                    value = 90;
+                  }
+                ];
+              };
+            };
+            options.reduceOptions.calcs = [ "lastNotNull" ];
+          }
+          {
+            title = "Disk (/)";
+            type = "gauge";
+            gridPos = {
+              h = 5;
+              w = 6;
+              x = 12;
+              y = 0;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = ''(1 - node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100'';
+                instant = true;
+                refId = "A";
+              }
+            ];
+            fieldConfig.defaults = {
+              unit = "percent";
+              min = 0;
+              max = 100;
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  {
+                    color = "green";
+                    value = null;
+                  }
+                  {
+                    color = "yellow";
+                    value = 70;
+                  }
+                  {
+                    color = "red";
+                    value = 90;
+                  }
+                ];
+              };
+            };
+            options.reduceOptions.calcs = [ "lastNotNull" ];
+          }
+          {
+            title = "Swap";
+            type = "gauge";
+            gridPos = {
+              h = 5;
+              w = 6;
+              x = 18;
+              y = 0;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = "(1 - node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes) * 100";
+                instant = true;
+                refId = "A";
+              }
+            ];
+            fieldConfig.defaults = {
+              unit = "percent";
+              min = 0;
+              max = 100;
+              noValue = "N/A";
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  {
+                    color = "green";
+                    value = null;
+                  }
+                  {
+                    color = "yellow";
+                    value = 50;
+                  }
+                  {
+                    color = "red";
+                    value = 80;
+                  }
+                ];
+              };
+            };
+            options.reduceOptions.calcs = [ "lastNotNull" ];
+          }
+
+          {
+            title = "CPU Usage Over Time";
+            type = "timeseries";
+            gridPos = {
+              h = 8;
+              w = 15;
+              x = 0;
+              y = 5;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = ''avg(irate(node_cpu_seconds_total{mode!="idle"}[5m])) by (mode) * 100'';
+                legendFormat = "{{mode}}";
+                refId = "A";
+              }
+            ];
+            fieldConfig.defaults = {
+              color.mode = "palette-classic";
+              custom = {
+                drawStyle = "line";
+                fillOpacity = 60;
+                stacking.mode = "normal";
+                lineWidth = 1;
+                pointSize = 5;
+              };
+              unit = "percent";
+            };
+            options.legend = {
+              displayMode = "list";
+              placement = "bottom";
+            };
+          }
+          {
+            title = "Top Processes by CPU";
+            type = "bargauge";
+            gridPos = {
+              h = 8;
+              w = 9;
+              x = 15;
+              y = 5;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = "topk(10, sum(rate(namedprocess_namegroup_cpu_seconds_total[5m])) by (groupname))";
+                legendFormat = "{{groupname}}";
+                instant = true;
+                refId = "A";
+              }
+            ];
+            fieldConfig.defaults = {
+              color.mode = "continuous-GrYlRd";
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  {
+                    color = "green";
+                    value = null;
+                  }
+                ];
+              };
+              unit = "percentunit";
+            };
+            options = {
+              orientation = "horizontal";
+              displayMode = "gradient";
+              reduceOptions.calcs = [ "lastNotNull" ];
+            };
+          }
+
+          {
+            title = "Memory Usage Over Time";
+            type = "timeseries";
+            gridPos = {
+              h = 8;
+              w = 15;
+              x = 0;
+              y = 13;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = "node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes";
+                legendFormat = "Used";
+                refId = "A";
+              }
+              {
+                expr = "node_memory_Buffers_bytes";
+                legendFormat = "Buffers";
+                refId = "B";
+              }
+              {
+                expr = "node_memory_Cached_bytes";
+                legendFormat = "Cached";
+                refId = "C";
+              }
+              {
+                expr = "node_memory_MemFree_bytes";
+                legendFormat = "Free";
+                refId = "D";
+              }
+            ];
+            fieldConfig.defaults = {
+              color.mode = "palette-classic";
+              custom = {
+                drawStyle = "line";
+                fillOpacity = 60;
+                stacking.mode = "normal";
+                lineWidth = 1;
+                pointSize = 5;
+              };
+              unit = "bytes";
+            };
+            fieldConfig.overrides = [
+              {
+                matcher = {
+                  id = "byName";
+                  options = "Used";
+                };
+                properties = [
+                  {
+                    id = "color";
+                    value = {
+                      mode = "fixed";
+                      fixedColor = "red";
+                    };
+                  }
+                ];
+              }
+              {
+                matcher = {
+                  id = "byName";
+                  options = "Buffers";
+                };
+                properties = [
+                  {
+                    id = "color";
+                    value = {
+                      mode = "fixed";
+                      fixedColor = "orange";
+                    };
+                  }
+                ];
+              }
+              {
+                matcher = {
+                  id = "byName";
+                  options = "Cached";
+                };
+                properties = [
+                  {
+                    id = "color";
+                    value = {
+                      mode = "fixed";
+                      fixedColor = "yellow";
+                    };
+                  }
+                ];
+              }
+              {
+                matcher = {
+                  id = "byName";
+                  options = "Free";
+                };
+                properties = [
+                  {
+                    id = "color";
+                    value = {
+                      mode = "fixed";
+                      fixedColor = "green";
+                    };
+                  }
+                ];
+              }
+            ];
+            options.legend = {
+              displayMode = "list";
+              placement = "bottom";
+            };
+          }
+          {
+            title = "Top Processes by Memory";
+            type = "bargauge";
+            gridPos = {
+              h = 8;
+              w = 9;
+              x = 15;
+              y = 13;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = ''topk(10, sum(namedprocess_namegroup_memory_bytes{memtype="resident"}) by (groupname))'';
+                legendFormat = "{{groupname}}";
+                instant = true;
+                refId = "A";
+              }
+            ];
+            fieldConfig.defaults = {
+              color.mode = "continuous-GrYlRd";
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  {
+                    color = "green";
+                    value = null;
+                  }
+                ];
+              };
+              unit = "bytes";
+            };
+            options = {
+              orientation = "horizontal";
+              displayMode = "gradient";
+              reduceOptions.calcs = [ "lastNotNull" ];
+            };
+          }
+
+          {
+            title = "Filesystem Usage";
+            type = "bargauge";
+            gridPos = {
+              h = 8;
+              w = 15;
+              x = 0;
+              y = 21;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = ''(1 - node_filesystem_avail_bytes{fstype!~"tmpfs|devtmpfs|squashfs|overlay|efivarfs"} / node_filesystem_size_bytes{fstype!~"tmpfs|devtmpfs|squashfs|overlay|efivarfs"}) * 100'';
+                legendFormat = "{{mountpoint}}";
+                instant = true;
+                refId = "A";
+              }
+            ];
+            fieldConfig.defaults = {
+              unit = "percent";
+              min = 0;
+              max = 100;
+              color.mode = "continuous-GrYlRd";
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  {
+                    color = "green";
+                    value = null;
+                  }
+                ];
+              };
+            };
+            options = {
+              orientation = "horizontal";
+              displayMode = "gradient";
+              reduceOptions.calcs = [ "lastNotNull" ];
+            };
+          }
+          {
+            title = "Top Processes by Disk I/O";
+            type = "bargauge";
+            gridPos = {
+              h = 8;
+              w = 9;
+              x = 15;
+              y = 21;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = "topk(10, sum(rate(namedprocess_namegroup_read_bytes_total[5m]) + rate(namedprocess_namegroup_write_bytes_total[5m])) by (groupname))";
+                legendFormat = "{{groupname}}";
+                instant = true;
+                refId = "A";
+              }
+            ];
+            fieldConfig.defaults = {
+              color.mode = "continuous-GrYlRd";
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  {
+                    color = "green";
+                    value = null;
+                  }
+                ];
+              };
+              unit = "Bps";
+            };
+            options = {
+              orientation = "horizontal";
+              displayMode = "gradient";
+              reduceOptions.calcs = [ "lastNotNull" ];
+            };
+          }
+        ];
+        schemaVersion = 39;
+        tags = [
+          "nixos"
+          "resources"
+        ];
+        templating.list = [ ];
+        time = {
+          from = "now-1h";
+          to = "now";
+        };
+        title = "System Resources";
+        uid = "system-resources";
       };
 
       "grafana/dashboards/stream-hyprland.json".text = mkStreamDashboard {
