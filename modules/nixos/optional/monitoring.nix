@@ -987,18 +987,20 @@ in
 
       "grafana/dashboards/system-resources.json".text = builtins.toJSON {
         annotations.list = [ ];
-        description = "CPU, memory, disk, and swap with per-process breakdowns";
+        description = "CPU, memory, and disk with per-process breakdowns";
         editable = true;
         graphTooltip = 1;
         links = mkLinks "system-resources";
         refresh = "30s";
         panels = [
+
+          # -- Row 0: Gauges (y=0, h=5) --
           {
             title = "CPU";
             type = "gauge";
             gridPos = {
               h = 5;
-              w = 6;
+              w = 8;
               x = 0;
               y = 0;
             };
@@ -1039,8 +1041,8 @@ in
             type = "gauge";
             gridPos = {
               h = 5;
-              w = 6;
-              x = 6;
+              w = 8;
+              x = 8;
               y = 0;
             };
             datasource = prom;
@@ -1080,8 +1082,8 @@ in
             type = "gauge";
             gridPos = {
               h = 5;
-              w = 6;
-              x = 12;
+              w = 8;
+              x = 16;
               y = 0;
             };
             datasource = prom;
@@ -1116,55 +1118,14 @@ in
             };
             options.reduceOptions.calcs = [ "lastNotNull" ];
           }
-          {
-            title = "Swap";
-            type = "gauge";
-            gridPos = {
-              h = 5;
-              w = 6;
-              x = 18;
-              y = 0;
-            };
-            datasource = prom;
-            targets = [
-              {
-                expr = "(1 - node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes) * 100";
-                instant = true;
-                refId = "A";
-              }
-            ];
-            fieldConfig.defaults = {
-              unit = "percent";
-              min = 0;
-              max = 100;
-              noValue = "N/A";
-              thresholds = {
-                mode = "absolute";
-                steps = [
-                  {
-                    color = "green";
-                    value = null;
-                  }
-                  {
-                    color = "yellow";
-                    value = 50;
-                  }
-                  {
-                    color = "red";
-                    value = 80;
-                  }
-                ];
-              };
-            };
-            options.reduceOptions.calcs = [ "lastNotNull" ];
-          }
 
+          # -- Row 1: Stats / used & total (y=5, h=3) --
           {
             title = "CPU";
             type = "stat";
             gridPos = {
               h = 3;
-              w = 6;
+              w = 8;
               x = 0;
               y = 5;
             };
@@ -1205,8 +1166,8 @@ in
             type = "stat";
             gridPos = {
               h = 3;
-              w = 6;
-              x = 6;
+              w = 8;
+              x = 8;
               y = 5;
             };
             datasource = prom;
@@ -1245,8 +1206,8 @@ in
             type = "stat";
             gridPos = {
               h = 3;
-              w = 6;
-              x = 12;
+              w = 8;
+              x = 16;
               y = 5;
             };
             datasource = prom;
@@ -1280,54 +1241,14 @@ in
               reduceOptions.calcs = [ "lastNotNull" ];
             };
           }
-          {
-            title = "Swap";
-            type = "stat";
-            gridPos = {
-              h = 3;
-              w = 6;
-              x = 18;
-              y = 5;
-            };
-            datasource = prom;
-            targets = [
-              {
-                expr = "node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes";
-                legendFormat = "Used";
-                instant = true;
-                refId = "A";
-              }
-              {
-                expr = "node_memory_SwapTotal_bytes";
-                legendFormat = "Total";
-                instant = true;
-                refId = "B";
-              }
-            ];
-            fieldConfig.defaults = {
-              unit = "bytes";
-              noValue = "N/A";
-              thresholds.steps = [
-                {
-                  color = "text";
-                  value = null;
-                }
-              ];
-            };
-            options = {
-              colorMode = "none";
-              graphMode = "none";
-              textMode = "value_and_name";
-              reduceOptions.calcs = [ "lastNotNull" ];
-            };
-          }
 
+          # -- Row 2: Time series / usage (y=8, h=8) --
           {
-            title = "CPU Usage Over Time";
+            title = "CPU Over Time";
             type = "timeseries";
             gridPos = {
               h = 8;
-              w = 15;
+              w = 8;
               x = 0;
               y = 8;
             };
@@ -1356,51 +1277,13 @@ in
             };
           }
           {
-            title = "Top Processes by CPU";
-            type = "bargauge";
-            gridPos = {
-              h = 8;
-              w = 9;
-              x = 15;
-              y = 8;
-            };
-            datasource = prom;
-            targets = [
-              {
-                expr = "topk(10, sum(rate(namedprocess_namegroup_cpu_seconds_total[5m])) by (groupname))";
-                legendFormat = "{{groupname}}";
-                instant = true;
-                refId = "A";
-              }
-            ];
-            fieldConfig.defaults = {
-              color.mode = "continuous-GrYlRd";
-              thresholds = {
-                mode = "absolute";
-                steps = [
-                  {
-                    color = "green";
-                    value = null;
-                  }
-                ];
-              };
-              unit = "percentunit";
-            };
-            options = {
-              orientation = "horizontal";
-              displayMode = "gradient";
-              reduceOptions.calcs = [ "lastNotNull" ];
-            };
-          }
-
-          {
-            title = "Memory Usage Over Time";
+            title = "Memory Over Time";
             type = "timeseries";
             gridPos = {
               h = 8;
-              w = 15;
-              x = 0;
-              y = 16;
+              w = 8;
+              x = 8;
+              y = 8;
             };
             datasource = prom;
             targets = [
@@ -1504,51 +1387,13 @@ in
             };
           }
           {
-            title = "Top Processes by Memory";
-            type = "bargauge";
-            gridPos = {
-              h = 8;
-              w = 9;
-              x = 15;
-              y = 16;
-            };
-            datasource = prom;
-            targets = [
-              {
-                expr = ''topk(10, sum(namedprocess_namegroup_memory_bytes{memtype="resident"}) by (groupname))'';
-                legendFormat = "{{groupname}}";
-                instant = true;
-                refId = "A";
-              }
-            ];
-            fieldConfig.defaults = {
-              color.mode = "continuous-GrYlRd";
-              thresholds = {
-                mode = "absolute";
-                steps = [
-                  {
-                    color = "green";
-                    value = null;
-                  }
-                ];
-              };
-              unit = "bytes";
-            };
-            options = {
-              orientation = "horizontal";
-              displayMode = "gradient";
-              reduceOptions.calcs = [ "lastNotNull" ];
-            };
-          }
-
-          {
             title = "Filesystem Usage";
             type = "bargauge";
             gridPos = {
               h = 8;
-              w = 15;
-              x = 0;
-              y = 24;
+              w = 8;
+              x = 16;
+              y = 8;
             };
             datasource = prom;
             targets = [
@@ -1580,14 +1425,90 @@ in
               reduceOptions.calcs = [ "lastNotNull" ];
             };
           }
+
+          # -- Row 3: Top processes (y=16, h=8) --
+          {
+            title = "Top Processes by CPU";
+            type = "bargauge";
+            gridPos = {
+              h = 8;
+              w = 8;
+              x = 0;
+              y = 16;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = "topk(10, sum(rate(namedprocess_namegroup_cpu_seconds_total[5m])) by (groupname))";
+                legendFormat = "{{groupname}}";
+                instant = true;
+                refId = "A";
+              }
+            ];
+            fieldConfig.defaults = {
+              color.mode = "continuous-GrYlRd";
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  {
+                    color = "green";
+                    value = null;
+                  }
+                ];
+              };
+              unit = "percentunit";
+            };
+            options = {
+              orientation = "horizontal";
+              displayMode = "gradient";
+              reduceOptions.calcs = [ "lastNotNull" ];
+            };
+          }
+          {
+            title = "Top Processes by Memory";
+            type = "bargauge";
+            gridPos = {
+              h = 8;
+              w = 8;
+              x = 8;
+              y = 16;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = ''topk(10, sum(namedprocess_namegroup_memory_bytes{memtype="resident"}) by (groupname))'';
+                legendFormat = "{{groupname}}";
+                instant = true;
+                refId = "A";
+              }
+            ];
+            fieldConfig.defaults = {
+              color.mode = "continuous-GrYlRd";
+              thresholds = {
+                mode = "absolute";
+                steps = [
+                  {
+                    color = "green";
+                    value = null;
+                  }
+                ];
+              };
+              unit = "bytes";
+            };
+            options = {
+              orientation = "horizontal";
+              displayMode = "gradient";
+              reduceOptions.calcs = [ "lastNotNull" ];
+            };
+          }
           {
             title = "Top Processes by Disk I/O";
             type = "bargauge";
             gridPos = {
               h = 8;
-              w = 9;
-              x = 15;
-              y = 24;
+              w = 8;
+              x = 16;
+              y = 16;
             };
             datasource = prom;
             targets = [
