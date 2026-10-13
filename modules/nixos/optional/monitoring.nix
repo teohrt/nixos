@@ -1160,13 +1160,176 @@ in
           }
 
           {
+            title = "CPU";
+            type = "stat";
+            gridPos = {
+              h = 3;
+              w = 6;
+              x = 0;
+              y = 5;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = ''sum(irate(node_cpu_seconds_total{mode!="idle"}[5m]))'';
+                legendFormat = "Active";
+                instant = true;
+                refId = "A";
+              }
+              {
+                expr = ''count(count(node_cpu_seconds_total{mode="idle"}) by (cpu))'';
+                legendFormat = "Total";
+                instant = true;
+                refId = "B";
+              }
+            ];
+            fieldConfig.defaults = {
+              unit = "short";
+              decimals = 1;
+              thresholds.steps = [
+                {
+                  color = "text";
+                  value = null;
+                }
+              ];
+            };
+            options = {
+              colorMode = "none";
+              graphMode = "none";
+              textMode = "value_and_name";
+              reduceOptions.calcs = [ "lastNotNull" ];
+            };
+          }
+          {
+            title = "Memory";
+            type = "stat";
+            gridPos = {
+              h = 3;
+              w = 6;
+              x = 6;
+              y = 5;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes";
+                legendFormat = "Used";
+                instant = true;
+                refId = "A";
+              }
+              {
+                expr = "node_memory_MemTotal_bytes";
+                legendFormat = "Total";
+                instant = true;
+                refId = "B";
+              }
+            ];
+            fieldConfig.defaults = {
+              unit = "bytes";
+              thresholds.steps = [
+                {
+                  color = "text";
+                  value = null;
+                }
+              ];
+            };
+            options = {
+              colorMode = "none";
+              graphMode = "none";
+              textMode = "value_and_name";
+              reduceOptions.calcs = [ "lastNotNull" ];
+            };
+          }
+          {
+            title = "Disk (/)";
+            type = "stat";
+            gridPos = {
+              h = 3;
+              w = 6;
+              x = 12;
+              y = 5;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = ''node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_avail_bytes{mountpoint="/"}'';
+                legendFormat = "Used";
+                instant = true;
+                refId = "A";
+              }
+              {
+                expr = ''node_filesystem_size_bytes{mountpoint="/"}'';
+                legendFormat = "Total";
+                instant = true;
+                refId = "B";
+              }
+            ];
+            fieldConfig.defaults = {
+              unit = "bytes";
+              thresholds.steps = [
+                {
+                  color = "text";
+                  value = null;
+                }
+              ];
+            };
+            options = {
+              colorMode = "none";
+              graphMode = "none";
+              textMode = "value_and_name";
+              reduceOptions.calcs = [ "lastNotNull" ];
+            };
+          }
+          {
+            title = "Swap";
+            type = "stat";
+            gridPos = {
+              h = 3;
+              w = 6;
+              x = 18;
+              y = 5;
+            };
+            datasource = prom;
+            targets = [
+              {
+                expr = "node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes";
+                legendFormat = "Used";
+                instant = true;
+                refId = "A";
+              }
+              {
+                expr = "node_memory_SwapTotal_bytes";
+                legendFormat = "Total";
+                instant = true;
+                refId = "B";
+              }
+            ];
+            fieldConfig.defaults = {
+              unit = "bytes";
+              noValue = "N/A";
+              thresholds.steps = [
+                {
+                  color = "text";
+                  value = null;
+                }
+              ];
+            };
+            options = {
+              colorMode = "none";
+              graphMode = "none";
+              textMode = "value_and_name";
+              reduceOptions.calcs = [ "lastNotNull" ];
+            };
+          }
+
+          {
             title = "CPU Usage Over Time";
             type = "timeseries";
             gridPos = {
               h = 8;
               w = 15;
               x = 0;
-              y = 5;
+              y = 8;
             };
             datasource = prom;
             targets = [
@@ -1199,7 +1362,7 @@ in
               h = 8;
               w = 9;
               x = 15;
-              y = 5;
+              y = 8;
             };
             datasource = prom;
             targets = [
@@ -1237,7 +1400,7 @@ in
               h = 8;
               w = 15;
               x = 0;
-              y = 13;
+              y = 16;
             };
             datasource = prom;
             targets = [
@@ -1347,7 +1510,7 @@ in
               h = 8;
               w = 9;
               x = 15;
-              y = 13;
+              y = 16;
             };
             datasource = prom;
             targets = [
@@ -1385,7 +1548,7 @@ in
               h = 8;
               w = 15;
               x = 0;
-              y = 21;
+              y = 24;
             };
             datasource = prom;
             targets = [
@@ -1424,7 +1587,7 @@ in
               h = 8;
               w = 9;
               x = 15;
-              y = 21;
+              y = 24;
             };
             datasource = prom;
             targets = [
