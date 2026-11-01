@@ -68,6 +68,26 @@
         "type": "github"
       }
     },
+    "claude-desktop": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785638032,
+        "narHash": "sha256-PvKt7lEpynodhBvCHJku01FXXYHz0jaFIM1q8k3aXi8=",
+        "owner": "GoByeBye",
+        "repo": "claude-desktop-nix",
+        "rev": "de634fc0c9e2def4679ccf6b4b700e670d37bcd5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "GoByeBye",
+        "repo": "claude-desktop-nix",
+        "type": "github"
+      }
+    },
     "firefox-gnome-theme": {
       "flake": false,
       "locked": {
@@ -362,6 +382,7 @@
     },
     "root": {
       "inputs": {
+        "claude-desktop": "claude-desktop",
         "git-hooks": "git-hooks",
         "herdr-nix": "herdr-nix",
         "home-manager": "home-manager",

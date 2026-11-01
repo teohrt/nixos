@@ -25,6 +25,10 @@
       url = "github:herdrdev/herdr-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    claude-desktop = {
+      url = "github:GoByeBye/claude-desktop-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     sops-nix.url = "github:Mic92/sops-nix";
     git-hooks = {
       url = "github:cachix/git-hooks.nix";
@@ -41,6 +45,7 @@
       spicetify-nix,
       nixos-hardware,
       sops-nix,
+      claude-desktop,
       noctalia,
       herdr-nix,
       git-hooks,
@@ -80,12 +85,14 @@
             ./modules/home/optional/apps/vscode.nix
             ./modules/home/optional/apps/obsidian.nix
             ./modules/home/optional/apps/spicetify.nix
+            ./modules/home/optional/apps/claude-desktop.nix
             ./modules/home/optional/ssh.nix
           ];
           extraSpecialArgs = {
             inherit
               pkgs-unstable
               spicetify-nix
+              claude-desktop
               noctalia
               herdr-nix
               username
