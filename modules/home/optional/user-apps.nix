@@ -3,6 +3,7 @@
   pkgs,
   pkgs-unstable,
   herdr-nix,
+  workmux,
   ...
 }:
 let
@@ -128,6 +129,7 @@ in
     terminaltexteffects # tte — terminal text effects (used by screensaver)
     claude-code
     tmux
+    workmux.packages.${pkgs.stdenv.hostPlatform.system}.default
     herdr-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
     nodejs
     lazydocker

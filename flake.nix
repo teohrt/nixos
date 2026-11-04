@@ -29,6 +29,7 @@
       url = "github:GoByeBye/claude-desktop-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    workmux.url = "github:raine/workmux";
     sops-nix.url = "github:Mic92/sops-nix";
     git-hooks = {
       url = "github:cachix/git-hooks.nix";
@@ -48,6 +49,7 @@
       claude-desktop,
       noctalia,
       herdr-nix,
+      workmux,
       git-hooks,
       ...
     }:
@@ -95,6 +97,7 @@
               claude-desktop
               noctalia
               herdr-nix
+              workmux
               username
               ;
           };
