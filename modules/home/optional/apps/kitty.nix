@@ -1,20 +1,9 @@
 # Terminal emulator with cursor trail and smooth scrolling. Styled by Stylix, but with fixed dark background.
 {
-  lib,
   pkgs,
   config,
   ...
 }:
-
-let
-  # Unfloat the active window if it's floating (used before kitty splits)
-  unfloatIfFloating = pkgs.writeShellScript "unfloat-if-floating" ''
-    floating=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.floating')
-    if [[ "$floating" == "true" ]]; then
-      hyprctl dispatch togglefloating
-    fi
-  '';
-in
 {
   programs.kitty = {
     enable = true;
@@ -43,61 +32,25 @@ in
       pixel_scroll = true;
       momentum_scroll = "0.98";
 
-      # Confirm before closing the OS window if 2+ kitty windows (splits/tabs) are open
       confirm_os_window_close = 2;
 
-      # Enable remote control for session management
+      # Launch tmux on startup
+      shell = "${config.home.homeDirectory}/.config/tmux/start.sh";
+
+      # Required for workmux kitty backend
       allow_remote_control = "yes";
       listen_on = "unix:$XDG_RUNTIME_DIR/kitty-socket";
-
-      # Tabs and layouts
-      enabled_layouts = "splits,stack";
-      tab_bar_edge = "top";
-      tab_bar_margin_height = "0 0";
-      startup_session = "~/.config/kitty/startup.conf";
     };
 
-    # Keybindings mirroring Hyprland (Ctrl instead of Super)
     keybindings = {
-      # Window (split) focus - Ctrl+arrows
-      "ctrl+left" = "neighboring_window left";
-      "ctrl+right" = "neighboring_window right";
-      "ctrl+up" = "neighboring_window up";
-      "ctrl+down" = "neighboring_window down";
-
-      # Window (split) movement - Ctrl+Shift+arrows
-      "ctrl+shift+left" = "move_window left";
-      "ctrl+shift+right" = "move_window right";
-      "ctrl+shift+up" = "move_window up";
-      "ctrl+shift+down" = "move_window down";
-
-      # Window management
-      "ctrl+q" = "close_window";
-      "ctrl+enter" =
-        "combine : launch --type=background ${unfloatIfFloating} : launch --location=split --cwd=current";
-      "ctrl+shift+enter" = "new_tab_with_cwd";
-      "ctrl+f" = "toggle_layout stack";
-      "ctrl+j" = "layout_action rotate";
-
-      # Tab switching - Ctrl+1-9
-      "ctrl+1" = "goto_tab 1";
-      "ctrl+2" = "goto_tab 2";
-      "ctrl+3" = "goto_tab 3";
-      "ctrl+4" = "goto_tab 4";
-      "ctrl+5" = "goto_tab 5";
-      "ctrl+6" = "goto_tab 6";
-      "ctrl+7" = "goto_tab 7";
-      "ctrl+8" = "goto_tab 8";
-      "ctrl+9" = "goto_tab 9";
-
-      # Tab management
-      "ctrl+shift+t" = "detach_window new-tab";
-      "ctrl+t" = "set_tab_title";
-
-      # Font size
       "ctrl+equal" = "change_font_size all +1.0";
       "ctrl+minus" = "change_font_size all -1.0";
-
+      # Send xterm-style sequences so tmux can recognize these key combos
+      "ctrl+enter" = "send_text all \\x1b[27;5;13~";
+      "ctrl+shift+left" = "send_text all \\x1b[1;6D";
+      "ctrl+shift+right" = "send_text all \\x1b[1;6C";
+      "ctrl+shift+up" = "send_text all \\x1b[1;6A";
+      "ctrl+shift+down" = "send_text all \\x1b[1;6B";
     };
 
     # Applied AFTER Stylix's base16 include, so this actually overrides the background
@@ -105,38 +58,6 @@ in
       font_size 15
       placement_strategy top-left
       background #${config.lib.stylix.colors.base01}
-      tab_bar_style separator
-      tab_separator ""
-      tab_title_template " {title} "
-      tab_bar_margin_color #${config.lib.stylix.colors.base01}
-      tab_bar_background #${config.lib.stylix.colors.base01}
-      inactive_tab_background #${config.lib.stylix.colors.base01}
-      inactive_tab_foreground #${config.lib.stylix.colors.base0D}
-      active_tab_background #${config.lib.stylix.colors.base0D}
-      active_tab_foreground #000000
-      active_tab_font_style bold
-      active_border_color #${config.lib.stylix.colors.base0D}
-      inactive_border_color #2e3440
     '';
   };
-
-  # -i loads aliases, -c runs the command, exec zsh replaces the process with an interactive shell so the tab stays open
-  # "l" is my ls alias to give customized directory contents visibility for each tab
-  xdg.configFile."kitty/startup.conf".text = ''
-    new_tab misc
-    cd ~/Dev
-    launch zsh -i -c "clear; exec zsh"
-
-    new_tab work
-    cd ~/Dev/work/hudsonts
-    launch zsh -i -c "clear; exec zsh"
-
-    new_tab nixos
-    cd ~/Dev/other/nixos
-    launch zsh -i -c "clear; exec zsh"
-
-    new_tab dotfiles
-    cd ~/Dev/other/dotfiles
-    launch zsh -i -c "clear; exec zsh"
-  '';
 }
