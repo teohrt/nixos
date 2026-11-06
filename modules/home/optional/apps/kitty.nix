@@ -47,6 +47,7 @@
       "ctrl+minus" = "change_font_size all -1.0";
       # Send xterm-style sequences so tmux can recognize these key combos
       "ctrl+enter" = "send_text all \\x1b[27;5;13~";
+      "ctrl+shift+enter" = "send_text all \\x1b[27;6;13~";
       "ctrl+shift+left" = "send_text all \\x1b[1;6D";
       "ctrl+shift+right" = "send_text all \\x1b[1;6C";
       "ctrl+shift+up" = "send_text all \\x1b[1;6A";
@@ -57,7 +58,7 @@
     extraConfig = ''
       font_size 15
       placement_strategy top-left
-      background #${config.lib.stylix.colors.base01}
+      background #050505
     '';
   };
 }
