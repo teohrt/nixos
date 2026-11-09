@@ -17,6 +17,7 @@
   ];
 
   xdg.mime.defaultApplications = {
+    "inode/directory" = "org.gnome.Nautilus.desktop";
     "image/png" = "satty.desktop";
     "image/jpeg" = "satty.desktop";
     "image/gif" = "satty.desktop";
