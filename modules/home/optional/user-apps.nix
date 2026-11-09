@@ -109,18 +109,6 @@ let
     };
   };
 
-  # Wrap zoom-us to enable Wayland screen sharing via PipeWire
-  zoom-wayland = pkgs.symlinkJoin {
-    name = "zoom-wayland";
-    paths = [ pkgs.zoom-us ];
-    buildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      wrapProgram $out/bin/zoom \
-        --set XDG_CURRENT_DESKTOP Hyprland \
-        --set XDG_SESSION_TYPE wayland \
-        --set QT_QPA_PLATFORM xcb
-    '';
-  };
 in
 {
   home.packages = with pkgs; [
@@ -153,7 +141,6 @@ in
     localsend
     discord
     bubblewrap # sandbox for Claude Desktop Cowork mode
-    zoom-wayland # wrapped for Wayland screen sharing
     postman
     bruno-v3 # API client (like Postman) — v3 from binary release
     gpu-screen-recorder # backend for Noctalia screen recorder plugin

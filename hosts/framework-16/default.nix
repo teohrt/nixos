@@ -3,16 +3,6 @@
   ...
 }:
 {
-  # Zoom runs on XWayland — wrap it to self-scale so clicks align with force_zero_scaling
-  nixpkgs.overlays = [
-    (_: prev: {
-      zoom-us = prev.zoom-us.overrideAttrs (old: {
-        postInstall = (old.postInstall or "") + ''
-          wrapProgram $out/bin/zoom --set QT_SCALE_FACTOR 1.25
-        '';
-      });
-    })
-  ];
   # Audio fixes for Framework 16
   # The AMD Ryzen audio hardware (ALC285 codec + SOF firmware) is newer and has quirks:
   # - WirePlumber auto-selects the wrong profile (Headphones instead of Speaker)
