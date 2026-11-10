@@ -35,7 +35,7 @@
       confirm_os_window_close = 2;
 
       # Launch tmux on startup
-      shell = "${config.home.homeDirectory}/.config/tmux/start.sh";
+      shell = "${config.home.homeDirectory}/.config/tmux/start.py";
 
       # Required for workmux kitty backend
       allow_remote_control = "yes";

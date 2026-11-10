@@ -130,6 +130,7 @@ in
     gum # charmbracelet — interactive prompts and widgets for shell scripts
     cmatrix
     go
+    python3
     croc
     delta # git-delta — syntax-highlighting diff pager
     pkgs-unstable.smassh
