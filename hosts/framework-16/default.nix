@@ -133,6 +133,9 @@
     ../../modules/nixos/optional/monitoring.nix
   ];
 
+  # GTK4 Vulkan renderer crashes on AMD (RADV) — use OpenGL backend instead
+  environment.sessionVariables.GSK_RENDERER = "ngl";
+
   networking.hostName = "framework-16";
 
   # Firmware for audio, wifi, etc.
