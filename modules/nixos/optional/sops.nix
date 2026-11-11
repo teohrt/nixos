@@ -26,6 +26,13 @@
       };
 
       "tailscale_auth_key" = { };
+
+      "tailscale_ssh_private_key" = {
+        owner = username;
+        group = "users";
+        mode = "0600";
+        path = "/home/${username}/.ssh/tailscale_ed25519";
+      };
     };
   };
 }
