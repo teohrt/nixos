@@ -55,7 +55,7 @@ let
 
     M.plugins = {
       dynamic_cursors = "${pkgs.hyprlandPlugins.hypr-dynamic-cursors}/lib/libhypr-dynamic-cursors.so",
-      hyprfocus = "${pkgs.hyprlandPlugins.hyprfocus}/lib/libhyprfocus.so",
+
     }
 
     return M
@@ -220,7 +220,7 @@ let
       ${pkgs.libnotify}/bin/notify-send -u low -t 3000 "Scale" "$prev → $1"
     }
 
-    choice=$(printf "WiFi QR\nReminder\nWebcam Preview\nScreensaver\nBrightness\nVolume\nScale\n$spoof_option" | ${walker} --dmenu -p "Toggle")
+    choice=$(printf "WiFi QR\nReminder\nWebcam Preview\nSystem Monitor\nScreensaver\nBrightness\nVolume\nScale\n$spoof_option" | ${walker} --dmenu -p "Toggle")
     case "$choice" in
       "WiFi QR")
         show_wifi_qr
@@ -242,6 +242,9 @@ let
         ;;
       "Webcam Preview")
         toggle_webcam
+        ;;
+      "System Monitor")
+        google-chrome-stable --app=http://localhost:9832/d/system-errors/system-errors --class=grafana-dashboard
         ;;
       "Screensaver")
         launch-screensaver
@@ -368,7 +371,6 @@ in
     package = pkgs.hyprland;
     plugins = [
       pkgs.hyprlandPlugins.hypr-dynamic-cursors
-      pkgs.hyprlandPlugins.hyprfocus
     ];
     systemd.enable = false; # UWSM handles session targets and env export; HM's version would conflict
     configType = "lua";

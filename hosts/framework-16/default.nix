@@ -3,16 +3,6 @@
   ...
 }:
 {
-  # Zoom runs on XWayland — wrap it to self-scale so clicks align with force_zero_scaling
-  nixpkgs.overlays = [
-    (_: prev: {
-      zoom-us = prev.zoom-us.overrideAttrs (old: {
-        postInstall = (old.postInstall or "") + ''
-          wrapProgram $out/bin/zoom --set QT_SCALE_FACTOR 1.25
-        '';
-      });
-    })
-  ];
   # Audio fixes for Framework 16
   # The AMD Ryzen audio hardware (ALC285 codec + SOF firmware) is newer and has quirks:
   # - WirePlumber auto-selects the wrong profile (Headphones instead of Speaker)
@@ -136,10 +126,15 @@
     ../../modules/nixos/optional/system-apps.nix
     ../../modules/nixos/optional/sops.nix
     ../../modules/nixos/optional/steam.nix
+    ../../modules/nixos/optional/wine.nix
     ../../modules/nixos/optional/kvm.nix
     ../../modules/nixos/optional/localsend.nix
     ../../modules/nixos/optional/vpn.nix
+    ../../modules/nixos/optional/monitoring.nix
   ];
+
+  # GTK4 Vulkan renderer crashes on AMD (RADV) — use OpenGL backend instead
+  environment.sessionVariables.GSK_RENDERER = "ngl";
 
   networking.hostName = "framework-16";
 

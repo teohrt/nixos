@@ -128,7 +128,7 @@ hl.bind(mod .. " + B", function()
 end, { description = "Toggle bar" })
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("noctalia-bar-move"), { description = "Move bar top/bottom" })
 hl.bind(mod .. " + J",            hl.dsp.layout("togglesplit"), { description = "Toggle split" })
-hl.bind(mod .. " + P",            hl.dsp.window.pin(), { description = "Pin window (all workspaces)" })
+hl.bind(mod .. " + P",            hl.dsp.window.pseudo(), { description = "Toggle pseudo-tile" })
 hl.bind(mod .. " + W",            hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"), { description = "Wallpaper picker" })
 hl.bind(mod .. " + SHIFT + W",    hl.dsp.exec_cmd(ipc .. " panel-toggle noctalia/wallhaven:browser"), { description = "Wallhaven browser" })
 
@@ -185,20 +185,8 @@ for i = 1, 10 do
 end
 
 ---- Scratch pad ----
--- Suppress hyprfocus animations when closing the scratchpad so the
--- returning focus doesn't trigger a distracting slide on the main workspace.
 local function toggle_scratchpad()
-    local special = hl.get_active_special_workspace()
-    local closing = special ~= nil and special.name == "special:scratchpad"
-
-    if not closing then
-        hl.dispatch(hl.dsp.workspace.toggle_special("scratchpad"))
-        return
-    end
-
-    hl.config({ plugin = { hyprfocus = { only_on_monitor_change = true } } })
     hl.dispatch(hl.dsp.workspace.toggle_special("scratchpad"))
-    hl.config({ plugin = { hyprfocus = { only_on_monitor_change = false } } })
 end
 
 for _, ctrl in ipairs({ "Control_L", "Control_R" }) do

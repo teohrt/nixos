@@ -10,9 +10,11 @@
     ../../modules/nixos/optional/system-apps.nix
     ../../modules/nixos/optional/sops.nix
     ../../modules/nixos/optional/steam.nix
+    ../../modules/nixos/optional/wine.nix
     ../../modules/nixos/optional/kvm.nix
     ../../modules/nixos/optional/localsend.nix
     ../../modules/nixos/optional/vpn.nix
+    ../../modules/nixos/optional/monitoring.nix
   ];
 
   networking.hostName = "my-thinkpad";

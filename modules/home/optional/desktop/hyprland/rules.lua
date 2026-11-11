@@ -75,6 +75,9 @@ floating_popup({ class = "^(bruno)$" })
 floating_popup({ title = "^(hyprmon)$" })
 floating_popup({ class = "^(dev.noctalia.Noctalia)$" })
 
+-- Grafana dashboard: floating popup (same as 1Password)
+floating_popup({ class = "^(grafana-dashboard|chrome-localhost__d_system.errors.*-Default)$" })
+
 -- Webcam preview: float, pin, no border (positioned in window.open handler)
 hl.window_rule({
     match = { title = "^(webcam)$" },

@@ -68,6 +68,26 @@
         "type": "github"
       }
     },
+    "claude-desktop": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785638032,
+        "narHash": "sha256-PvKt7lEpynodhBvCHJku01FXXYHz0jaFIM1q8k3aXi8=",
+        "owner": "GoByeBye",
+        "repo": "claude-desktop-nix",
+        "rev": "de634fc0c9e2def4679ccf6b4b700e670d37bcd5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "GoByeBye",
+        "repo": "claude-desktop-nix",
+        "type": "github"
+      }
+    },
     "firefox-gnome-theme": {
       "flake": false,
       "locked": {
@@ -315,6 +335,22 @@
         "type": "github"
       }
     },
+    "nixpkgs_4": {
+      "locked": {
+        "lastModified": 1787900134,
+        "narHash": "sha256-VYXO0XZlgj06dxJZRhrD3WoSsvq/c7+/Akyoa22pefw=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "83199d0d373dd3ac2b9a1996b1d0263f76ab7a4c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "noctalia": {
       "inputs": {
         "nixpkgs": [
@@ -362,6 +398,7 @@
     },
     "root": {
       "inputs": {
+        "claude-desktop": "claude-desktop",
         "git-hooks": "git-hooks",
         "herdr-nix": "herdr-nix",
         "home-manager": "home-manager",
@@ -371,7 +408,8 @@
         "noctalia": "noctalia",
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix",
-        "stylix": "stylix"
+        "stylix": "stylix",
+        "workmux": "workmux"
       }
     },
     "sops-nix": {
@@ -553,6 +591,24 @@
       "original": {
         "owner": "tinted-theming",
         "repo": "base16-zed",
+        "type": "github"
+      }
+    },
+    "workmux": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_4"
+      },
+      "locked": {
+        "lastModified": 1793774638,
+        "narHash": "sha256-xp1vkuXH88UGmR1UqUmmzyMIXwi1vGesRlOoTyEmCzk=",
+        "owner": "raine",
+        "repo": "workmux",
+        "rev": "da569703dc16d7850584021949e6379301af54f7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "raine",
+        "repo": "workmux",
         "type": "github"
       }
     }

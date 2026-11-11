@@ -3,6 +3,7 @@
   pkgs,
   pkgs-unstable,
   herdr-nix,
+  workmux,
   ...
 }:
 let
@@ -108,18 +109,6 @@ let
     };
   };
 
-  # Wrap zoom-us to enable Wayland screen sharing via PipeWire
-  zoom-wayland = pkgs.symlinkJoin {
-    name = "zoom-wayland";
-    paths = [ pkgs.zoom-us ];
-    buildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      wrapProgram $out/bin/zoom \
-        --set XDG_CURRENT_DESKTOP Hyprland \
-        --set XDG_SESSION_TYPE wayland \
-        --set QT_QPA_PLATFORM xcb
-    '';
-  };
 in
 {
   home.packages = with pkgs; [
@@ -127,6 +116,8 @@ in
     wl-clipboard # wl-copy/wl-paste — needed for Claude Code image paste on Wayland
     terminaltexteffects # tte — terminal text effects (used by screensaver)
     claude-code
+    tmux
+    workmux.packages.${pkgs.stdenv.hostPlatform.system}.default
     herdr-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
     nodejs
     lazydocker
@@ -139,6 +130,7 @@ in
     gum # charmbracelet — interactive prompts and widgets for shell scripts
     cmatrix
     go
+    python3
     croc
     delta # git-delta — syntax-highlighting diff pager
     pkgs-unstable.smassh
@@ -150,7 +142,6 @@ in
     localsend
     discord
     bubblewrap # sandbox for Claude Desktop Cowork mode
-    zoom-wayland # wrapped for Wayland screen sharing
     postman
     bruno-v3 # API client (like Postman) — v3 from binary release
     gpu-screen-recorder # backend for Noctalia screen recorder plugin
