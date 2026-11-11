@@ -15,6 +15,7 @@
     ../../modules/nixos/optional/localsend.nix
     ../../modules/nixos/optional/vpn.nix
     ../../modules/nixos/optional/monitoring.nix
+    ../../modules/nixos/optional/tailscale.nix
   ];
 
   networking.hostName = "my-thinkpad";

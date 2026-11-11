@@ -77,6 +77,9 @@
     ]; # video: brightnessctl; docker: rootless docker; networkmanager: NM control
     packages = [ ];
     shell = pkgs.zsh;
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA4NmStNCItRU8uVCbD3BgJqkmlvG6WG4MpW57tVDkP5 trace@tailnet"
+    ];
   };
 
   i18n.defaultLocale = "en_US.UTF-8";
