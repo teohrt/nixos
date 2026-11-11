@@ -131,6 +131,7 @@
     ../../modules/nixos/optional/localsend.nix
     ../../modules/nixos/optional/vpn.nix
     ../../modules/nixos/optional/monitoring.nix
+    ../../modules/nixos/optional/tailscale.nix
   ];
 
   # GTK4 Vulkan renderer crashes on AMD (RADV) — use OpenGL backend instead

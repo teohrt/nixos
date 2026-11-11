@@ -16,6 +16,14 @@ _: {
         User = "git";
         IdentityFile = "~/.ssh/work_github_ed25519";
       };
+      "thinkpad" = {
+        HostName = "my-thinkpad";
+        User = "trace";
+      };
+      "framework" = {
+        HostName = "framework-16";
+        User = "trace";
+      };
     };
   };
 

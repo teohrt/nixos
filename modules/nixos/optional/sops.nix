@@ -24,6 +24,8 @@
       "expressvpn_credentials" = {
         mode = "0400";
       };
+
+      "tailscale_auth_key" = { };
     };
   };
 }
