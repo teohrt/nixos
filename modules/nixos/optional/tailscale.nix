@@ -36,6 +36,8 @@
     settings = {
       PasswordAuthentication = false;
       PermitRootLogin = "no";
+      ClientAliveInterval = 30;
+      ClientAliveCountMax = 3;
     };
   };
 }

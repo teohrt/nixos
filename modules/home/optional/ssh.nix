@@ -5,6 +5,8 @@ _: {
     settings = {
       "*" = {
         AddKeysToAgent = "yes";
+        ServerAliveInterval = 30;
+        ServerAliveCountMax = 3;
       };
       "github.com" = {
         HostName = "github.com";
