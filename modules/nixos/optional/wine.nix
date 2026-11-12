@@ -2,7 +2,7 @@
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
-    wineWowPackages.staging # wine-staging has extra patches for app compatibility
+    wineWow64Packages.staging # wine-staging has extra patches for app compatibility
     winetricks # installs common DLLs/runtimes apps depend on
     bottles # GUI frontend for managing per-app wine prefixes
   ];
