@@ -1,6 +1,7 @@
 {
   imports = [
     ./user-apps.nix
+    ./stylix.nix
     ./desktop/hyprland.nix
     ./desktop/noctalia.nix
     ./desktop/walker.nix
