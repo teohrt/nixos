@@ -15,11 +15,12 @@ Each host imports from a shared module system:
 - **`modules/home/core/`** — Base home-manager config (notifications, power menu, screensaver)
 - **`modules/home/optional/`** — Opt-in user modules (hyprland, waybar, apps, etc.)
 
-Hosts live in `hosts/<hostname>/` and pick which optional modules to include. See [Adding a new machine](docs/new-machine.md) for the full module reference.
+Hosts live in `hosts/<hostname>/` and pick which optional modules to include. See [Adding a host](docs/adding-a-host.md) for the full module reference.
 
 
 ## Docs
 
-- [Adding a new machine](docs/new-machine.md)
+- [Adding a host](docs/adding-a-host.md)
+- [Adding a homelab node](docs/adding-a-homelab-node.md)
 - [Secrets management](docs/secrets.md)
 - [Theming](docs/theming.md)
