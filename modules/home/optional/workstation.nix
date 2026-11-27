@@ -2,6 +2,8 @@
   imports = [
     ./user-apps.nix
     ./stylix.nix
+    ./claude-mcp.nix
+    ./nautilus.nix
     ./desktop/hyprland.nix
     ./desktop/noctalia.nix
     ./desktop/walker.nix
