@@ -119,7 +119,7 @@ This creates `/mnt/etc/nixos/hardware-configuration.nix`. Copy its contents — 
 cat /mnt/etc/nixos/hardware-configuration.nix
 ```
 
-Save this output. You'll paste it into `hosts/<hostname>/hardware.nix` in step 8.
+Save this output. You'll paste it into `hosts/homelab/<hostname>/hardware.nix` in step 8.
 
 ## 7. Bootstrap a Minimal Config for First Boot
 
@@ -180,45 +180,39 @@ reboot
 
 Follow the [adding a host](adding-a-host.md) guide to:
 
-1. Create `hosts/homelab/` with `default.nix` and `hardware.nix` (paste the output from step 6)
-2. Register the host in `flake.nix`
+1. Create `hosts/homelab/<hostname>/` with `default.nix` and `hardware.nix` (paste the output from step 6)
+2. Register the host in `flake.nix` with `mkHomelabHost`
 3. Set up secrets
 
-The existing `mkHost` helper includes `hmNixosModule`, which pulls in desktop-specific home-manager modules (hyprland, waybar, etc.). Register this host separately with a server-appropriate module list. See the [adding a host guide](adding-a-host.md) for the full module reference.
+`mkHomelabHost` provides core NixOS, docker, sops, tailscale, and home-manager with SSH — no desktop modules. See the [adding a host guide](adding-a-host.md) for the full module reference.
 
 ### LXQt + greetd auto-login
 
-The host config should enable LXQt and greetd for a lightweight desktop that auto-logs in on boot:
+The host's `default.nix` should enable LXQt and greetd for a lightweight desktop that auto-logs in on boot:
 
 ```nix
-# In hosts/homelab/default.nix
+# In hosts/homelab/<hostname>/default.nix
 { pkgs, ... }:
 {
-  imports = [
-    ./hardware.nix
-    ../../modules/nixos/core
-    ../../modules/nixos/optional/docker.nix
-    ../../modules/nixos/optional/system-apps.nix
-    ../../modules/nixos/optional/sops.nix
-    ../../modules/nixos/optional/tailscale.nix
-  ];
+  imports = [ ./hardware.nix ];
 
-  networking.hostName = "homelab";
+  networking.hostName = "<hostname>";
 
-  # LXQt desktop — lightweight GUI accessible via network KVM
-  services.xserver.enable = true;
-  services.xserver.desktopManager.lxqt.enable = true;
-
-  # Auto-login via greetd — boots straight into LXQt, no login screen
-  services.greetd = {
-    enable = true;
-    settings.default_session = {
-      command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd startlxqt";
-      user = "trace";
+  services = {
+    xserver = {
+      enable = true;
+      desktopManager.lxqt.enable = true;
     };
-    settings.initial_session = {
-      command = "startlxqt";
-      user = "trace";
+    greetd = {
+      enable = true;
+      settings.default_session = {
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd startlxqt";
+        user = "trace";
+      };
+      settings.initial_session = {
+        command = "startlxqt";
+        user = "trace";
+      };
     };
   };
 
@@ -240,7 +234,7 @@ git clone <your-repo-url> ~/Dev/other/nixos
 cd ~/Dev/other/nixos
 
 # Deploy
-sudo nixos-rebuild switch --flake .#homelab
+sudo nixos-rebuild switch --flake .#<hostname>
 ```
 
 After this rebuild, the bootstrap config from step 7 is fully replaced by the flake. SSH will be locked down to Tailscale-only (via the tailscale module), and sops secrets will be decrypted.
@@ -252,7 +246,7 @@ After this rebuild, the bootstrap config from step 7 is fully replaced by the fl
 tailscale status
 
 # SSH works over tailnet from your workstation
-ssh homelab
+ssh <hostname>
 
 # Secrets are decrypted
 ls -la ~/.ssh/personal_github_ed25519
@@ -269,13 +263,13 @@ Rebuilds from your workstation over Tailscale:
 # On the mini PC
 cd ~/Dev/other/nixos
 git pull
-sudo nixos-rebuild switch --flake .#homelab
+sudo nixos-rebuild switch --flake .#<hostname>
 ```
 
 Or remotely:
 
 ```bash
-nixos-rebuild switch --flake .#homelab --target-host trace@homelab --use-remote-sudo
+nixos-rebuild switch --flake .#<hostname> --target-host trace@<hostname> --use-remote-sudo
 ```
 
 The network KVM remains available as a fallback if SSH and Tailscale are both down.

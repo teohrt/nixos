@@ -2,10 +2,16 @@
 
 ## 1. Create the host directory
 
+Hosts are organized by type:
+
 ```
-hosts/<hostname>/
-  default.nix
-  hardware.nix
+hosts/
+  workstations/<hostname>/    # for mkWorkstationHost
+    default.nix
+    hardware.nix
+  homelab/<hostname>/         # for mkHomelabHost
+    default.nix
+    hardware.nix
 ```
 
 ## 2. Set up secrets
@@ -18,7 +24,7 @@ Generate an age key for the new host and add it to the secrets file so it can de
 nixos-generate-config --show-hardware-config > hardware.nix
 ```
 
-Paste the output into `hosts/<hostname>/hardware.nix`.
+Paste the output into the host's `hardware.nix`.
 
 ## 4. Check for hardware-specific modules
 
@@ -35,69 +41,53 @@ Common examples:
 - `lenovo-thinkpad-t480`
 - `dell-xps-15-9500`
 
-## 5. Write `hosts/<hostname>/default.nix`
+## 5. Write the host's `default.nix`
 
-Use `hosts/framework-16/default.nix` as a reference:
+Core NixOS modules, docker, sops, tailscale, and home-manager core are all provided by the flake's host builders — you don't need to import them. The host's `default.nix` only needs hardware-specific config.
+
+**Workstation** (use `hosts/workstations/framework-16/default.nix` as a reference):
 
 ```nix
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 {
-  imports = [
-    ./hardware.nix
-    ../../modules/nixos/core
-    ../../modules/nixos/optional/desktop.nix
-    ../../modules/nixos/optional/networking.nix
-    ../../modules/nixos/optional/docker.nix
-    ../../modules/nixos/optional/system-apps.nix
-  ];
+  imports = [ ./hardware.nix ];
 
   networking.hostName = "<hostname>";
-  time.timeZone = "America/New_York";
-  i18n.defaultLocale = "en_US.UTF-8";
 
-  home-manager.users.trace = {
-    imports = [
-      ../../modules/home/core
-      ../../modules/home/optional/user-apps.nix
-      ../../modules/home/optional/desktop/hyprland.nix
-      ../../modules/home/optional/desktop/waybar.nix
-      ../../modules/home/optional/desktop/walker.nix
-      ../../modules/home/optional/desktop/wallpaper.nix
-      ../../modules/home/optional/desktop/hyprlock.nix
-      ../../modules/home/optional/desktop/hypridle.nix
-      ../../modules/home/optional/apps/kitty.nix
-      ../../modules/home/optional/apps/firefox.nix
-      ../../modules/home/optional/apps/vscode.nix
-      ../../modules/home/optional/apps/obsidian.nix
-      ../../modules/home/optional/apps/spicetify.nix
-    ];
+  # Hardware-specific config goes here (audio fixes, GPU drivers, etc.)
 
-    # Override monitor scaling if needed (default is 1.2x)
-    # wayland.windowManager.hyprland.settings.monitor = lib.mkForce ",preferred,auto,1.25";
-  };
+  system.stateVersion = "26.05"; # set to NixOS version at install time, never change
+}
+```
 
-  system.stateVersion = "25.11"; # set to NixOS version at install time, never change
+**Homelab** (use `hosts/homelab/alpha/default.nix` as a reference):
+
+```nix
+{ pkgs, ... }:
+{
+  imports = [ ./hardware.nix ];
+
+  networking.hostName = "<hostname>";
+
+  # Server-specific config goes here (LXQt, greetd, services, etc.)
+
+  system.stateVersion = "26.05";
 }
 ```
 
 ## 6. Register the host in `flake.nix`
 
-Add an entry to `nixosConfigurations`:
+Add an entry to `nixosConfigurations` using the appropriate builder:
 
 ```nix
-my-new-machine = nixpkgs.lib.nixosSystem {
-  inherit system;
-  specialArgs = { inherit pkgs-walker; };
-  modules = [
-    ./hosts/my-new-machine
-    # Add hardware module if available:
-    # nixos-hardware.nixosModules.framework-16-7040-amd
-    stylix.nixosModules.stylix
-    { inherit (themeConfig) stylix; }
-    home-manager.nixosModules.home-manager
-    hmNixosModule
-  ];
-};
+# Workstation
+my-new-machine = mkWorkstationHost ./hosts/workstations/my-new-machine [
+  # Add hardware module if available:
+  # nixos-hardware.nixosModules.framework-16-7040-amd
+];
+
+# Homelab
+my-new-server = mkHomelabHost ./hosts/homelab/my-new-server [ ];
 ```
 
 ## 7. Deploy
@@ -141,7 +131,7 @@ sudo nixos-rebuild switch --flake .#<hostname>
 
 ## Hardware-specific configuration
 
-For hardware that needs special handling (audio quirks, firmware, scaling), add configuration directly to the host's `default.nix`. See `hosts/framework-16/default.nix` for examples:
+For hardware that needs special handling (audio quirks, firmware, scaling), add configuration directly to the host's `default.nix`. See `hosts/workstations/framework-16/default.nix` for examples:
 
 - WirePlumber rules for audio profile selection
 - Bluetooth auto-switching

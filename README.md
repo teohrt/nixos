@@ -8,14 +8,25 @@ Personal [NixOS](https://nixos.org/) configuration for multiple machines using [
 
 ## Structure
 
-Each host imports from a shared module system:
+Hosts are organized by type, with shared modules managed through the flake's host builders:
+
+```
+hosts/
+  workstations/     # Desktop machines — mkWorkstationHost
+    framework-16/
+    my-thinkpad/
+  homelab/          # Servers — mkHomelabHost
+    alpha/
+```
+
+Modules are layered:
 
 - **`modules/nixos/core/`** — Base NixOS config shared by all machines (nix settings, bootloader, user, shell)
-- **`modules/nixos/optional/`** — Opt-in system modules (desktop, networking, docker, steam, sops)
+- **`modules/nixos/optional/`** — Opt-in system modules; `workstation.nix` bundles the desktop set
 - **`modules/home/core/`** — Base home-manager config (notifications, power menu, screensaver)
-- **`modules/home/optional/`** — Opt-in user modules (hyprland, waybar, apps, etc.)
+- **`modules/home/optional/`** — Opt-in user modules; `workstation.nix` bundles desktop apps
 
-Hosts live in `hosts/<hostname>/` and pick which optional modules to include. See [Adding a host](docs/adding-a-host.md) for the full module reference.
+The flake provides three host builders: `mkHost` (base — core, docker, sops, tailscale), `mkWorkstationHost` (adds desktop, theming, GUI apps), and `mkHomelabHost` (adds SSH only). See [Adding a host](docs/adding-a-host.md) for the full module reference.
 
 
 ## Docs
