@@ -150,10 +150,10 @@
 
       nixosConfigurations = {
         # Workstations
-        framework-16 = mkWorkstationHost ./hosts/framework-16 [
+        framework-16 = mkWorkstationHost ./hosts/workstations/framework-16 [
           nixos-hardware.nixosModules.framework-16-7040-amd
         ];
-        my-thinkpad = mkWorkstationHost ./hosts/my-thinkpad [ ];
+        my-thinkpad = mkWorkstationHost ./hosts/workstations/my-thinkpad [ ];
 
         # Homelab
         alpha = mkHomelabHost ./hosts/homelab/alpha [ ];
