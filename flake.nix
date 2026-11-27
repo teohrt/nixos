@@ -169,6 +169,25 @@
           nixfmt.enable = true;
           statix.enable = true;
           selene.enable = true;
+          nix-build-check = {
+            enable = true;
+            name = "nix-build-check";
+            entry = toString (
+              pkgs.writeShellScript "nix-build-check" ''
+                failed=0
+                for host in framework-16 my-thinkpad; do
+                  echo "Evaluating $host..."
+                  if ! nix build .#nixosConfigurations.$host.config.system.build.toplevel --dry-run 2>&1; then
+                    echo "FAIL: $host"
+                    failed=1
+                  fi
+                done
+                exit $failed
+              ''
+            );
+            files = "\\.nix$";
+            pass_filenames = false;
+          };
         };
       };
 
