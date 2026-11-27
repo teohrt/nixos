@@ -118,20 +118,6 @@
   };
   imports = [
     ./hardware.nix
-    ../../modules/nixos/core
-    ../../modules/nixos/optional/desktop.nix
-    ../../modules/nixos/optional/networking.nix
-    ../../modules/nixos/optional/privacy.nix
-    ../../modules/nixos/optional/docker.nix
-    ../../modules/nixos/optional/system-apps.nix
-    ../../modules/nixos/optional/sops.nix
-    ../../modules/nixos/optional/steam.nix
-    ../../modules/nixos/optional/wine.nix
-    ../../modules/nixos/optional/kvm.nix
-    ../../modules/nixos/optional/localsend.nix
-    ../../modules/nixos/optional/vpn.nix
-    ../../modules/nixos/optional/monitoring.nix
-    ../../modules/nixos/optional/tailscale.nix
   ];
 
   # GTK4 Vulkan renderer crashes on AMD (RADV) — use OpenGL backend instead

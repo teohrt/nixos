@@ -1,0 +1,18 @@
+{
+  imports = [
+    ./user-apps.nix
+    ./desktop/hyprland.nix
+    ./desktop/noctalia.nix
+    ./desktop/walker.nix
+    ./desktop/hypridle.nix
+    ./apps/kitty.nix
+    ./apps/browser-chooser.nix
+    ./apps/firefox.nix
+    ./apps/slack.nix
+    ./apps/vscode.nix
+    ./apps/obsidian.nix
+    ./apps/spicetify.nix
+    ./apps/claude-desktop.nix
+    ./ssh.nix
+  ];
+}
