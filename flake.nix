@@ -95,6 +95,7 @@
             hostPath
             { nixpkgs.hostPlatform = system; }
             ./modules/nixos/core
+            ./modules/nixos/optional/base-tools.nix
             ./modules/nixos/optional/docker.nix
             ./modules/nixos/optional/sops.nix
             ./modules/nixos/optional/tailscale.nix
