@@ -3,7 +3,6 @@
   pkgs,
   pkgs-unstable,
   herdr-nix,
-  workmux,
   ...
 }:
 let
@@ -116,22 +115,12 @@ in
     wl-clipboard # wl-copy/wl-paste — needed for Claude Code image paste on Wayland
     terminaltexteffects # tte — terminal text effects (used by screensaver)
     claude-code
-    tmux
-    workmux.packages.${pkgs.stdenv.hostPlatform.system}.default
     herdr-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
     nodejs
-    lazydocker
-    ripgrep
-    jq
-    fzf
-    which
-    tree
-    gawk
     gum # charmbracelet — interactive prompts and widgets for shell scripts
     cmatrix
     go
     python3
-    croc
     delta # git-delta — syntax-highlighting diff pager
     pkgs-unstable.smassh
 
@@ -139,7 +128,6 @@ in
     google-chrome
     _1password-gui
     obsidian
-    localsend
     discord
     bubblewrap # sandbox for Claude Desktop Cowork mode
     postman
@@ -158,7 +146,6 @@ in
     system-config-printer # printer management GUI
     evince # PDF viewer
     libreoffice # office suite + PDF editing via Draw
-    vlc # video player
     brightnessctl # brightness control (requires video group)
     nautilus # file manager
     nautilus-python # enables right-click extensions (e.g. open in terminal)

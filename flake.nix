@@ -130,7 +130,6 @@
               claude-desktop
               noctalia
               herdr-nix
-              workmux
               ;
           };
         };
