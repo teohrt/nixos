@@ -59,13 +59,16 @@ if ctx.hostname == "framework-16" then
         },
     })
 
-    -- Lid switch: disable display and backlight when closed
+    -- Lid switch: disable display and suspend if undocked and caffeine is off
     hl.bind("switch:on:Lid Switch", function()
         hl.monitor({ output = "eDP-1", disabled = true })
         hl.exec_cmd("brightnessctl -d amdgpu_bl1 set 0")
         hl.timer(function()
             hl.exec_cmd("hyprctl reload")
         end, { timeout = 500, type = "oneshot" })
+        if not find_external_monitor() then
+            hl.exec_cmd("idle-inhibited || systemctl suspend")
+        end
     end, { locked = true })
 
     hl.bind("switch:off:Lid Switch", function()

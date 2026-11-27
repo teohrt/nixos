@@ -168,6 +168,13 @@ in
       ];
     };
 
+    # Lid switch handled by Hyprland (display toggle + caffeine-gated suspend)
+    logind.settings.Login = {
+      HandleLidSwitch = "ignore";
+      HandleLidSwitchDocked = "ignore";
+      HandleLidSwitchExternalPower = "ignore";
+    };
+
     # Battery status daemon (used by Noctalia bar, hypridle for battery-aware behavior)
     upower.enable = true;
 

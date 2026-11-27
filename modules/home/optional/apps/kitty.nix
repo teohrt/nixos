@@ -38,6 +38,7 @@
       shell = "${config.home.homeDirectory}/.config/tmux/start.py";
 
       # Required for workmux kitty backend
+      clipboard_control = "write-clipboard write-primary read-clipboard read-primary";
       allow_remote_control = "yes";
       listen_on = "unix:$XDG_RUNTIME_DIR/kitty-socket";
     };
@@ -58,7 +59,8 @@
     extraConfig = ''
       font_size 15
       placement_strategy top-left
-      background #050505
+      background #2E3440
+      background_opacity 0.7
     '';
   };
 }

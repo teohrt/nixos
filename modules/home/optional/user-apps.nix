@@ -146,9 +146,11 @@ in
     bruno-v3 # API client (like Postman) — v3 from binary release
     gpu-screen-recorder # backend for Noctalia screen recorder plugin
     easyeffects # audio effects for PipeWire
+    gnome-sound-recorder # voice memo recorder
     dbeaver-unwrapped # database client (PostgreSQL, MySQL, SQLite, etc.)
     bolt-launcher # Jagex Launcher alternative (RuneLite, HDOS, RS3)
     qbittorrent
+    kdePackages.kdenlive
 
     # wayland / hyprland ecosystem
     kdePackages.partitionmanager

@@ -84,6 +84,7 @@ let
 in
 {
   home.packages = [
+    idleInhibited
     screensaverCmd
     launchScreensaver
     toggleScreensaver
