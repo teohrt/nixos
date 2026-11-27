@@ -1,5 +1,12 @@
 { pkgs, username, ... }:
 {
+  imports = [
+    ./base-tools.nix
+    ./docker.nix
+    ./sops.nix
+    ./tailscale.nix
+  ];
+
   nix.settings = {
     experimental-features = [
       "nix-command"

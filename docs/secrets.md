@@ -123,7 +123,7 @@ Edit the secrets file:
 sops secrets/secrets.yaml
 ```
 
-Then add corresponding entries in `modules/nixos/optional/sops.nix`:
+Then add corresponding entries in `modules/nixos/core/sops.nix`:
 
 ```nix
 secrets."my-new-secret" = {
