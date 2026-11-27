@@ -13,6 +13,7 @@
     inputs.workmux.packages.${stdenv.hostPlatform.system}.default
     jq
     lazydocker
+    qbittorrent
     ripgrep
     stow
     tmux

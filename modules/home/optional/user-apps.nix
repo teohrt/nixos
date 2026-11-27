@@ -137,7 +137,6 @@ in
     gnome-sound-recorder # voice memo recorder
     dbeaver-unwrapped # database client (PostgreSQL, MySQL, SQLite, etc.)
     bolt-launcher # Jagex Launcher alternative (RuneLite, HDOS, RS3)
-    qbittorrent
     kdePackages.kdenlive
 
     # wayland / hyprland ecosystem
