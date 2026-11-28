@@ -3,6 +3,7 @@
   imports = [
     ./base-tools.nix
     ./docker.nix
+    ./smb.nix
     ./sops.nix
     ./tailscale.nix
   ];

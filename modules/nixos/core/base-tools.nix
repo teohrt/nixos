@@ -4,6 +4,7 @@
     git
     neovim
     eza
+    cifs-utils
     croc
     fzf
     gawk

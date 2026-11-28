@@ -29,6 +29,14 @@
 
       "tailscale_auth_key" = { };
 
+      "zach_nas_smb_credentials" = {
+        mode = "0400";
+      };
+
+      "zach_nas_smb_device" = {
+        mode = "0400";
+      };
+
       "tailscale_ssh_private_key" = {
         owner = username;
         group = "users";
